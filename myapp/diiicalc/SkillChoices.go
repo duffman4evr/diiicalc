@@ -58,7 +58,7 @@ const (
 var (
 	emptyRuneSlugs           = []string{}
 	mantraOfHealingRuneSlugs = []string{"mantra-of-healing-e"}
-	mantraOfEvasionRuneSlugs = []string{"mantra-of-evasion-e"}
+	mantraOfEvasionRuneSlugs = []string{"spam", "mantra-of-evasion-e", "hard-target-spam"}
 	leapRuneSlugs            = []string{"leap-d"}
 	horrifyRuneSlugs         = []string{"horrify-a"}
 	deadlyReachRuneSlugs     = []string{"deadly-reach-e"}
@@ -557,12 +557,37 @@ func (self *IgnorePainSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats
 }
 func (self *LeapSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == leapRuneSlugs[0] {
-		derivedStats.Armor *= 3
+		derivedStats.Armor *= 4
 	}
 }
 func (self *MantraOfEvasionSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == mantraOfEvasionRuneSlugs[0] {
+		
+	}
+	switch {
+	case self.Value == standardUrlValueOn:
+		derivedStats.AddDodge(0.15)
+
+	case self.Value == mantraOfHealingRuneSlugs[0]: // Spam
+		derivedStats.AddDodge(0.30)
+
+		case self.Value == mantraOfHealingRuneSlugs[1]: // Hard Target
 		derivedStats.Armor *= 1.2
+		derivedStats.ResistArcane *= 1.4
+		derivedStats.ResistFire *= 1.4
+		derivedStats.ResistLightning *= 1.4
+		derivedStats.ResistPoison *= 1.4
+		derivedStats.ResistCold *= 1.4
+		derivedStats.ResistPhysical *= 1.4
+
+		case self.Value == mantraOfHealingRuneSlugs[2]: // Hard Target Spam
+		derivedStats.Armor *= 1.2
+		derivedStats.ResistArcane *= 1.4
+		derivedStats.ResistFire *= 1.4
+		derivedStats.ResistLightning *= 1.4
+		derivedStats.ResistPoison *= 1.4
+		derivedStats.ResistCold *= 1.4
+		derivedStats.ResistPhysical *= 1.4
 	}
 }
 func (self *MantraOfHealingSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
@@ -730,7 +755,10 @@ func (self *MantraOfEvasionSkillChoice) PrintHtml(w http.ResponseWriter) {
 	fmt.Fprintln(w, `<td class="tableRight">`)
 	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('defensiveForm').submit();">%s`, self.GetUrlKey(), "\n")
 	fmt.Fprintf(w, `<option value="%s" %s >Off</option>%s`, standardUrlValueOff, GetSelected(self, standardUrlValueOff), "\n")
-	fmt.Fprintf(w, `<option value="%s" %s >Hard Target</option>%s`, mantraOfEvasionRuneSlugs[0], GetSelected(self, mantraOfEvasionRuneSlugs[0]), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >On</option>%s`, standardUrlValueOn, GetSelected(self, standardUrlValueOn), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >Spam</option>%s`, mantraOfEvasionRuneSlugs[0], GetSelected(self, mantraOfEvasionRuneSlugs[0]), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >Hard Target</option>%s`, mantraOfEvasionRuneSlugs[1], GetSelected(self, mantraOfEvasionRuneSlugs[1]), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >Hard Target Spam</option>%s`, mantraOfEvasionRuneSlugs[2], GetSelected(self, mantraOfEvasionRuneSlugs[2]), "\n")
 	fmt.Fprintln(w, `</select>`)
 	fmt.Fprintln(w, `</td>`)
 	fmt.Fprintln(w, `</tr>`)

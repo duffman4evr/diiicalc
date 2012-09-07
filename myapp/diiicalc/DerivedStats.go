@@ -15,7 +15,7 @@ type DerivedStats struct {
 	ResistPoison      float64
 	ResistCold        float64
 	ResistPhysical    float64
-	MitigationSources []MitigationSource
+	MitigationSources map[string]float64
 }
 
 func NewDerivedStats(baseStats *BaseStats, skillChoices []SkillChoice) *DerivedStats {

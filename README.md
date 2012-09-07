@@ -27,3 +27,9 @@ VERSION 1.1:
 - Life regen is not yet taken into account. Getting a value for this requires many requests to the Diablo 3 profile API, and applications are limited in the amount of requests they can make.
 - Life steal (percentage-based) is not taken into account due the offensive stat calculation requirements for such a stat.
 - Life gain % is not factored in to vitality gain EHP analysis.
+
+VERSION 1.2:
+
+===UPDATES===
+
+- Leap: Iron Impact was previously giving a bonus of only 200% armor, rather than 300%. Thanks to ANBUCyrus for the bug find!

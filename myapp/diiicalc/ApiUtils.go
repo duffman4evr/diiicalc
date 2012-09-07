@@ -125,16 +125,6 @@ type ApiItem struct {
 	Icon          string               `json:"icon"`
 	DisplayColor  string               `json:"displayColor"`
 	TooltipParams string               `json:"tooltipParams"`
-	RawAttributes ApiItemAttributesRaw `json:"attributesRaw"`
-}
-
-type ApiItemAttributesRaw struct {
-	LifeOnHit ApiMinMaxNumber `json:"Hitpoints_On_Hit"`
-}
-
-type ApiMinMaxNumber struct {
-	Min float64 `json:"min"`
-	Max float64 `json:"max"`
 }
 
 // Utilities on types.

@@ -15,12 +15,7 @@ type MetaStats struct {
 	EffectiveLifeOnHit      float64
 	EffectiveLifeRegen      float64
 	TotalMitigation         float64
-	MitigationSources       []MitigationSource
-}
-
-type MitigationSource struct {
-	Name  string
-	Value float64
+	MitigationSources       map[string]float64
 }
 
 type StatChangeEffect struct {
@@ -53,28 +48,34 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 	reductionFromArmor := self.DerivedStats.Armor / ((50.0 * self.DerivedStats.BaseStats.Level) + self.DerivedStats.Armor)
 	reductionFromResistances := self.MinResistance / ((5.0 * self.DerivedStats.BaseStats.Level) + self.MinResistance)
 
-	self.MitigationSources = append(self.MitigationSources, MitigationSource{MitigationSourceArmor, reductionFromArmor})
-	self.MitigationSources = append(self.MitigationSources, MitigationSource{MitigationSourceResistances, reductionFromResistances})
+	self.MitigationSources[MitigationSourceArmor] = reductionFromArmor
+	self.MitigationSources[MitigationSourceResistances] = reductionFromResistances
 
 	// Special case: Melee classes should have a reduction of 30%.
 	if self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassBarbarian || self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassMonk {
-		self.MitigationSources = append(self.MitigationSources, MitigationSource{MitigationSourceMeleeClass, 0.30})
-	}
-
-	// Special case: Demon Hunters and Monks should incorporate dodge into their mitigation.
-	if self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassDemonHunter || self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassMonk {
-		self.MitigationSources = append(self.MitigationSources, MitigationSource{MitigationSourceDodge, getDodgeChanceFromDexterity(self.DerivedStats.Dexterity)})
+		self.MitigationSources[MitigationSourceMeleeClass] = 0.30
 	}
 
 	// Add any mitigation sources that might have been added by DerivedStats (Skills like Ignore Pain)
-	for i := 0; i < len(self.DerivedStats.MitigationSources); i++ {
-		self.MitigationSources = append(self.MitigationSources, self.DerivedStats.MitigationSources[i])
+	for key := range self.DerivedStats.MitigationSources {
+		self.MitigationSources[key] = self.DerivedStats.MitigationSources[key]
+	}
+
+	// Special case: Demon Hunters and Monks should incorporate dodge from dexterity into their mitigation.
+	//               Be careful to *multiplicatively* stack this with existing dodge from abilities, if any.
+	if self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassDemonHunter || self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassMonk {
+
+		dodgeChanceFromSkills := self.MitigationSources[MitigationSourceDodge]
+		dodgeChanceFromDex := getDodgeChanceFromDexterity(self.DerivedStats.Dexterity)
+
+		self.MitigationSources[MitigationSourceDodge] = (1 - dodgeChanceFromSkills) * (1 - dodgeChanceFromDex)
 	}
 
 	var totalNonMitigation float64 = 1.0
 
-	for i := 0; i < len(self.MitigationSources); i++ {
-		totalNonMitigation *= 1 - self.MitigationSources[i].Value
+	// Multiplicatively stack all mitigation sources.
+	for key := range self.MitigationSources {
+		totalNonMitigation *= 1 - self.MitigationSources[key].Value
 	}
 
 	self.TotalMitigation = 1 - totalNonMitigation

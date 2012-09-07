@@ -11,17 +11,17 @@ import (
 
 const (
 	// URL keys.
-	urlKeyBattleTagUser      = "battleTagVis"
-	urlKeyBattleTagSystem    = "battleTagHid"
-	urlKeyHeroIdUser         = "character"
-	urlKeyFindButton         = "find"
-	urlKeyDefensiveButton    = "viewDefensive"
-	urlKeyLeftCompareValue   = "leftValue"
-	urlKeyCenterCompareValue = "centerValue"
-	urlKeyRightCompareValue  = "rightValue"
+	urlKeyBattleTagUser      = "btu"
+	urlKeyBattleTagSystem    = "bts"
+	urlKeyHeroIdUser         = "hiu"
+	urlKeyFindButton         = "fi"
+	urlKeyDefensiveButton    = "vd"
+	urlKeyLeftCompareValue   = "lcv"
+	urlKeyCenterCompareValue = "ccv"
+	urlKeyRightCompareValue  = "rcv"
 	urlKeyRealm              = "re"
 	urlKeyHeroes             = "he"
-	
+
 	urlKeyHeroId          = "hi"
 	urlKeyHeroName        = "hn"
 	urlKeyHeroClass       = "hc"
