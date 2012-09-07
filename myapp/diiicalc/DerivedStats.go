@@ -24,7 +24,6 @@ func NewDerivedStats(baseStats *BaseStats, skillChoices []SkillChoice) *DerivedS
 
 	self.BaseStats = *baseStats
 	self.SkillChoices = skillChoices
-
 	self.Dexterity = baseStats.Dexterity
 	self.Vitality = baseStats.Vitality
 	self.Armor = baseStats.Armor
@@ -37,6 +36,8 @@ func NewDerivedStats(baseStats *BaseStats, skillChoices []SkillChoice) *DerivedS
 	self.ResistPoison = baseStats.ResistPoison
 	self.ResistCold = baseStats.ResistCold
 	self.ResistPhysical = baseStats.ResistPhysical
+
+	self.MitigationSources = make(map[string]float64)
 
 	for i := 0; i < len(skillChoices); i++ {
 		skillChoices[i].ModifyDerivedStats(self)

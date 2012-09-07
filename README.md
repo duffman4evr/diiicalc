@@ -32,4 +32,18 @@ VERSION 1.2:
 
 ===UPDATES===
 
-- Leap: Iron Impact was previously giving a bonus of only 200% armor, rather than 300%. Thanks to ANBUCyrus for the bug find!
+- 'Leap - Iron Impact' was previously giving a bonus of only 200% armor, rather than 300%. This has been fixed. Bug found by: ANBUCyrus.
+- 'Fists of Thunder' support added.
+- 'The Guardian's Path' support added.
+- 'Mantra of Evasion' now affects Dodge %. Issue found by: TyrialFrost.
+- Issue where 'Seize the Initiative' skill wasn't being detected was fixed. Bug found by: pmilkman.
+- The ability to % Life has been added at the bottom comparison section.
+- For Monks and Demon Hunters, the ability to select Dexterity has been added at the bottom comparison section.
+- System-wide issues with calculating Armor/Resistance bonuses due to skills have been fixed. HUGE thanks to ANBUCyrus for finding this out.
+
+===KNOWN ISSUES===
+
+- The Diablo 3 API reports buffed (rather than unbuffed) values to this calculator. Due to this, the calculator will have the best accuracy if you log your character off without any defensive passive skills, including the Enchantress armor buff. Once Blizzard fixes the D3 API, this will no longer be necessary. If they take too long to fix it, I will implement a workaround.
+- Life regen is not yet taken into account. Getting a value for this requires many requests to the Diablo 3 profile API, and applications are limited in the amount of requests they can make.
+- Life steal (percentage-based) is not taken into account due the offensive stat calculation requirements for such a stat.
+- Life gain % is not factored in to vitality gain EHP analysis.

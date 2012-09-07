@@ -35,6 +35,8 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 
 	self := new(MetaStats)
 
+	self.MitigationSources = make(map[string]float64)
+
 	// Copy in some data.
 	self.DerivedStats = *derivedStats
 
@@ -61,21 +63,18 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 		self.MitigationSources[key] = self.DerivedStats.MitigationSources[key]
 	}
 
-	// Special case: Demon Hunters and Monks should incorporate dodge from dexterity into their mitigation.
-	//               Be careful to *multiplicatively* stack this with existing dodge from abilities, if any.
+	// Special case: 
+	//   Demon Hunters and Monks should incorporate dodge from dexterity into their mitigation.
+	//   Be careful to *multiplicatively* stack this with existing dodge from abilities, if any.
 	if self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassDemonHunter || self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassMonk {
-
-		dodgeChanceFromSkills := self.MitigationSources[MitigationSourceDodge]
-		dodgeChanceFromDex := getDodgeChanceFromDexterity(self.DerivedStats.Dexterity)
-
-		self.MitigationSources[MitigationSourceDodge] = (1 - dodgeChanceFromSkills) * (1 - dodgeChanceFromDex)
+		addDodge(getDodgeChanceFromDexterity(self.DerivedStats.Dexterity), &self.MitigationSources)
 	}
 
 	var totalNonMitigation float64 = 1.0
 
-	// Multiplicatively stack all mitigation sources.
+	// Multiplicatively stack all mitigation sources to get our total mitigation.
 	for key := range self.MitigationSources {
-		totalNonMitigation *= 1 - self.MitigationSources[key].Value
+		totalNonMitigation *= 1 - self.MitigationSources[key]
 	}
 
 	self.TotalMitigation = 1 - totalNonMitigation
@@ -86,19 +85,6 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 	self.EffectiveLifeRegen = self.DerivedStats.LifeRegen * self.EffectiveLifeMultiplier
 
 	return self
-}
-
-func (self *MetaStats) GetMitigationSource(name string) (mitigationSource *MitigationSource) {
-	for i := 0; i < len(self.MitigationSources); i++ {
-		if self.MitigationSources[i].Name == name {
-			return &self.MitigationSources[i]
-		}
-	}
-	return nil
-}
-
-func (self *MetaStats) GetMitigationSources() (mitigationSources *[]MitigationSource) {
-	return &self.MitigationSources
 }
 
 func (self *MetaStats) ComputeEffectiveLifeChangeForVitChange(vitGain float64) (effectiveLifeGain float64) {
@@ -168,10 +154,10 @@ func (self *MetaStats) ComputeArmorEquivalentForResistChange(resistChange float6
 
 	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
 
-	selfReductionFromArmor := self.GetMitigationSource(MitigationSourceArmor).Value
-	selfReductionFromResistances := self.GetMitigationSource(MitigationSourceResistances).Value
+	selfReductionFromArmor := self.MitigationSources[MitigationSourceArmor]
+	selfReductionFromResistances := self.MitigationSources[MitigationSourceResistances]
 
-	modifiedReductionFromResistances := modifiedMetaStats.GetMitigationSource(MitigationSourceResistances).Value
+	modifiedReductionFromResistances := modifiedMetaStats.MitigationSources[MitigationSourceResistances]
 
 	// Used some algebra here...
 	unmitigatedArmor := (1.0 - selfReductionFromArmor) * (1.0 - modifiedReductionFromResistances) / (1.0 - selfReductionFromResistances)

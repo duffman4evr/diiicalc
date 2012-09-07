@@ -15,8 +15,14 @@ const (
 	energyArmorUrlKey    = "energyArmor"
 	energyArmorSkillSlug = "energy-armor"
 
+	fistsOfThunderUrlKey    = "fistsOfThunder"
+	fistsOfThunderSkillSlug = "fists-of-thunder"
+
 	glassCannonUrlKey    = "glassCannon"
 	glassCannonSkillSlug = "glass-cannon"
+
+	guardiansPathUrlKey    = "guardiansPath"
+	guardiansPathSkillSlug = "the-guardians-path"
 
 	horrifyUrlKey    = "horrify"
 	horrifySkillSlug = "horrify"
@@ -45,8 +51,8 @@ const (
 	poweredArmorUrlKey    = "poweredArmor"
 	poweredArmorSkillSlug = ""
 
-	siezeTheInitiativeUrlKey    = "siezeTheInitiative"
-	siezeTheInitiativeSkillSlug = "sieze-the-initiative"
+	seizeTheInitiativeUrlKey    = "seizeTheInitiative"
+	seizeTheInitiativeSkillSlug = "seize-the-initiative"
 
 	toughAsNailsUrlKey    = "toughAsNails"
 	toughAsNailsSkillSlug = "tough-as-nails"
@@ -57,12 +63,13 @@ const (
 
 var (
 	emptyRuneSlugs           = []string{}
-	mantraOfHealingRuneSlugs = []string{"mantra-of-healing-e"}
-	mantraOfEvasionRuneSlugs = []string{"spam", "mantra-of-evasion-e", "hard-target-spam"}
-	leapRuneSlugs            = []string{"leap-d"}
-	horrifyRuneSlugs         = []string{"horrify-a"}
 	deadlyReachRuneSlugs     = []string{"deadly-reach-e"}
 	energyArmorRuneSlugs     = []string{"energy-armor-a"}
+	fistsOfThunderRuneSlugs  = []string{"fists-of-thunder-e"}
+	horrifyRuneSlugs         = []string{"horrify-a"}
+	leapRuneSlugs            = []string{"leap-d"}
+	mantraOfHealingRuneSlugs = []string{"mantra-of-healing-e"}
+	mantraOfEvasionRuneSlugs = []string{"spam", "mantra-of-evasion-e", "hard-target-spam"}
 	warCryRuneSlugs          = []string{"war-cry-a", "war-cry-c"}
 )
 
@@ -176,6 +183,8 @@ func ParseSkillChoices(r *http.Request) (skillChoices []SkillChoice) {
 			deadlyReachSkillChoice        = new(DeadlyReachSkillChoice)
 			mantraOfEvasionSkillChoice    = new(MantraOfEvasionSkillChoice)
 			mantraOfHealingSkillChoice    = new(MantraOfHealingSkillChoice)
+			fistsOfThunderSkillChoice     = new(FistsOfThunderSkillChoice)
+			guardiansPathSkillChoice      = new(GuardiansPathSkillChoice)
 			poweredArmorSkillChoice       = new(PoweredArmorSkillChoice)
 		)
 
@@ -184,6 +193,8 @@ func ParseSkillChoices(r *http.Request) (skillChoices []SkillChoice) {
 		InitializeSkillChoice(deadlyReachSkillChoice, r)
 		InitializeSkillChoice(mantraOfEvasionSkillChoice, r)
 		InitializeSkillChoice(mantraOfHealingSkillChoice, r)
+		InitializeSkillChoice(fistsOfThunderSkillChoice, r)
+		InitializeSkillChoice(guardiansPathSkillChoice, r)
 		InitializeSkillChoice(poweredArmorSkillChoice, r)
 
 		skillChoices = append(skillChoices, seizeTheInitiativeSkillChoice)
@@ -191,6 +202,8 @@ func ParseSkillChoices(r *http.Request) (skillChoices []SkillChoice) {
 		skillChoices = append(skillChoices, deadlyReachSkillChoice)
 		skillChoices = append(skillChoices, mantraOfEvasionSkillChoice)
 		skillChoices = append(skillChoices, mantraOfHealingSkillChoice)
+		skillChoices = append(skillChoices, fistsOfThunderSkillChoice)
+		skillChoices = append(skillChoices, guardiansPathSkillChoice)
 		skillChoices = append(skillChoices, poweredArmorSkillChoice)
 
 	} else if heroClass == urlValueHeroClassWizard {
@@ -244,7 +257,13 @@ type DeadlyReachSkillChoice struct {
 type EnergyArmorSkillChoice struct {
 	Value string
 }
+type FistsOfThunderSkillChoice struct {
+	Value string
+}
 type GlassCannonSkillChoice struct {
+	Value string
+}
+type GuardiansPathSkillChoice struct {
 	Value string
 }
 type HorrifySkillChoice struct {
@@ -290,7 +309,13 @@ func (self *DeadlyReachSkillChoice) GetValue() string {
 func (self *EnergyArmorSkillChoice) GetValue() string {
 	return self.Value
 }
+func (self *FistsOfThunderSkillChoice) GetValue() string {
+	return self.Value
+}
 func (self *GlassCannonSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *GuardiansPathSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *HorrifySkillChoice) GetValue() string {
@@ -336,7 +361,13 @@ func (self *DeadlyReachSkillChoice) SetValue(value string) {
 func (self *EnergyArmorSkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *FistsOfThunderSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *GlassCannonSkillChoice) SetValue(value string) {
+	self.Value = value
+}
+func (self *GuardiansPathSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *HorrifySkillChoice) SetValue(value string) {
@@ -382,8 +413,14 @@ func (self *DeadlyReachSkillChoice) GetUrlKey() string {
 func (self *EnergyArmorSkillChoice) GetUrlKey() string {
 	return energyArmorUrlKey
 }
+func (self *FistsOfThunderSkillChoice) GetUrlKey() string {
+	return fistsOfThunderUrlKey
+}
 func (self *GlassCannonSkillChoice) GetUrlKey() string {
 	return glassCannonUrlKey
+}
+func (self *GuardiansPathSkillChoice) GetUrlKey() string {
+	return guardiansPathUrlKey
 }
 func (self *HorrifySkillChoice) GetUrlKey() string {
 	return horrifyUrlKey
@@ -413,7 +450,7 @@ func (self *PoweredArmorSkillChoice) GetUrlKey() string {
 	return poweredArmorUrlKey
 }
 func (self *SeizeTheInitiativeSkillChoice) GetUrlKey() string {
-	return siezeTheInitiativeUrlKey
+	return seizeTheInitiativeUrlKey
 }
 func (self *ToughAsNailsSkillChoice) GetUrlKey() string {
 	return toughAsNailsUrlKey
@@ -428,8 +465,14 @@ func (self *DeadlyReachSkillChoice) GetSkillSlug() string {
 func (self *EnergyArmorSkillChoice) GetSkillSlug() string {
 	return energyArmorSkillSlug
 }
+func (self *FistsOfThunderSkillChoice) GetSkillSlug() string {
+	return fistsOfThunderSkillSlug
+}
 func (self *GlassCannonSkillChoice) GetSkillSlug() string {
 	return glassCannonSkillSlug
+}
+func (self *GuardiansPathSkillChoice) GetSkillSlug() string {
+	return guardiansPathSkillSlug
 }
 func (self *HorrifySkillChoice) GetSkillSlug() string {
 	return horrifySkillSlug
@@ -459,7 +502,7 @@ func (self *PoweredArmorSkillChoice) GetSkillSlug() string {
 	return poweredArmorSkillSlug
 }
 func (self *SeizeTheInitiativeSkillChoice) GetSkillSlug() string {
-	return siezeTheInitiativeSkillSlug
+	return seizeTheInitiativeSkillSlug
 }
 func (self *ToughAsNailsSkillChoice) GetSkillSlug() string {
 	return toughAsNailsSkillSlug
@@ -474,7 +517,13 @@ func (self *DeadlyReachSkillChoice) GetRuneSlugs() []string {
 func (self *EnergyArmorSkillChoice) GetRuneSlugs() []string {
 	return energyArmorRuneSlugs
 }
+func (self *FistsOfThunderSkillChoice) GetRuneSlugs() []string {
+	return fistsOfThunderRuneSlugs
+}
 func (self *GlassCannonSkillChoice) GetRuneSlugs() []string {
+	return emptyRuneSlugs
+}
+func (self *GuardiansPathSkillChoice) GetRuneSlugs() []string {
 	return emptyRuneSlugs
 }
 func (self *HorrifySkillChoice) GetRuneSlugs() []string {
@@ -516,88 +565,85 @@ func (self *WarCrySkillChoice) GetRuneSlugs() []string {
 
 func (self *DeadlyReachSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == deadlyReachRuneSlugs[0] {
-		derivedStats.Armor *= 1.5
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.5
 	}
 }
 func (self *EnergyArmorSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	switch {
 	case self.Value == standardUrlValueOn:
-		derivedStats.Armor *= 1.65
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.65
 
 	case self.Value == energyArmorRuneSlugs[0]:
-		derivedStats.Armor *= 1.65
-		derivedStats.ResistArcane *= 1.4
-		derivedStats.ResistFire *= 1.4
-		derivedStats.ResistLightning *= 1.4
-		derivedStats.ResistPoison *= 1.4
-		derivedStats.ResistCold *= 1.4
-		derivedStats.ResistPhysical *= 1.4
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.65
+		derivedStats.ResistArcane += derivedStats.BaseStats.ResistArcane * 0.4
+		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * 0.4
+		derivedStats.ResistLightning += derivedStats.BaseStats.ResistLightning * 0.4
+		derivedStats.ResistPoison += derivedStats.BaseStats.ResistPoison * 0.4
+		derivedStats.ResistCold += derivedStats.BaseStats.ResistCold * 0.4
+		derivedStats.ResistPhysical += derivedStats.BaseStats.ResistPhysical * 0.4
+	}
+}
+func (self *FistsOfThunderSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
+	if self.Value == fistsOfThunderRuneSlugs[0] {
+		addDodge(0.16, &derivedStats.MitigationSources)
 	}
 }
 func (self *GlassCannonSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == standardUrlValueOn {
-		derivedStats.Armor *= .9
-		derivedStats.ResistArcane *= .9
-		derivedStats.ResistFire *= .9
-		derivedStats.ResistLightning *= .9
-		derivedStats.ResistPoison *= .9
-		derivedStats.ResistCold *= .9
-		derivedStats.ResistPhysical *= .9
+		derivedStats.Armor += derivedStats.BaseStats.Armor * -0.1
+		derivedStats.ResistArcane += derivedStats.BaseStats.ResistArcane * -0.1
+		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * -0.1
+		derivedStats.ResistLightning += derivedStats.BaseStats.ResistLightning * -0.1
+		derivedStats.ResistPoison += derivedStats.BaseStats.ResistPoison * -0.1
+		derivedStats.ResistCold += derivedStats.BaseStats.ResistCold * -0.1
+		derivedStats.ResistPhysical += derivedStats.BaseStats.ResistPhysical * -0.1
+	}
+}
+func (self *GuardiansPathSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
+	if self.Value == standardUrlValueOn {
+		addDodge(0.15, &derivedStats.MitigationSources)
 	}
 }
 func (self *HorrifySkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == horrifyRuneSlugs[0] {
-		derivedStats.Armor *= 2
+		derivedStats.Armor += derivedStats.BaseStats.Armor
 	}
 }
 func (self *IgnorePainSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == standardUrlValueOn {
-		derivedStats.MitigationSources = append(derivedStats.MitigationSources, MitigationSource{"Ignore Pain", 0.65})
+		derivedStats.MitigationSources["Ignore Pain"] = 0.65
 	}
 }
 func (self *LeapSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == leapRuneSlugs[0] {
-		derivedStats.Armor *= 4
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 3.0
 	}
 }
 func (self *MantraOfEvasionSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
-	if self.Value == mantraOfEvasionRuneSlugs[0] {
-		
-	}
 	switch {
 	case self.Value == standardUrlValueOn:
-		derivedStats.AddDodge(0.15)
+		addDodge(0.15, &derivedStats.MitigationSources)
 
-	case self.Value == mantraOfHealingRuneSlugs[0]: // Spam
-		derivedStats.AddDodge(0.30)
+	case self.Value == mantraOfEvasionRuneSlugs[0]: // Spam
+		addDodge(0.30, &derivedStats.MitigationSources)
 
-		case self.Value == mantraOfHealingRuneSlugs[1]: // Hard Target
-		derivedStats.Armor *= 1.2
-		derivedStats.ResistArcane *= 1.4
-		derivedStats.ResistFire *= 1.4
-		derivedStats.ResistLightning *= 1.4
-		derivedStats.ResistPoison *= 1.4
-		derivedStats.ResistCold *= 1.4
-		derivedStats.ResistPhysical *= 1.4
+	case self.Value == mantraOfEvasionRuneSlugs[1]: // Hard Target
+		addDodge(0.15, &derivedStats.MitigationSources)
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 
-		case self.Value == mantraOfHealingRuneSlugs[2]: // Hard Target Spam
-		derivedStats.Armor *= 1.2
-		derivedStats.ResistArcane *= 1.4
-		derivedStats.ResistFire *= 1.4
-		derivedStats.ResistLightning *= 1.4
-		derivedStats.ResistPoison *= 1.4
-		derivedStats.ResistCold *= 1.4
-		derivedStats.ResistPhysical *= 1.4
+	case self.Value == mantraOfEvasionRuneSlugs[2]: // Hard Target Spam
+		addDodge(0.30, &derivedStats.MitigationSources)
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 	}
 }
 func (self *MantraOfHealingSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == mantraOfHealingRuneSlugs[0] {
-		derivedStats.ResistArcane *= 1.2
-		derivedStats.ResistFire *= 1.2
-		derivedStats.ResistLightning *= 1.2
-		derivedStats.ResistPoison *= 1.2
-		derivedStats.ResistCold *= 1.2
-		derivedStats.ResistPhysical *= 1.2
+		derivedStats.ResistArcane += derivedStats.BaseStats.ResistArcane * 0.2
+		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * 0.2
+		derivedStats.ResistLightning += derivedStats.BaseStats.ResistLightning * 0.2
+		derivedStats.ResistPoison += derivedStats.BaseStats.ResistPoison * 0.2
+		derivedStats.ResistCold += derivedStats.BaseStats.ResistCold * 0.2
+		derivedStats.ResistPhysical += derivedStats.BaseStats.ResistPhysical * 0.2
 	}
 }
 func (self *NervesOfSteelSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
@@ -618,7 +664,7 @@ func (self *OneWithEverythingSkillChoice) ModifyDerivedStats(derivedStats *Deriv
 }
 func (self *PoweredArmorSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == standardUrlValueOn {
-		derivedStats.Armor *= 1.15
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.15
 	}
 }
 func (self *SeizeTheInitiativeSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
@@ -628,30 +674,30 @@ func (self *SeizeTheInitiativeSkillChoice) ModifyDerivedStats(derivedStats *Deri
 }
 func (self *ToughAsNailsSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == standardUrlValueOn {
-		derivedStats.Armor *= 1.25
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.25
 	}
 }
 func (self *JungleFortitudeSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == standardUrlValueOn {
-		derivedStats.MitigationSources = append(derivedStats.MitigationSources, MitigationSource{"Jungle Fortitude", 0.20})
+		derivedStats.MitigationSources["Jungle Fortitude"] = 0.20
 	}
 }
 func (self *WarCrySkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	switch {
 	case self.Value == standardUrlValueOn:
-		derivedStats.Armor *= 1.2
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 
 	case self.Value == warCryRuneSlugs[0]:
-		derivedStats.Armor *= 1.4
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.4
 
 	case self.Value == warCryRuneSlugs[1]:
-		derivedStats.Armor *= 1.2
-		derivedStats.ResistFire *= 1.5
-		derivedStats.ResistLightning *= 1.5
-		derivedStats.ResistPoison *= 1.5
-		derivedStats.ResistCold *= 1.5
-		derivedStats.ResistArcane *= 1.5
-		derivedStats.ResistPhysical *= 1.5
+		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
+		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * 0.5
+		derivedStats.ResistLightning += derivedStats.BaseStats.ResistLightning * 0.5
+		derivedStats.ResistPoison += derivedStats.BaseStats.ResistPoison * 0.5
+		derivedStats.ResistCold += derivedStats.BaseStats.ResistCold * 0.5
+		derivedStats.ResistArcane += derivedStats.BaseStats.ResistArcane * 0.5
+		derivedStats.ResistPhysical += derivedStats.BaseStats.ResistPhysical * 0.5
 
 	}
 }
@@ -683,10 +729,36 @@ func (self *EnergyArmorSkillChoice) PrintHtml(w http.ResponseWriter) {
 	fmt.Fprintln(w, `</tr>`)
 
 }
+func (self *FistsOfThunderSkillChoice) PrintHtml(w http.ResponseWriter) {
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Fists of Thunder:</td>`)
+	fmt.Fprintln(w, `<td class="tableRight">`)
+	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('defensiveForm').submit();">%s`, self.GetUrlKey(), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >Off</option>%s`, standardUrlValueOff, GetSelected(self, standardUrlValueOff), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >Lightning Flash</option>%s`, fistsOfThunderRuneSlugs[0], GetSelected(self, fistsOfThunderRuneSlugs[0]), "\n")
+	fmt.Fprintln(w, `</select>`)
+	fmt.Fprintln(w, `</td>`)
+	fmt.Fprintln(w, `</tr>`)
+
+}
 func (self *GlassCannonSkillChoice) PrintHtml(w http.ResponseWriter) {
 
 	fmt.Fprintln(w, `<tr>`)
 	fmt.Fprintln(w, `<td class="tableLeft">Glass Cannon:</td>`)
+	fmt.Fprintln(w, `<td class="tableRight">`)
+	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('defensiveForm').submit();">%s`, self.GetUrlKey(), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >Off</option>%s`, standardUrlValueOff, GetSelected(self, standardUrlValueOff), "\n")
+	fmt.Fprintf(w, `<option value="%s" %s >On</option>%s`, standardUrlValueOn, GetSelected(self, standardUrlValueOn), "\n")
+	fmt.Fprintln(w, `</select>`)
+	fmt.Fprintln(w, `</td>`)
+	fmt.Fprintln(w, `</tr>`)
+
+}
+func (self *GuardiansPathSkillChoice) PrintHtml(w http.ResponseWriter) {
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Guardian's Path:</td>`)
 	fmt.Fprintln(w, `<td class="tableRight">`)
 	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('defensiveForm').submit();">%s`, self.GetUrlKey(), "\n")
 	fmt.Fprintf(w, `<option value="%s" %s >Off</option>%s`, standardUrlValueOff, GetSelected(self, standardUrlValueOff), "\n")

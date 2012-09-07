@@ -7,6 +7,15 @@ import (
 )
 
 // Some package private helper functions.
+func addDodge(dodge float64, mitigationSources *map[string]float64) {
+
+	oldDodge := (*mitigationSources)[MitigationSourceDodge]
+	addedDodge := (1 - oldDodge) * dodge
+
+	(*mitigationSources)[MitigationSourceDodge] = oldDodge + addedDodge
+
+}
+
 func getDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 
 	//     Dex     | Chance per Dex

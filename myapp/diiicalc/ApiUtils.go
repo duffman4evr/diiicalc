@@ -120,11 +120,11 @@ type ApiItems struct {
 }
 
 type ApiItem struct {
-	Id            string               `json:"id"`
-	Name          string               `json:"name"`
-	Icon          string               `json:"icon"`
-	DisplayColor  string               `json:"displayColor"`
-	TooltipParams string               `json:"tooltipParams"`
+	Id            string `json:"id"`
+	Name          string `json:"name"`
+	Icon          string `json:"icon"`
+	DisplayColor  string `json:"displayColor"`
+	TooltipParams string `json:"tooltipParams"`
 }
 
 // Utilities on types.

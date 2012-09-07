@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -25,6 +26,7 @@ const (
 	urlKeyHeroId          = "hi"
 	urlKeyHeroName        = "hn"
 	urlKeyHeroClass       = "hc"
+	urlKeyNumberOfWeapons = "nw"
 	urlKeyLevel           = "lv"
 	urlKeyDexterity       = "de"
 	urlKeyVitality        = "vi"
@@ -238,9 +240,6 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 		// Populate metadata about the stats (Effective Life, etc.).
 		metaStats = NewMetaStats(derivedStats)
 
-		// Pull out the mitigation sources so that we don't constantly re-build them.
-		mitigationSources = *(metaStats.GetMitigationSources())
-
 		// Grab the comparison pieces from the request.
 		leftCompareValue, _   = strconv.ParseFloat(r.FormValue(urlKeyLeftCompareValue), 64)
 		centerCompareValue, _ = strconv.ParseFloat(r.FormValue(urlKeyCenterCompareValue), 64)
@@ -267,6 +266,7 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyHeroName, r.FormValue(urlKeyHeroName), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyHeroClass, r.FormValue(urlKeyHeroClass), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyNumberOfWeapons, r.FormValue(urlKeyNumberOfWeapons), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyLevel, r.FormValue(urlKeyLevel), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyDexterity, r.FormValue(urlKeyDexterity), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyVitality, r.FormValue(urlKeyVitality), "\n")
@@ -340,10 +340,18 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<td colspan="2" class="centerText" style="text-decoration: underline; font-size: 20px;">Mitigation Sources</td>`)
 	fmt.Fprintln(w, `</tr>`)
 
-	for i := 0; i < len(mitigationSources); i++ {
+	alphabeticalMitigationSources := []string{}
+
+	for key := range metaStats.MitigationSources {
+		alphabeticalMitigationSources = append(alphabeticalMitigationSources, key)
+	}
+
+	sort.Strings(alphabeticalMitigationSources)
+
+	for _, value := range alphabeticalMitigationSources {
 		fmt.Fprintln(w, `<tr>`)
-		fmt.Fprintf(w, `<td class="halfWidth tableLeft">%s:</td>`, mitigationSources[i].Name)
-		fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.2f `, mitigationSources[i].Value*100)
+		fmt.Fprintf(w, `<td class="halfWidth tableLeft">%s:</td>`, value)
+		fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.2f `, metaStats.MitigationSources[value]*100)
 		fmt.Fprintln(w, `%</td>`)
 		fmt.Fprintln(w, `</tr>`)
 	}
@@ -471,6 +479,12 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 		return
 	}
 
+	var numberOfWeapons int64 = 1
+
+	if hero.Items.MainHand.Id != hero.Items.OffHand.Id {
+		numberOfWeapons = 2
+	}
+
 	urlValues := url.Values{}
 
 	urlValues.Set(urlKeyBattleTagSystem, dashStyleBattleTag)
@@ -480,6 +494,7 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 
 	urlValues.Set(urlKeyHeroName, hero.Name)
 	urlValues.Set(urlKeyHeroClass, hero.Class)
+	urlValues.Set(urlKeyNumberOfWeapons, strconv.FormatInt(numberOfWeapons, 10))
 	urlValues.Set(urlKeyLevel, strconv.FormatFloat(hero.Level, 'f', 0, 64))
 	urlValues.Set(urlKeyDexterity, strconv.FormatFloat(hero.Stats.Dexterity, 'f', 0, 64))
 	urlValues.Set(urlKeyVitality, strconv.FormatFloat(hero.Stats.Vitality, 'f', 0, 64))

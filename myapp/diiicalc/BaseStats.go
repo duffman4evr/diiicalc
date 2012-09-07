@@ -23,6 +23,7 @@ type BaseStats struct {
 	BlockAmountMin  float64
 	BlockAmountMax  float64
 	BlockChance     float64
+	NumberOfWeapons int64
 }
 
 func NewBaseStats(r *http.Request) *BaseStats {
@@ -31,6 +32,7 @@ func NewBaseStats(r *http.Request) *BaseStats {
 
 	// Parse in all the source values from the request.
 	self.HeroClass = r.FormValue(urlKeyHeroClass)
+	self.NumberOfWeapons, _ = strconv.ParseInt(r.FormValue(urlKeyNumberOfWeapons), 10, 64)
 	self.Level, _ = strconv.ParseFloat(r.FormValue(urlKeyLevel), 64)
 	self.Dexterity, _ = strconv.ParseFloat(r.FormValue(urlKeyDexterity), 64)
 	self.Vitality, _ = strconv.ParseFloat(r.FormValue(urlKeyVitality), 64)
