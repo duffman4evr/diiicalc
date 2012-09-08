@@ -1,12 +1,12 @@
 RELEASE NOTES
 
-VERSION 1.0:
+------------VERSION 1.0:------------
 
 ===UPDATES===
 
 - Initial release. Ability to query the D3 US API for data and calculate EHP.
 
-VERSION 1.1:
+------------VERSION 1.1:------------
 
 ===UPDATES===
 
@@ -28,22 +28,24 @@ VERSION 1.1:
 - Life steal (percentage-based) is not taken into account due the offensive stat calculation requirements for such a stat.
 - Life gain % is not factored in to vitality gain EHP analysis.
 
-VERSION 1.2:
+------------VERSION 1.2:------------
 
 ===UPDATES===
 
+- System-wide issues with calculating Armor/Resistance bonuses due to skills have been fixed. HUGE thanks to ANBUCyrus for finding this out.
+- The calculator now reports accurate numbers for characters that logged off with defensive passives. Note: logging off with an active Enchantress with the armor buff will still cause problems.
+- Dodge is now factored in to EHP for all hero class types.
+- The bottom comparison section has been updated to allow you to select which stat to compare. Life % bonuses and Dexterity have been added.
 - 'Leap - Iron Impact' was previously giving a bonus of only 200% armor, rather than 300%. This has been fixed. Bug found by: ANBUCyrus.
 - 'Fists of Thunder' support added.
 - 'The Guardian's Path' support added.
 - 'Mantra of Evasion' now affects Dodge %. Issue found by: TyrialFrost.
 - Issue where 'Seize the Initiative' skill wasn't being detected was fixed. Bug found by: pmilkman.
-- The ability to % Life has been added at the bottom comparison section.
-- For Monks and Demon Hunters, the ability to select Dexterity has been added at the bottom comparison section.
-- System-wide issues with calculating Armor/Resistance bonuses due to skills have been fixed. HUGE thanks to ANBUCyrus for finding this out.
+- Life % is now factored in to EHP gains due to vitality gains.
+- The Diablo 3 API mis-reports resistances for all characters by a small amount. A workaround for this has been implemented.
 
 ===KNOWN ISSUES===
 
-- The Diablo 3 API reports buffed (rather than unbuffed) values to this calculator. Due to this, the calculator will have the best accuracy if you log your character off without any defensive passive skills, including the Enchantress armor buff. Once Blizzard fixes the D3 API, this will no longer be necessary. If they take too long to fix it, I will implement a workaround.
+- The Diablo 3 API reports buffed (rather than unbuffed) values to this calculator.  Due to this, the calculator will have the best accuracy if you log your character off without the Enchantress armor buff. Once Blizzard fixes the D3 API, this will no longer be necessary.
 - Life regen is not yet taken into account. Getting a value for this requires many requests to the Diablo 3 profile API, and applications are limited in the amount of requests they can make.
 - Life steal (percentage-based) is not taken into account due the offensive stat calculation requirements for such a stat.
-- Life gain % is not factored in to vitality gain EHP analysis.

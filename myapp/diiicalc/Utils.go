@@ -7,6 +7,10 @@ import (
 )
 
 // Some package private helper functions.
+func getBaseLifeForHero(vitality float64, level float64) (life float64) {
+	return 36 + (4 * level) + getLifeFromVitality(vitality, level)
+}
+
 func getLifeFromVitality(vitality float64, level float64) (life float64) {
 	var lifePerVit float64
 
@@ -30,7 +34,7 @@ func addDodge(dodge float64, mitigationSources *map[string]float64) {
 
 func getDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 
-	//     Dex     | Chance per Dex
+	//     Dex     | Chance per Dex, with 1 == 100% dodge chance
 	// ------------+----------------
 	//    1 - 100  |      .001
 	//  101 - 500  |      .00025
@@ -46,11 +50,11 @@ func getDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 		dex -= 100
 	}
 
-	if dex <= 500 {
+	if dex <= 400 {
 		return dodgeChance + (dex * .00025)
 	} else {
-		dodgeChance += 500 * .00025
-		dex -= 500
+		dodgeChance += 400 * .00025
+		dex -= 400
 	}
 
 	if dex <= 500 {

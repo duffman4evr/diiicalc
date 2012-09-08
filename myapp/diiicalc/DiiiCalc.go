@@ -496,15 +496,74 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 		return
 	}
 
+	// Figure out if the hero is using one or two weapons. 
+	// This value is not used yet though.
 	var numberOfWeapons int64 = 1
 
 	if hero.Items.MainHand.Id != hero.Items.OffHand.Id {
 		numberOfWeapons = 2
 	}
 
-	baseLife := getLifeFromVitality(hero.Stats.Vitality, hero.Level)
-	lifePercentBonus := (hero.Stats.Life / baseLife) - 1
+	// Figure out the base life and life % bonus.
+	baseLife := getBaseLifeForHero(hero.Stats.Vitality, hero.Level)
+	lifePercentBonus := (hero.Stats.Life / baseLife) - 1.0
 
+	// Account for Blizzard issue where they report the wrong resistance.
+	if hero.Class == urlValueHeroClassWizard || hero.Class == urlValueHeroClassWitchDoctor {
+		hero.Stats.ResistArcane += (hero.Level - 1) * (0.3)
+		hero.Stats.ResistFire += (hero.Level - 1) * (0.3)
+		hero.Stats.ResistLightning += (hero.Level - 1) * (0.3)
+		hero.Stats.ResistPoison += (hero.Level - 1) * (0.3)
+		hero.Stats.ResistCold += (hero.Level - 1) * (0.3)
+		hero.Stats.ResistPhysical += (hero.Level - 1) * (0.3)
+	} else {
+		hero.Stats.ResistArcane += (hero.Level - 1) * (0.1)
+		hero.Stats.ResistFire += (hero.Level - 1) * (0.1)
+		hero.Stats.ResistLightning += (hero.Level - 1) * (0.1)
+		hero.Stats.ResistPoison += (hero.Level - 1) * (0.1)
+		hero.Stats.ResistCold += (hero.Level - 1) * (0.1)
+		hero.Stats.ResistPhysical += (hero.Level - 1) * (0.1)
+	}
+
+	// Account for some passive skills giving issues due to Diablo 3 API reporting buffed stats.
+	armorBonus := 1.0
+	resistBonus := 1.0
+
+	for i := 0; i < len(hero.Skills.Passive); i++ {
+		slug := hero.Skills.Passive[i].Skill.Slug
+
+		if slug == toughAsNailsSkillSlug {
+			armorBonus += .25
+		}
+
+		if slug == glassCannonSkillSlug {
+			armorBonus += -0.1
+			resistBonus += -0.1
+		}
+	}
+
+	for i := 0; i < len(hero.Skills.Passive); i++ {
+		slug := hero.Skills.Passive[i].Skill.Slug
+
+		if slug == nervesOfSteelSkillSlug {
+			hero.Stats.Armor -= hero.Stats.Vitality * armorBonus
+		}
+
+		if slug == seizeTheInitiativeSkillSlug {
+			hero.Stats.Armor -= hero.Stats.Dexterity * armorBonus
+		}
+	}
+
+	hero.Stats.Armor /= armorBonus
+
+	hero.Stats.ResistArcane /= resistBonus
+	hero.Stats.ResistFire /= resistBonus
+	hero.Stats.ResistLightning /= resistBonus
+	hero.Stats.ResistPoison /= resistBonus
+	hero.Stats.ResistCold /= resistBonus
+	hero.Stats.ResistPhysical /= resistBonus
+
+	// Build the actual URL.
 	urlValues := url.Values{}
 
 	urlValues.Set(urlKeyBattleTagSystem, dashStyleBattleTag)
@@ -518,7 +577,7 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 	urlValues.Set(urlKeyLevel, strconv.FormatFloat(hero.Level, 'f', 0, 64))
 	urlValues.Set(urlKeyDexterity, strconv.FormatFloat(hero.Stats.Dexterity, 'f', 0, 64))
 	urlValues.Set(urlKeyVitality, strconv.FormatFloat(hero.Stats.Vitality, 'f', 0, 64))
-	urlValues.Set(urlKeyLifePercent, strconv.FormatFloat(lifePercentBonus, 'f', 0, 64))
+	urlValues.Set(urlKeyLifePercent, strconv.FormatFloat(lifePercentBonus, 'f', 3, 64))
 	urlValues.Set(urlKeyLifeOnHit, strconv.FormatFloat(hero.Stats.LifeOnHit, 'f', 0, 64))
 	urlValues.Set(urlKeyLifeRegen, "0")
 	urlValues.Set(urlKeyArmor, strconv.FormatFloat(hero.Stats.Armor, 'f', 0, 64))

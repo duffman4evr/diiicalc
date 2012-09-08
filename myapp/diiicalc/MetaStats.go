@@ -63,12 +63,9 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 		self.MitigationSources[key] = self.DerivedStats.MitigationSources[key]
 	}
 
-	// Special case: 
-	//   Demon Hunters and Monks should incorporate dodge from dexterity into their mitigation.
-	//   Be careful to *multiplicatively* stack this with existing dodge from abilities, if any.
-	if self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassDemonHunter || self.DerivedStats.BaseStats.HeroClass == urlValueHeroClassMonk {
-		addDodge(getDodgeChanceFromDexterity(self.DerivedStats.Dexterity), &self.MitigationSources)
-	}
+	// Icorporate dodge from dexterity into the mitigation.
+	// Be careful to *multiplicatively* stack this with existing dodge from abilities, if any.
+	addDodge(getDodgeChanceFromDexterity(self.DerivedStats.Dexterity), &self.MitigationSources)
 
 	var totalNonMitigation float64 = 1.0
 
