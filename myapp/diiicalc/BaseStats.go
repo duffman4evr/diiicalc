@@ -11,7 +11,7 @@ type BaseStats struct {
 	Dexterity       float64
 	Vitality        float64
 	Armor           float64
-	Life            float64
+	LifePercent     float64
 	LifeOnHit       float64
 	LifeRegen       float64
 	ResistArcane    float64
@@ -37,7 +37,7 @@ func NewBaseStats(r *http.Request) *BaseStats {
 	self.Dexterity, _ = strconv.ParseFloat(r.FormValue(urlKeyDexterity), 64)
 	self.Vitality, _ = strconv.ParseFloat(r.FormValue(urlKeyVitality), 64)
 	self.Armor, _ = strconv.ParseFloat(r.FormValue(urlKeyArmor), 64)
-	self.Life, _ = strconv.ParseFloat(r.FormValue(urlKeyLife), 64)
+	self.LifePercent, _ = strconv.ParseFloat(r.FormValue(urlKeyLifePercent), 64)
 	self.LifeOnHit, _ = strconv.ParseFloat(r.FormValue(urlKeyLifeOnHit), 64)
 	self.LifeRegen, _ = strconv.ParseFloat(r.FormValue(urlKeyLifeRegen), 64)
 	self.BlockAmountMin, _ = strconv.ParseFloat(r.FormValue(urlKeyBlockMin), 64)

@@ -12,16 +12,21 @@ import (
 
 const (
 	// URL keys.
-	urlKeyBattleTagUser      = "btu"
-	urlKeyBattleTagSystem    = "bts"
-	urlKeyHeroIdUser         = "hiu"
-	urlKeyFindButton         = "fi"
-	urlKeyDefensiveButton    = "vd"
+	urlKeyBattleTagUser   = "btu"
+	urlKeyBattleTagSystem = "bts"
+	urlKeyHeroIdUser      = "hiu"
+	urlKeyFindButton      = "fi"
+	urlKeyDefensiveButton = "vd"
+	urlKeyRealm           = "re"
+	urlKeyHeroes          = "he"
+
+	urlKeyLeftCompareType   = "lct"
+	urlKeyCenterCompareType = "cct"
+	urlKeyRightCompareType  = "rct"
+
 	urlKeyLeftCompareValue   = "lcv"
 	urlKeyCenterCompareValue = "ccv"
 	urlKeyRightCompareValue  = "rcv"
-	urlKeyRealm              = "re"
-	urlKeyHeroes             = "he"
 
 	urlKeyHeroId          = "hi"
 	urlKeyHeroName        = "hn"
@@ -31,7 +36,7 @@ const (
 	urlKeyDexterity       = "de"
 	urlKeyVitality        = "vi"
 	urlKeyArmor           = "ar"
-	urlKeyLife            = "li"
+	urlKeyLifePercent     = "lp"
 	urlKeyLifeOnHit       = "lh"
 	urlKeyLifeRegen       = "lr"
 	urlKeyBlockMin        = "bi"
@@ -63,9 +68,11 @@ const (
 	urlKeyPassive3 = "p3"
 
 	// URL values.
-	urlValueCompareTypeVitality = "vit"
-	urlValueCompareTypeResist   = "res"
-	urlValueCompareTypeArmor    = "arm"
+	urlValueCompareTypeVitality    = "vit"
+	urlValueCompareTypeResist      = "res"
+	urlValueCompareTypeArmor       = "arm"
+	urlValueCompareTypePercentLife = "pli"
+	urlValueCompareTypeDexterity   = "dex"
 
 	urlValueHeroClassBarbarian   = "barbarian"
 	urlValueHeroClassMonk        = "monk"
@@ -85,6 +92,7 @@ var (
 	urlKeysPassiveSkills = []string{urlKeyPassive1, urlKeyPassive2, urlKeyPassive3}
 
 	heroClassMap = make(map[string]string)
+	compareTypeMap = make(map[string]string)
 )
 
 // Special init funtion.
@@ -95,6 +103,12 @@ func init() {
 	heroClassMap[urlValueHeroClassWitchDoctor] = "Witch Doctor"
 	heroClassMap[urlValueHeroClassWizard] = "Wizard"
 	heroClassMap[urlValueHeroClassDemonHunter] = "Demon Hunter"
+
+	compareTypeMap[urlValueCompareTypeVitality] = "Vitality"
+	compareTypeMap[urlValueCompareTypeResist] = "Resist"
+	compareTypeMap[urlValueCompareTypeArmor] = "Armor"
+	compareTypeMap[urlValueCompareTypePercentLife] = `% Life`
+	compareTypeMap[urlValueCompareTypeDexterity] = "Dexterity"
 
 	http.HandleFunc("/CharacterFind", characterFind)
 	http.HandleFunc("/Defensive", defensive)
@@ -246,9 +260,9 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 		rightCompareValue, _  = strconv.ParseFloat(r.FormValue(urlKeyRightCompareValue), 64)
 
 		// Do the actual comparisons.
-		leftCompareChanges   = metaStats.CalculateStatChangeEffect(urlValueCompareTypeArmor, leftCompareValue)
-		centerCompareChanges = metaStats.CalculateStatChangeEffect(urlValueCompareTypeResist, centerCompareValue)
-		rightCompareChanges  = metaStats.CalculateStatChangeEffect(urlValueCompareTypeVitality, rightCompareValue)
+		leftCompareChanges   = metaStats.CalculateStatChangeEffect(r.FormValue(urlKeyLeftCompareType), leftCompareValue)
+		centerCompareChanges = metaStats.CalculateStatChangeEffect(r.FormValue(urlKeyCenterCompareType), centerCompareValue)
+		rightCompareChanges  = metaStats.CalculateStatChangeEffect(r.FormValue(urlKeyRightCompareType), rightCompareValue)
 
 		effectiveLifeGainForOneMoreResist, _, _ = metaStats.ComputeStatChangesForResistChange(1.0)
 	)
@@ -270,7 +284,7 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyLevel, r.FormValue(urlKeyLevel), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyDexterity, r.FormValue(urlKeyDexterity), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyVitality, r.FormValue(urlKeyVitality), "\n")
-	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyLife, r.FormValue(urlKeyLife), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyLifePercent, r.FormValue(urlKeyLifePercent), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyLifeOnHit, r.FormValue(urlKeyLifeOnHit), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyLifeRegen, r.FormValue(urlKeyLifeRegen), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyArmor, r.FormValue(urlKeyArmor), "\n")
@@ -393,15 +407,18 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<tr>`)
 
 	fmt.Fprintln(w, `<td class="centerText thirdWidth">`)
-	fmt.Fprintf(w, `Armor: <input name="%s" type="text" size="10" value="%.0f" onkeyup="showUpdateButton();" />%s`, urlKeyLeftCompareValue, leftCompareValue, "\n")
+	fmt.Fprintf(w, `<input name="%s" type="text" size="10" value="%.0f" onkeyup="showUpdateButton();" />%s`, urlKeyLeftCompareValue, leftCompareValue, "\n")
+	printComparisonSelect(w, urlKeyLeftCompareType, r.FormValue(urlKeyLeftCompareType))
 	fmt.Fprintln(w, `</td>`)
 
 	fmt.Fprintln(w, `<td class="centerText thirdWidth">`)
-	fmt.Fprintf(w, `All Resist: <input name="%s" type="text" size="10" value="%.0f" onkeyup="showUpdateButton();" />%s`, urlKeyCenterCompareValue, centerCompareValue, "\n")
+	fmt.Fprintf(w, `<input name="%s" type="text" size="10" value="%.0f" onkeyup="showUpdateButton();" />%s`, urlKeyCenterCompareValue, centerCompareValue, "\n")
+	printComparisonSelect(w, urlKeyCenterCompareType, r.FormValue(urlKeyCenterCompareType))
 	fmt.Fprintln(w, `</td>`)
 
 	fmt.Fprintln(w, `<td class="centerText thirdWidth">`)
-	fmt.Fprintf(w, `Vitality: <input name="%s" type="text" size="10" value="%.0f" onkeyup="showUpdateButton();" />%s`, urlKeyRightCompareValue, rightCompareValue, "\n")
+	fmt.Fprintf(w, `<input name="%s" type="text" size="10" value="%.0f" onkeyup="showUpdateButton();" />%s`, urlKeyRightCompareValue, rightCompareValue, "\n")
+	printComparisonSelect(w, urlKeyRightCompareType, r.FormValue(urlKeyRightCompareType))
 	fmt.Fprintln(w, `</td>`)
 
 	fmt.Fprintln(w, `</tr>`)
@@ -485,6 +502,9 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 		numberOfWeapons = 2
 	}
 
+	baseLife := getLifeFromVitality(hero.Stats.Vitality, hero.Level)
+	lifePercentBonus := (hero.Stats.Life / baseLife) - 1
+
 	urlValues := url.Values{}
 
 	urlValues.Set(urlKeyBattleTagSystem, dashStyleBattleTag)
@@ -498,7 +518,7 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 	urlValues.Set(urlKeyLevel, strconv.FormatFloat(hero.Level, 'f', 0, 64))
 	urlValues.Set(urlKeyDexterity, strconv.FormatFloat(hero.Stats.Dexterity, 'f', 0, 64))
 	urlValues.Set(urlKeyVitality, strconv.FormatFloat(hero.Stats.Vitality, 'f', 0, 64))
-	urlValues.Set(urlKeyLife, strconv.FormatFloat(hero.Stats.Life, 'f', 0, 64))
+	urlValues.Set(urlKeyLifePercent, strconv.FormatFloat(lifePercentBonus, 'f', 0, 64))
 	urlValues.Set(urlKeyLifeOnHit, strconv.FormatFloat(hero.Stats.LifeOnHit, 'f', 0, 64))
 	urlValues.Set(urlKeyLifeRegen, "0")
 	urlValues.Set(urlKeyArmor, strconv.FormatFloat(hero.Stats.Armor, 'f', 0, 64))
@@ -534,6 +554,10 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 		leftCompareValue   = "250"
 		centerCompareValue = "80"
 		rightCompareValue  = "100"
+
+		leftCompareType    = urlValueCompareTypeArmor
+		centerCompareType = urlValueCompareTypeResist
+		rightCompareType  = urlValueCompareTypeVitality
 	)
 
 	if r.FormValue(urlKeyLeftCompareValue) != "" {
@@ -550,7 +574,54 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 	urlValues.Set(urlKeyCenterCompareValue, centerCompareValue)
 	urlValues.Set(urlKeyRightCompareValue, rightCompareValue)
 
+	if r.FormValue(urlKeyLeftCompareType) != "" {
+		leftCompareType = r.FormValue(urlKeyLeftCompareType)
+	}
+	if r.FormValue(urlKeyCenterCompareType) != "" {
+		centerCompareType = r.FormValue(urlKeyCenterCompareType)
+	}
+	if r.FormValue(urlKeyRightCompareType) != "" {
+		rightCompareType = r.FormValue(urlKeyRightCompareType)
+	}
+
+	urlValues.Set(urlKeyLeftCompareType, leftCompareType)
+	urlValues.Set(urlKeyCenterCompareType, centerCompareType)
+	urlValues.Set(urlKeyRightCompareType, rightCompareType)
+
 	http.Redirect(w, r, "Defensive?"+urlValues.Encode(), 301)
+}
+
+func printComparisonSelect(w http.ResponseWriter, urlKey string, selectedCompareType string) {
+
+	var (
+		armorSelected       = ""
+		resistSelected      = ""
+		vitalitySelected    = ""
+		percentLifeSelected = ""
+		dexteritySelected   = ""
+	)
+
+	switch {
+	case selectedCompareType == urlValueCompareTypeArmor:
+		armorSelected = "selected"
+	case selectedCompareType == urlValueCompareTypeResist:
+		resistSelected = "selected"
+	case selectedCompareType == urlValueCompareTypeVitality:
+		vitalitySelected = "selected"
+	case selectedCompareType == urlValueCompareTypePercentLife:
+		percentLifeSelected = "selected"
+	case selectedCompareType == urlValueCompareTypeDexterity:
+		dexteritySelected = "selected"
+	}
+
+	fmt.Fprintf(w, `<select name="%s" onchange="showUpdateButton();">%s`, urlKey, "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, urlValueCompareTypeArmor, armorSelected, compareTypeMap[urlValueCompareTypeArmor], "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, urlValueCompareTypeResist, resistSelected, compareTypeMap[urlValueCompareTypeResist], "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, urlValueCompareTypeVitality, vitalitySelected, compareTypeMap[urlValueCompareTypeVitality], "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, urlValueCompareTypePercentLife, percentLifeSelected, compareTypeMap[urlValueCompareTypePercentLife], "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, urlValueCompareTypeDexterity, dexteritySelected, compareTypeMap[urlValueCompareTypeDexterity], "\n")
+	fmt.Fprintln(w, `</select>`)
+
 }
 
 func printBattleTagInput(w http.ResponseWriter, battleTag string, realm string) {

@@ -87,19 +87,39 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 	return self
 }
 
-func (self *MetaStats) ComputeEffectiveLifeChangeForVitChange(vitGain float64) (effectiveLifeGain float64) {
+func (self *MetaStats) ComputeEffectiveLifeChangeForVitChange(vitChange float64) (effectiveLifeGain float64) {
 
-	var lifePerVit float64
-
-	if self.DerivedStats.BaseStats.Level < 35 {
-		lifePerVit = 10
-	} else {
-		lifePerVit = self.DerivedStats.BaseStats.Level - 25
-	}
+	baseLifeChange := getLifeFromVitality(vitChange, self.DerivedStats.BaseStats.Level)
+	actualLifeChange := baseLifeChange * (1 + self.DerivedStats.BaseStats.LifePercent)
 
 	modifiedDerivedStats := self.DerivedStats
 
-	modifiedDerivedStats.Life += (lifePerVit * vitGain)
+	modifiedDerivedStats.Life += actualLifeChange
+
+	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
+
+	return modifiedMetaStats.EffectiveLife - self.EffectiveLife
+}
+
+func (self *MetaStats) ComputeEffectiveLifeChangeForPercentLifeChange(percentLifeChange float64) (effectiveLifeGain float64) {
+
+	newPercentLifeBonus := 1 + self.DerivedStats.BaseStats.LifePercent + (percentLifeChange / 100.0)
+	newLife := (getLifeFromVitality(self.DerivedStats.BaseStats.Vitality, self.DerivedStats.BaseStats.Level) * newPercentLifeBonus)
+
+	modifiedDerivedStats := self.DerivedStats
+
+	modifiedDerivedStats.Life = newLife
+
+	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
+
+	return modifiedMetaStats.EffectiveLife - self.EffectiveLife
+}
+
+func (self *MetaStats) ComputeEffectiveLifeChangeForDexterityChange(dexterityChange float64) (effectiveLifeGain float64) {
+
+	modifiedDerivedStats := self.DerivedStats
+
+	modifiedDerivedStats.Dexterity += dexterityChange
 
 	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
 
@@ -182,6 +202,10 @@ func (self *MetaStats) CalculateStatChangeEffect(changeType string, changeValue 
 		effectiveLifeChange, effectiveLifeOnHitChange, effectiveLifeRegenChange = self.ComputeStatChangesForResistChange(changeValue)
 	} else if changeType == urlValueCompareTypeArmor {
 		effectiveLifeChange, effectiveLifeOnHitChange, effectiveLifeRegenChange = self.ComputeStatChangesForArmorChange(changeValue)
+	} else if changeType == urlValueCompareTypePercentLife {
+		effectiveLifeChange = self.ComputeEffectiveLifeChangeForPercentLifeChange(changeValue)
+	} else if changeType == urlValueCompareTypeDexterity {
+		effectiveLifeChange = self.ComputeEffectiveLifeChangeForDexterityChange(changeValue)
 	}
 
 	if effectiveLifeChange < -0.01 || effectiveLifeChange > 0.01 {

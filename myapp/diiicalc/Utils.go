@@ -7,6 +7,18 @@ import (
 )
 
 // Some package private helper functions.
+func getLifeFromVitality(vitality float64, level float64) (life float64) {
+	var lifePerVit float64
+
+	if level < 35 {
+		lifePerVit = 10.0
+	} else {
+		lifePerVit = level - 25.0
+	}
+
+	return vitality * lifePerVit
+}
+
 func addDodge(dodge float64, mitigationSources *map[string]float64) {
 
 	oldDodge := (*mitigationSources)[MitigationSourceDodge]

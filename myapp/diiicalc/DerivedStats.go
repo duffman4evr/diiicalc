@@ -4,7 +4,6 @@ type DerivedStats struct {
 	BaseStats         BaseStats
 	SkillChoices      []SkillChoice
 	Dexterity         float64
-	Vitality          float64
 	Armor             float64
 	Life              float64
 	LifeOnHit         float64
@@ -25,9 +24,8 @@ func NewDerivedStats(baseStats *BaseStats, skillChoices []SkillChoice) *DerivedS
 	self.BaseStats = *baseStats
 	self.SkillChoices = skillChoices
 	self.Dexterity = baseStats.Dexterity
-	self.Vitality = baseStats.Vitality
 	self.Armor = baseStats.Armor
-	self.Life = baseStats.Life
+	self.Life = getLifeFromVitality(baseStats.Vitality, baseStats.Level) * (1 + baseStats.LifePercent)
 	self.LifeOnHit = baseStats.LifeOnHit
 	self.LifeRegen = baseStats.LifeRegen
 	self.ResistArcane = baseStats.ResistArcane

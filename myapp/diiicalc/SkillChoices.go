@@ -648,7 +648,7 @@ func (self *MantraOfHealingSkillChoice) ModifyDerivedStats(derivedStats *Derived
 }
 func (self *NervesOfSteelSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
 	if self.Value == standardUrlValueOn {
-		derivedStats.Armor += float64(derivedStats.Vitality)
+		derivedStats.Armor += float64(derivedStats.BaseStats.Vitality)
 	}
 }
 func (self *OneWithEverythingSkillChoice) ModifyDerivedStats(derivedStats *DerivedStats) {
