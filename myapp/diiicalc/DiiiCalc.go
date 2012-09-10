@@ -161,7 +161,7 @@ func characterFind(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, `<form action="CharacterFind" method="GET">`)
 
-	fmt.Fprintln(w, `<table class="fullWidth">`)
+	fmt.Fprintln(w, `<table style="margin-left: auto; margin-right: auto;">`)
 
 	if !findButtonUsed {
 
@@ -183,8 +183,8 @@ func characterFind(w http.ResponseWriter, r *http.Request) {
 			var buffer bytes.Buffer
 
 			fmt.Fprintln(w, `<tr>`)
-			fmt.Fprintln(w, `<td class="halfWidth tableLeft">Hero:</td>`)
-			fmt.Fprintln(w, `<td class="halfWidth tableRight">`)
+			fmt.Fprintln(w, `<td class="tableLeft">Hero:</td>`)
+			fmt.Fprintln(w, `<td class="tableRight">`)
 			fmt.Fprintf(w, `<select autofocus="autofocus" name="%s" id="%s">`, urlKeyHeroIdUser, urlKeyHeroIdUser)
 
 			for i := 0; i < len(heroes); i++ {
@@ -315,15 +315,34 @@ func defensive(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, urlKeyRune6, r.FormValue(urlKeyRune6), "\n")
 
 	// Header.
+	fmt.Fprintln(w, `<table>`)
+	fmt.Fprintln(w, `<tr>`)
+
+	fmt.Fprintln(w, `<td style="width: 100px;">`)
+	fmt.Fprintln(w, `<a href="CharacterFind" style="text-decoration: none;">&lt; Search</a>`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `<td style="width: 700px;">`)
 	fmt.Fprintln(w, `<div style="font-size: 24px; margin: 10px;"><span>Defensive Stat Summary for </span>`)
 	printHeroSelect(w, r.FormValue(urlKeyHeroes), r.FormValue(urlKeyHeroId))
 	fmt.Fprintln(w, `</div>`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `<td style="width: 100px;">`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `</tr>`)
+	fmt.Fprintln(w, `</table>`)
 
 	// Main summary.
 	fmt.Fprintln(w, `<div class="roundedBorder" style="float: left; width: 560px;">`)
 	fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Effective Life: <span style="font-weight: bold;">%s</span></div>%s`, getCommaLadenValue(metaStats.EffectiveLife), "\n")
 	fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Mitigation: <span style="font-weight: bold;">%.2f `, metaStats.TotalMitigation*100.0)
 	fmt.Fprintln(w, `%</span></div>`)
+
+	if metaStats.EffectiveLifeOnHit > 1 {
+		fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Effective Life on Hit: <span style="font-weight: bold;">%s</span></div>%s`, getCommaLadenValue(metaStats.EffectiveLifeOnHit), "\n")
+	}
 
 	effectiveLifeFromBlock := metaStats.EffectiveLife - metaStats.EffectiveLifeNoShield
 
@@ -702,15 +721,15 @@ func printBattleTagInput(w http.ResponseWriter, battleTag string, realm string) 
 	}
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintln(w, `<td class="halfWidth tableLeft">BattleTag:</td>`)
-	fmt.Fprintln(w, `<td class="halfWidth tableRight">`)
+	fmt.Fprintln(w, `<td class="tableLeft">BattleTag:</td>`)
+	fmt.Fprintln(w, `<td class="tableRight">`)
 	fmt.Fprintf(w, `<input autofocus="autofocus" name="%s" id="%s" placeholder="mytag#1234" type="text" size="25" value="%s" />%s`, urlKeyBattleTagUser, urlKeyBattleTagUser, battleTag, "\n")
 	fmt.Fprintln(w, `</td>`)
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintln(w, `<td class="halfWidth tableLeft">Region:</td>`)
-	fmt.Fprintln(w, `<td class="halfWidth tableRight">`)
+	fmt.Fprintln(w, `<td class="tableLeft">Region:</td>`)
+	fmt.Fprintln(w, `<td class="tableRight">`)
 	fmt.Fprintf(w, `<select name="%s">%s`, urlKeyRealm, "\n")
 	fmt.Fprintf(w, `<option value="%s" %s>US</option>%s`, urlValueRealmUs, usSelected, "\n")
 	fmt.Fprintf(w, `<option value="%s" %s>EU</option>%s`, urlValueRealmEu, euSelected, "\n")
@@ -721,7 +740,7 @@ func printBattleTagInput(w http.ResponseWriter, battleTag string, realm string) 
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintf(w, `<td colspan="2"><input type="submit" style="margin-top: 15px;" name="%s" value="Find" /></td>%s`, urlKeyFindButton, "\n")
+	fmt.Fprintf(w, `<td colspan="2"><input type="submit" style="margin-top: 15px; font-size: 24px;" name="%s" value="Find" /></td>%s`, urlKeyFindButton, "\n")
 	fmt.Fprintln(w, `</tr>`)
 
 }
@@ -807,6 +826,15 @@ func printHtmlIntro(w http.ResponseWriter) {
 		border-color: #555555;
 	}
 
+ 	.footer
+ 	{
+		position: fixed;
+		width: 100%;
+		bottom: 0px;
+		left: 0px;
+		z-index: 1;
+	}
+
 	.roundedBorder
 	{
 		border-style: solid;
@@ -835,6 +863,7 @@ func printHtmlIntro(w http.ResponseWriter) {
 }
 
 func printHtmlOutro(w http.ResponseWriter) {
+	fmt.Fprintln(w, `<div class="footer" style="margin-bottom: 5px; font-size: 12px;"><span>Concerns? Email me: <a href="mailto:duffman4evr@gmail.com">duffman4evr@gmail.com</a></span></div>`)
 	fmt.Fprintln(w, `</div>`)
 	fmt.Fprintln(w, `</body>`)
 	fmt.Fprintln(w, `</html>`)

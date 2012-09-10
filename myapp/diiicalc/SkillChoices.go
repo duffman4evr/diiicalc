@@ -155,25 +155,19 @@ func ParseSkillChoices(r *http.Request) (skillChoices []SkillChoice) {
 		var (
 			toughAsNailsSkillChoice  = new(ToughAsNailsSkillChoice)
 			nervesOfSteelSkillChoice = new(NervesOfSteelSkillChoice)
-			warCrySkillChoice        = new(WarCrySkillChoice)
 			leapSkillChoice          = new(LeapSkillChoice)
 			ignorePainSkillChoice    = new(IgnorePainSkillChoice)
-			poweredArmorSkillChoice  = new(PoweredArmorSkillChoice)
 		)
 
 		InitializeSkillChoice(toughAsNailsSkillChoice, r)
 		InitializeSkillChoice(nervesOfSteelSkillChoice, r)
-		InitializeSkillChoice(warCrySkillChoice, r)
 		InitializeSkillChoice(leapSkillChoice, r)
 		InitializeSkillChoice(ignorePainSkillChoice, r)
-		InitializeSkillChoice(poweredArmorSkillChoice, r)
 
 		skillChoices = append(skillChoices, toughAsNailsSkillChoice)
 		skillChoices = append(skillChoices, nervesOfSteelSkillChoice)
-		skillChoices = append(skillChoices, warCrySkillChoice)
 		skillChoices = append(skillChoices, leapSkillChoice)
 		skillChoices = append(skillChoices, ignorePainSkillChoice)
-		skillChoices = append(skillChoices, poweredArmorSkillChoice)
 
 	} else if heroClass == urlValueHeroClassMonk {
 
@@ -181,72 +175,70 @@ func ParseSkillChoices(r *http.Request) (skillChoices []SkillChoice) {
 			seizeTheInitiativeSkillChoice = new(SeizeTheInitiativeSkillChoice)
 			oneWithEverythingSkillChoice  = new(OneWithEverythingSkillChoice)
 			deadlyReachSkillChoice        = new(DeadlyReachSkillChoice)
-			mantraOfEvasionSkillChoice    = new(MantraOfEvasionSkillChoice)
 			mantraOfHealingSkillChoice    = new(MantraOfHealingSkillChoice)
 			fistsOfThunderSkillChoice     = new(FistsOfThunderSkillChoice)
 			guardiansPathSkillChoice      = new(GuardiansPathSkillChoice)
-			poweredArmorSkillChoice       = new(PoweredArmorSkillChoice)
 		)
 
 		InitializeSkillChoice(seizeTheInitiativeSkillChoice, r)
 		InitializeSkillChoice(oneWithEverythingSkillChoice, r)
 		InitializeSkillChoice(deadlyReachSkillChoice, r)
-		InitializeSkillChoice(mantraOfEvasionSkillChoice, r)
 		InitializeSkillChoice(mantraOfHealingSkillChoice, r)
 		InitializeSkillChoice(fistsOfThunderSkillChoice, r)
 		InitializeSkillChoice(guardiansPathSkillChoice, r)
-		InitializeSkillChoice(poweredArmorSkillChoice, r)
 
 		skillChoices = append(skillChoices, seizeTheInitiativeSkillChoice)
 		skillChoices = append(skillChoices, oneWithEverythingSkillChoice)
 		skillChoices = append(skillChoices, deadlyReachSkillChoice)
-		skillChoices = append(skillChoices, mantraOfEvasionSkillChoice)
 		skillChoices = append(skillChoices, mantraOfHealingSkillChoice)
 		skillChoices = append(skillChoices, fistsOfThunderSkillChoice)
 		skillChoices = append(skillChoices, guardiansPathSkillChoice)
-		skillChoices = append(skillChoices, poweredArmorSkillChoice)
 
 	} else if heroClass == urlValueHeroClassWizard {
 
 		var (
 			energyArmorSkillChoice  = new(EnergyArmorSkillChoice)
 			glassCannonSkillChoice  = new(GlassCannonSkillChoice)
-			poweredArmorSkillChoice = new(PoweredArmorSkillChoice)
 		)
 
 		InitializeSkillChoice(energyArmorSkillChoice, r)
 		InitializeSkillChoice(glassCannonSkillChoice, r)
-		InitializeSkillChoice(poweredArmorSkillChoice, r)
 
 		skillChoices = append(skillChoices, energyArmorSkillChoice)
 		skillChoices = append(skillChoices, glassCannonSkillChoice)
-		skillChoices = append(skillChoices, poweredArmorSkillChoice)
 
 	} else if heroClass == urlValueHeroClassDemonHunter {
 
-		poweredArmorSkillChoice := new(PoweredArmorSkillChoice)
-
-		InitializeSkillChoice(poweredArmorSkillChoice, r)
-
-		skillChoices = append(skillChoices, poweredArmorSkillChoice)
+		// lol Demon Hunter...
 
 	} else if heroClass == urlValueHeroClassWitchDoctor {
 
 		var (
 			horrifySkillChoice         = new(HorrifySkillChoice)
 			jungleFortitudeSkillChoice = new(JungleFortitudeSkillChoice)
-			poweredArmorSkillChoice    = new(PoweredArmorSkillChoice)
 		)
 
 		InitializeSkillChoice(horrifySkillChoice, r)
 		InitializeSkillChoice(jungleFortitudeSkillChoice, r)
-		InitializeSkillChoice(poweredArmorSkillChoice, r)
 
 		skillChoices = append(skillChoices, horrifySkillChoice)
 		skillChoices = append(skillChoices, jungleFortitudeSkillChoice)
-		skillChoices = append(skillChoices, poweredArmorSkillChoice)
 
 	}
+
+	var (
+		warCrySkillChoice        = new(WarCrySkillChoice)
+		mantraOfEvasionSkillChoice    = new(MantraOfEvasionSkillChoice)
+		poweredArmorSkillChoice  = new(PoweredArmorSkillChoice)
+	)
+
+	InitializeSkillChoice(warCrySkillChoice, r)
+	InitializeSkillChoice(mantraOfEvasionSkillChoice, r)
+	InitializeSkillChoice(poweredArmorSkillChoice, r)
+
+	skillChoices = append(skillChoices, warCrySkillChoice)
+	skillChoices = append(skillChoices, mantraOfEvasionSkillChoice)
+	skillChoices = append(skillChoices, poweredArmorSkillChoice)
 
 	return skillChoices
 }
