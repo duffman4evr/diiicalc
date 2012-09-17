@@ -1,17 +1,33 @@
-package diiicalc
+package util
 
 import (
 	"bytes"
+	"errors"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 // Some package private helper functions.
-func getBaseLifeForHero(vitality float64, level float64) (life float64) {
-	return 36 + (4 * level) + getLifeFromVitality(vitality, level)
+func createSystemBattleTag(userBattleTag string) (systemBattleTag string, err error) {
+
+	systemBattleTag = strings.Replace(userBattleTag, "#", "-", -1)
+
+	match, _ := regexp.MatchString(`[^0-9][^\-]*-[0-9]+`, systemBattleTag)
+
+	if !match {
+		err = errors.New("Given BattleTag is not of the form 'name-number' or 'name#number'.")
+	}
+
+	return
 }
 
-func getLifeFromVitality(vitality float64, level float64) (life float64) {
+// Some publicly exposed helper functions.
+func ComputeBaseLifeForHero(vitality float64, level float64) (life float64) {
+	return 36 + (4 * level) + DeriveLifeFromVitality(vitality, level)
+}
+
+func DeriveLifeFromVitality(vitality float64, level float64) (life float64) {
 	var lifePerVit float64
 
 	if level < 35 {
@@ -23,7 +39,7 @@ func getLifeFromVitality(vitality float64, level float64) (life float64) {
 	return vitality * lifePerVit
 }
 
-func addDodge(dodge float64, mitigationSources *map[string]float64) {
+func AddDodge(dodge float64, mitigationSources *map[string]float64) {
 
 	oldDodge := (*mitigationSources)[MitigationSourceDodge]
 	addedDodge := (1 - oldDodge) * dodge
@@ -32,7 +48,8 @@ func addDodge(dodge float64, mitigationSources *map[string]float64) {
 
 }
 
-func getDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
+// TODO some issue here with really high dex.
+func ComputeDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 
 	//     Dex     | Chance per Dex, with 1 == 100% dodge chance
 	// ------------+----------------
@@ -67,11 +84,11 @@ func getDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 	return dodgeChance + (dex * .00010)
 }
 
-func getArmorFromDr(dr float64, lvl float64) (armor float64) {
+func ComputeArmorFromDr(dr float64, lvl float64) (armor float64) {
 	return 50.0 * lvl * dr / (1.0 - dr)
 }
 
-func getCommaLadenValue(f float64) (value string) {
+func GenerateCommaLadenValue(f float64) (value string) {
 
 	var buffer bytes.Buffer
 
@@ -106,7 +123,8 @@ func getCommaLadenValue(f float64) (value string) {
 	return
 }
 
-func getSignForValue(f float64) (sign string) {
+// TODO fix the usages of this to be consistent
+func GetSignForValue(f float64) (sign string) {
 
 	if f >= 0 {
 		sign = "+"
@@ -115,7 +133,7 @@ func getSignForValue(f float64) (sign string) {
 	return
 }
 
-func getColorForValue(f float64) (color string) {
+func GetColorForValue(f float64) (color string) {
 
 	if f < 0 {
 		color = "#A31919"
@@ -123,10 +141,10 @@ func getColorForValue(f float64) (color string) {
 		color = "#008A2E"
 	}
 
-	return
+	return color
 }
 
-func findMin(f ...float64) (min float64) {
+func FindMin(f ...float64) (min float64) {
 
 	length := len(f)
 
@@ -139,10 +157,10 @@ func findMin(f ...float64) (min float64) {
 		}
 	}
 
-	return
+	return min
 }
 
-func findMax(f ...float64) (max float64) {
+func FindMax(f ...float64) (max float64) {
 
 	length := len(f)
 
@@ -155,5 +173,5 @@ func findMax(f ...float64) (max float64) {
 		}
 	}
 
-	return
+	return max
 }

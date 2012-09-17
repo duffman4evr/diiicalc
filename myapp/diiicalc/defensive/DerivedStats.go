@@ -1,8 +1,9 @@
-package diiicalc
+package defensive
+
+import "diiicalc/util"
 
 type DerivedStats struct {
 	BaseStats         BaseStats
-	SkillChoices      []SkillChoice
 	Dexterity         float64
 	Armor             float64
 	Life              float64
@@ -17,15 +18,14 @@ type DerivedStats struct {
 	MitigationSources map[string]float64
 }
 
-func NewDerivedStats(baseStats *BaseStats, skillChoices []SkillChoice) *DerivedStats {
+func NewDerivedStats(baseStats *BaseStats) *DerivedStats {
 
 	self := new(DerivedStats)
 
 	self.BaseStats = *baseStats
-	self.SkillChoices = skillChoices
 	self.Dexterity = baseStats.Dexterity
 	self.Armor = baseStats.Armor
-	self.Life = getLifeFromVitality(baseStats.Vitality, baseStats.Level) * (1 + baseStats.LifePercent)
+	self.Life = util.DeriveLifeFromVitality(baseStats.Vitality, baseStats.Level) * (1 + baseStats.LifePercent)
 	self.LifeOnHit = baseStats.LifeOnHit
 	self.LifeRegen = baseStats.LifeRegen
 	self.ResistArcane = baseStats.ResistArcane
@@ -36,10 +36,6 @@ func NewDerivedStats(baseStats *BaseStats, skillChoices []SkillChoice) *DerivedS
 	self.ResistPhysical = baseStats.ResistPhysical
 
 	self.MitigationSources = make(map[string]float64)
-
-	for i := 0; i < len(skillChoices); i++ {
-		skillChoices[i].ModifyDerivedStats(self)
-	}
 
 	return self
 }
