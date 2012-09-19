@@ -123,7 +123,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
 	for i := 0; i < len(skillChoices); i += 2 {
-		skillChoices[i].PrintHtml(w)
+		skillChoices[i].PrintOffensiveHtml(w)
 	}
 
 	fmt.Fprintln(w, `</table>`)
@@ -133,7 +133,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
 	for i := 1; i < len(skillChoices); i += 2 {
-		skillChoices[i].PrintHtml(w)
+		skillChoices[i].PrintOffensiveHtml(w)
 	}
 
 	fmt.Fprintln(w, `</table>`)

@@ -68,55 +68,44 @@ const (
 	wrathOfTheBerzerkerSkillSlug = "wrath-of-the-berzerker"
 )
 
-var (
-	emptyRuneSlugs               = []string{}
-	bashRuneSlugs                = []string{"bash-a"}
-	battleRageRuneSlugs          = []string{"battle-rage-a", "battle-rage-e"}
-	deadlyReachRuneSlugs         = []string{"deadly-reach-e"}
-	energyArmorRuneSlugs         = []string{"energy-armor-a"}
-	fistsOfThunderRuneSlugs      = []string{"fists-of-thunder-e"}
-	frenzyRuneSlugs              = []string{"frenzy-a"}
-	horrifyRuneSlugs             = []string{"horrify-a"}
-	leapRuneSlugs                = []string{"leap-z123"}
-	mantraOfHealingRuneSlugs     = []string{"mantra-of-healing-e"}
-	mantraOfEvasionRuneSlugs     = []string{"spam", "mantra-of-evasion-e", "hard-target-spam"}
-	overpowerRuneSlugs           = []string{"overpower-a"}
-	revengeRuneSlugs             = []string{"revenge-a"}
-	warCryRuneSlugs              = []string{"war-cry-a", "war-cry-c"}
-	wrathOfTheBerzerkerRuneSlugs = []string{"wrath-of-the-berzerker-a", "wrath-of-the-berzerker-c"}
-)
+var emptyRuneSlugs = []string{}
 
 type SkillChoice interface {
-	PrintHtml(w http.ResponseWriter)
 	GetValue() string
 	SetValue(value string)
 	GetUrlKey() string
 	GetSkillSlug() string
-	GetRuneSlugs() []string
 }
 
 type DefensiveSkillChoice interface {
 	ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats)
-	PrintHtml(w http.ResponseWriter)
+	PrintDefensiveHtml(w http.ResponseWriter)
+	GetDefensiveRuneSlugs() []string
 	GetValue() string
 	SetValue(value string)
 	GetUrlKey() string
 	GetSkillSlug() string
-	GetRuneSlugs() []string
 }
 
 type OffensiveSkillChoice interface {
 	ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats)
-	PrintHtml(w http.ResponseWriter)
+	PrintOffensiveHtml(w http.ResponseWriter)
+	GetOffensiveRuneSlugs() []string
 	GetValue() string
 	SetValue(value string)
 	GetUrlKey() string
 	GetSkillSlug() string
-	GetRuneSlugs() []string
 }
 
-func InitializeSkillChoice(skillChoice SkillChoice, r *http.Request) {
+func InitializeDefensiveSkillChoice(skillChoice DefensiveSkillChoice, r *http.Request) {
+	InitializeSkillChoice(skillChoice, skillChoice.GetDefensiveRuneSlugs(), r)
+}
 
+func InitializeOffensiveSkillChoice(skillChoice OffensiveSkillChoice, r *http.Request) {
+	InitializeSkillChoice(skillChoice, skillChoice.GetOffensiveRuneSlugs(), r)
+}
+
+func InitializeSkillChoice(skillChoice SkillChoice, supportedRuneSlugs []string, r *http.Request) {
 	// If there is already a value for this SkillChoice's URL key, then continue using it!
 	urlValue := r.FormValue(skillChoice.GetUrlKey())
 
@@ -154,7 +143,6 @@ func InitializeSkillChoice(skillChoice SkillChoice, r *http.Request) {
 
 		// Furthermore, check if we have a match on any of the runes we care about.
 		userRuneSlug := r.FormValue(util.UrlKeysActiveRunes[i])
-		supportedRuneSlugs := skillChoice.GetRuneSlugs()
 
 		for j := 0; j < len(supportedRuneSlugs); j++ {
 			// If we have a match, set the URL value for this SkillChoice to match
@@ -206,7 +194,7 @@ func ParseOffensiveSkillChoices(r *http.Request) (offensiveSkillChoices []Offens
 	}
 
 	for _, skillChoice := range offensiveSkillChoices {
-		InitializeSkillChoice(skillChoice, r)
+		InitializeOffensiveSkillChoice(skillChoice, r)
 	}
 
 	return offensiveSkillChoices
@@ -228,10 +216,10 @@ func ParseDefensiveSkillChoices(r *http.Request) (defensiveSkillChoices []Defens
 			ignorePainSkillChoice    = new(IgnorePainSkillChoice)
 		)
 
-		InitializeSkillChoice(toughAsNailsSkillChoice, r)
-		InitializeSkillChoice(nervesOfSteelSkillChoice, r)
-		InitializeSkillChoice(leapSkillChoice, r)
-		InitializeSkillChoice(ignorePainSkillChoice, r)
+		InitializeDefensiveSkillChoice(toughAsNailsSkillChoice, r)
+		InitializeDefensiveSkillChoice(nervesOfSteelSkillChoice, r)
+		InitializeDefensiveSkillChoice(leapSkillChoice, r)
+		InitializeDefensiveSkillChoice(ignorePainSkillChoice, r)
 
 		defensiveSkillChoices = append(defensiveSkillChoices, toughAsNailsSkillChoice)
 		defensiveSkillChoices = append(defensiveSkillChoices, nervesOfSteelSkillChoice)
@@ -249,12 +237,12 @@ func ParseDefensiveSkillChoices(r *http.Request) (defensiveSkillChoices []Defens
 			guardiansPathSkillChoice      = new(GuardiansPathSkillChoice)
 		)
 
-		InitializeSkillChoice(seizeTheInitiativeSkillChoice, r)
-		InitializeSkillChoice(oneWithEverythingSkillChoice, r)
-		InitializeSkillChoice(deadlyReachSkillChoice, r)
-		InitializeSkillChoice(mantraOfHealingSkillChoice, r)
-		InitializeSkillChoice(fistsOfThunderSkillChoice, r)
-		InitializeSkillChoice(guardiansPathSkillChoice, r)
+		InitializeDefensiveSkillChoice(seizeTheInitiativeSkillChoice, r)
+		InitializeDefensiveSkillChoice(oneWithEverythingSkillChoice, r)
+		InitializeDefensiveSkillChoice(deadlyReachSkillChoice, r)
+		InitializeDefensiveSkillChoice(mantraOfHealingSkillChoice, r)
+		InitializeDefensiveSkillChoice(fistsOfThunderSkillChoice, r)
+		InitializeDefensiveSkillChoice(guardiansPathSkillChoice, r)
 
 		defensiveSkillChoices = append(defensiveSkillChoices, seizeTheInitiativeSkillChoice)
 		defensiveSkillChoices = append(defensiveSkillChoices, oneWithEverythingSkillChoice)
@@ -270,8 +258,8 @@ func ParseDefensiveSkillChoices(r *http.Request) (defensiveSkillChoices []Defens
 			glassCannonSkillChoice = new(GlassCannonSkillChoice)
 		)
 
-		InitializeSkillChoice(energyArmorSkillChoice, r)
-		InitializeSkillChoice(glassCannonSkillChoice, r)
+		InitializeDefensiveSkillChoice(energyArmorSkillChoice, r)
+		InitializeDefensiveSkillChoice(glassCannonSkillChoice, r)
 
 		defensiveSkillChoices = append(defensiveSkillChoices, energyArmorSkillChoice)
 		defensiveSkillChoices = append(defensiveSkillChoices, glassCannonSkillChoice)
@@ -287,8 +275,8 @@ func ParseDefensiveSkillChoices(r *http.Request) (defensiveSkillChoices []Defens
 			jungleFortitudeSkillChoice = new(JungleFortitudeSkillChoice)
 		)
 
-		InitializeSkillChoice(horrifySkillChoice, r)
-		InitializeSkillChoice(jungleFortitudeSkillChoice, r)
+		InitializeDefensiveSkillChoice(horrifySkillChoice, r)
+		InitializeDefensiveSkillChoice(jungleFortitudeSkillChoice, r)
 
 		defensiveSkillChoices = append(defensiveSkillChoices, horrifySkillChoice)
 		defensiveSkillChoices = append(defensiveSkillChoices, jungleFortitudeSkillChoice)
@@ -301,9 +289,9 @@ func ParseDefensiveSkillChoices(r *http.Request) (defensiveSkillChoices []Defens
 		poweredArmorSkillChoice    = new(PoweredArmorSkillChoice)
 	)
 
-	InitializeSkillChoice(warCrySkillChoice, r)
-	InitializeSkillChoice(mantraOfEvasionSkillChoice, r)
-	InitializeSkillChoice(poweredArmorSkillChoice, r)
+	InitializeDefensiveSkillChoice(warCrySkillChoice, r)
+	InitializeDefensiveSkillChoice(mantraOfEvasionSkillChoice, r)
+	InitializeDefensiveSkillChoice(poweredArmorSkillChoice, r)
 
 	defensiveSkillChoices = append(defensiveSkillChoices, warCrySkillChoice)
 	defensiveSkillChoices = append(defensiveSkillChoices, mantraOfEvasionSkillChoice)
@@ -313,10 +301,18 @@ func ParseDefensiveSkillChoices(r *http.Request) (defensiveSkillChoices []Defens
 }
 
 func printSimpleOnOffHtml(sc SkillChoice, title string, w http.ResponseWriter) {
-	printHtml(sc, title, true, []string{}, w)
+	printAgnosticHtml(sc, title, true, []string{}, []string{}, w)
 }
 
-func printHtml(sc SkillChoice, title string, hasSimpleOn bool, runeChoiceNames []string, w http.ResponseWriter) {
+func printDefensiveHtml(sc DefensiveSkillChoice, title string, hasSimpleOn bool, runeChoiceNames []string, w http.ResponseWriter) {
+	printAgnosticHtml(sc, title, hasSimpleOn, runeChoiceNames, sc.GetDefensiveRuneSlugs(), w)
+}
+
+func printOffensiveHtml(sc OffensiveSkillChoice, title string, hasSimpleOn bool, runeChoiceNames []string, w http.ResponseWriter) {
+	printAgnosticHtml(sc, title, hasSimpleOn, runeChoiceNames, sc.GetOffensiveRuneSlugs(), w)
+}
+
+func printAgnosticHtml(sc SkillChoice, title string, hasSimpleOn bool, runeChoiceNames []string, runeChoiceSlugs []string, w http.ResponseWriter) {
 	fmt.Fprintln(w, `<tr>`)
 	fmt.Fprintf(w, `<td class="tableLeft">%s:</td>%s`, title, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">`)
@@ -328,7 +324,7 @@ func printHtml(sc SkillChoice, title string, hasSimpleOn bool, runeChoiceNames [
 	}
 
 	for i := 0; i < len(runeChoiceNames); i++ {
-		fmt.Fprintf(w, `<option value="%s" %s >%s</option>%s`, sc.GetRuneSlugs()[0], GetSelected(sc, sc.GetRuneSlugs()[0]), runeChoiceNames[i], "\n")
+		fmt.Fprintf(w, `<option value="%s" %s >%s</option>%s`, runeChoiceSlugs[i], GetSelected(sc, runeChoiceSlugs[i]), runeChoiceNames[i], "\n")
 	}
 
 	fmt.Fprintln(w, `</select>`)
@@ -746,99 +742,106 @@ func (self *WrathOfTheBerzerkerSkillChoice) GetSkillSlug() string {
 	return wrathOfTheBerzerkerSkillSlug
 }
 
-func (self *BashSkillChoice) GetRuneSlugs() []string {
-	return bashRuneSlugs
+func (self *BashSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"bash-a"}
 }
-func (self *BattleRageSkillChoice) GetRuneSlugs() []string {
-	return battleRageRuneSlugs
+func (self *BattleRageSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"battle-rage-a", "battle-rage-e"}
 }
-func (self *BerzerkerRageSkillChoice) GetRuneSlugs() []string {
+func (self *BerzerkerRageSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *BrawlerSkillChoice) GetRuneSlugs() []string {
+func (self *BrawlerSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *DeadlyReachSkillChoice) GetRuneSlugs() []string {
-	return deadlyReachRuneSlugs
+func (self *DeadlyReachSkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"deadly-reach-e"}
 }
-func (self *EnergyArmorSkillChoice) GetRuneSlugs() []string {
-	return energyArmorRuneSlugs
+func (self *DeadlyReachSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"deadly-reach-f"}
 }
-func (self *FistsOfThunderSkillChoice) GetRuneSlugs() []string {
-	return fistsOfThunderRuneSlugs
+func (self *EnergyArmorSkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"energy-armor-a"}
 }
-func (self *FrenzySkillChoice) GetRuneSlugs() []string {
-	return frenzyRuneSlugs
+func (self *FistsOfThunderSkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"fists-of-thunder-e"}
 }
-func (self *GlassCannonSkillChoice) GetRuneSlugs() []string {
+func (self *FrenzySkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"frenzy-a"}
+}
+func (self *GlassCannonSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *GuardiansPathSkillChoice) GetRuneSlugs() []string {
+func (self *GuardiansPathSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *HorrifySkillChoice) GetRuneSlugs() []string {
-	return horrifyRuneSlugs
+func (self *HorrifySkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"horrify-a"}
 }
-func (self *IgnorePainSkillChoice) GetRuneSlugs() []string {
+func (self *IgnorePainSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *JungleFortitudeSkillChoice) GetRuneSlugs() []string {
+func (self *JungleFortitudeSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *LeapSkillChoice) GetRuneSlugs() []string {
-	return leapRuneSlugs
+func (self *LeapSkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"leap-z123"}
 }
-func (self *MantraOfEvasionSkillChoice) GetRuneSlugs() []string {
-	return mantraOfEvasionRuneSlugs
+func (self *MantraOfEvasionSkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"spam", "mantra-of-evasion-e", "hard-target-spam"}
 }
-func (self *MantraOfHealingSkillChoice) GetRuneSlugs() []string {
-	return mantraOfHealingRuneSlugs
+func (self *MantraOfHealingSkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"mantra-of-healing-e"}
 }
-func (self *NervesOfSteelSkillChoice) GetRuneSlugs() []string {
+func (self *NervesOfSteelSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *OneWithEverythingSkillChoice) GetRuneSlugs() []string {
+func (self *OneWithEverythingSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *OverpowerSkillChoice) GetRuneSlugs() []string {
-	return overpowerRuneSlugs
+func (self *OverpowerSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"overpower-a"}
 }
-func (self *PoweredArmorSkillChoice) GetRuneSlugs() []string {
+func (self *PoweredArmorSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *RevengeSkillChoice) GetRuneSlugs() []string {
-	return revengeRuneSlugs
+func (self *RevengeSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"revenge-a"}
 }
-func (self *RuthlessSkillChoice) GetRuneSlugs() []string {
+func (self *RuthlessSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *SeizeTheInitiativeSkillChoice) GetRuneSlugs() []string {
+func (self *SeizeTheInitiativeSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *ToughAsNailsSkillChoice) GetRuneSlugs() []string {
+func (self *ToughAsNailsSkillChoice) GetDefensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *WarCrySkillChoice) GetRuneSlugs() []string {
-	return warCryRuneSlugs
+func (self *WarCrySkillChoice) GetDefensiveRuneSlugs() []string {
+	return []string{"war-cry-a", "war-cry-c"}
 }
-func (self *WeaponsMasterSkillChoice) GetRuneSlugs() []string {
+func (self *WeaponsMasterSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *WrathOfTheBerzerkerSkillChoice) GetRuneSlugs() []string {
-	return wrathOfTheBerzerkerRuneSlugs
+func (self *WrathOfTheBerzerkerSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"wrath-of-the-berzerker-a", "wrath-of-the-berzerker-c"}
 }
 
+// TODO switch all of these to switch statemetns
+
 func (self *BashSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
-	if self.Value == bashRuneSlugs[0] { // Punish
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Punish
 		derivedStats.SkillDamageBonus += 0.24
 	}
 }
 func (self *BattleRageSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
 	switch {
 	case self.Value == standardUrlValueOn:
 		derivedStats.SkillDamageBonus += 0.15
 		derivedStats.CritChance += 0.03
-	case self.Value == battleRageRuneSlugs[0]: // Marauder's Rage
+	case self.Value == runeSlugs[0]: // Marauder's Rage
 		derivedStats.SkillDamageBonus += 0.30
 		derivedStats.CritChance += 0.03
 	}
@@ -854,17 +857,20 @@ func (self *BrawlerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offens
 	}
 }
 func (self *FrenzySkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
-	if self.Value == frenzyRuneSlugs[0] { // Maniac //TODO split this and bash into stacks.
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Maniac //TODO split this and bash into stacks.
 		derivedStats.SkillDamageBonus += 0.20
 	}
 }
 func (self *OverpowerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
-	if self.Value == overpowerRuneSlugs[0] { // Killing Spree
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Killing Spree
 		derivedStats.CritChance += 0.10
 	}
 }
 func (self *RevengeSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
-	if self.Value == revengeRuneSlugs[0] { // Best Served Cold
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Best Served Cold
 		derivedStats.CritChance += 0.10
 	}
 }
@@ -887,26 +893,29 @@ func (self *WeaponsMasterSkillChoice) ModifyOffensiveDerivedStats(derivedStats *
 	}
 }
 func (self *WrathOfTheBerzerkerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
 	switch {
 	case self.Value == standardUrlValueOn:
 		derivedStats.CritChance += 0.10
 		derivedStats.AttackSpeedBonus += 0.25
-	case self.Value == wrathOfTheBerzerkerRuneSlugs[0]: // Insanity
+	case self.Value == runeSlugs[0]: // Insanity
 		derivedStats.SkillDamageBonus += 1.00
 	}
 }
 
 func (self *DeadlyReachSkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
-	if self.Value == deadlyReachRuneSlugs[0] {
+	runeSlugs := self.GetDefensiveRuneSlugs()
+	if self.Value == runeSlugs[0] {
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.5
 	}
 }
 func (self *EnergyArmorSkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
+	runeSlugs := self.GetDefensiveRuneSlugs()
 	switch {
 	case self.Value == standardUrlValueOn:
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.65
 
-	case self.Value == energyArmorRuneSlugs[0]:
+	case self.Value == runeSlugs[0]:
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.65
 		derivedStats.ResistArcane += derivedStats.BaseStats.ResistArcane * 0.4
 		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * 0.4
@@ -917,7 +926,8 @@ func (self *EnergyArmorSkillChoice) ModifyDefensiveDerivedStats(derivedStats *de
 	}
 }
 func (self *FistsOfThunderSkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
-	if self.Value == fistsOfThunderRuneSlugs[0] {
+	runeSlugs := self.GetDefensiveRuneSlugs()
+	if self.Value == runeSlugs[0] {
 		util.AddDodge(0.16, &derivedStats.MitigationSources)
 	}
 }
@@ -938,7 +948,8 @@ func (self *GuardiansPathSkillChoice) ModifyDefensiveDerivedStats(derivedStats *
 	}
 }
 func (self *HorrifySkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
-	if self.Value == horrifyRuneSlugs[0] {
+	runeSlugs := self.GetDefensiveRuneSlugs()
+	if self.Value == runeSlugs[0] {
 		derivedStats.Armor += derivedStats.BaseStats.Armor
 	}
 }
@@ -948,29 +959,32 @@ func (self *IgnorePainSkillChoice) ModifyDefensiveDerivedStats(derivedStats *def
 	}
 }
 func (self *LeapSkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
-	if self.Value == leapRuneSlugs[0] {
+	runeSlugs := self.GetDefensiveRuneSlugs()
+	if self.Value == runeSlugs[0] {
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 3.0
 	}
 }
 func (self *MantraOfEvasionSkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
+	runeSlugs := self.GetDefensiveRuneSlugs()
 	switch {
 	case self.Value == standardUrlValueOn:
 		util.AddDodge(0.15, &derivedStats.MitigationSources)
 
-	case self.Value == mantraOfEvasionRuneSlugs[0]: // Spam
+	case self.Value == runeSlugs[0]: // Spam
 		util.AddDodge(0.30, &derivedStats.MitigationSources)
 
-	case self.Value == mantraOfEvasionRuneSlugs[1]: // Hard Target
+	case self.Value == runeSlugs[1]: // Hard Target
 		util.AddDodge(0.15, &derivedStats.MitigationSources)
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 
-	case self.Value == mantraOfEvasionRuneSlugs[2]: // Hard Target Spam
+	case self.Value == runeSlugs[2]: // Hard Target Spam
 		util.AddDodge(0.30, &derivedStats.MitigationSources)
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 	}
 }
 func (self *MantraOfHealingSkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
-	if self.Value == mantraOfHealingRuneSlugs[0] {
+	runeSlugs := self.GetDefensiveRuneSlugs()
+	if self.Value == runeSlugs[0] {
 		derivedStats.ResistArcane += derivedStats.BaseStats.ResistArcane * 0.2
 		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * 0.2
 		derivedStats.ResistLightning += derivedStats.BaseStats.ResistLightning * 0.2
@@ -1021,14 +1035,15 @@ func (self *JungleFortitudeSkillChoice) ModifyDefensiveDerivedStats(derivedStats
 	}
 }
 func (self *WarCrySkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensive.DerivedStats) {
+	runeSlugs := self.GetDefensiveRuneSlugs()
 	switch {
 	case self.Value == standardUrlValueOn:
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 
-	case self.Value == warCryRuneSlugs[0]:
+	case self.Value == runeSlugs[0]:
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.4
 
-	case self.Value == warCryRuneSlugs[1]:
+	case self.Value == runeSlugs[1]:
 		derivedStats.Armor += derivedStats.BaseStats.Armor * 0.2
 		derivedStats.ResistFire += derivedStats.BaseStats.ResistFire * 0.5
 		derivedStats.ResistLightning += derivedStats.BaseStats.ResistLightning * 0.5
@@ -1040,84 +1055,84 @@ func (self *WarCrySkillChoice) ModifyDefensiveDerivedStats(derivedStats *defensi
 	}
 }
 
-func (self *BashSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Bash", false, []string{"Punish"}, w)
+func (self *BashSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Bash", false, []string{"Punish"}, w)
 }
-func (self *BattleRageSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Battle Rage", true, []string{"Marauder's Rage"}, w)
+func (self *BattleRageSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Battle Rage", true, []string{"Marauder's Rage"}, w)
 }
-func (self *BerzerkerRageSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *BerzerkerRageSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Berzerker Rage", w)
 }
-func (self *BrawlerSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *BrawlerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Brawler", w)
 }
-func (self *DeadlyReachSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Deadly Reach", false, []string{"Keen Eye"}, w)
+func (self *DeadlyReachSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Deadly Reach", false, []string{"Keen Eye"}, w)
 }
-func (self *EnergyArmorSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Energy Armor", true, []string{"Prismatic"}, w)
+func (self *EnergyArmorSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Energy Armor", true, []string{"Prismatic"}, w)
 }
-func (self *FistsOfThunderSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Fists of Thunder", false, []string{"Lightning Flash"}, w)
+func (self *FistsOfThunderSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Fists of Thunder", false, []string{"Lightning Flash"}, w)
 }
-func (self *FrenzySkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Frenzy", false, []string{"Maniac"}, w)
+func (self *FrenzySkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Frenzy", false, []string{"Maniac"}, w)
 }
-func (self *GlassCannonSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *GlassCannonSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "GlassCannon", w)
 }
-func (self *GuardiansPathSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *GuardiansPathSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Guardian's Path", w)
 }
-func (self *HorrifySkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Horrify", false, []string{"Frightening Aspect"}, w)
+func (self *HorrifySkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Horrify", false, []string{"Frightening Aspect"}, w)
 }
-func (self *IgnorePainSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *IgnorePainSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Ignore Pain", w)
 }
-func (self *JungleFortitudeSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *JungleFortitudeSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Jungle Fortitude", w)
 }
-func (self *LeapSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Leap", false, []string{"Iron Impact"}, w)
+func (self *LeapSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Leap", false, []string{"Iron Impact"}, w)
 }
-func (self *MantraOfEvasionSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Mantra of Evasion", true, []string{"Spam", "Hard Target", "Hard Target Spam"}, w)
+func (self *MantraOfEvasionSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Mantra of Evasion", true, []string{"Spam", "Hard Target", "Hard Target Spam"}, w)
 }
-func (self *MantraOfHealingSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Mantra of Healing", false, []string{"Time of Need"}, w)
+func (self *MantraOfHealingSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "Mantra of Healing", false, []string{"Time of Need"}, w)
 }
-func (self *NervesOfSteelSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *NervesOfSteelSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Nerves of Steel", w)
 }
-func (self *OneWithEverythingSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *OneWithEverythingSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "One With Everything", w)
 }
-func (self *OverpowerSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Overpower", false, []string{"Killing Spree"}, w)
+func (self *OverpowerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Overpower", false, []string{"Killing Spree"}, w)
 }
-func (self *PoweredArmorSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *PoweredArmorSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Enchantress Armor", w)
 }
-func (self *RevengeSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "Revenge", false, []string{"Best Served Cold"}, w)
+func (self *RevengeSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Revenge", false, []string{"Best Served Cold"}, w)
 }
-func (self *RuthlessSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *RuthlessSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Ruthless", w)
 }
-func (self *SeizeTheInitiativeSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *SeizeTheInitiativeSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Seize the Initiative", w)
 }
-func (self *ToughAsNailsSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *ToughAsNailsSkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Tough as Nails", w)
 }
-func (self *WarCrySkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "War Cry", true, []string{"Hardened Wrath", "Impunity"}, w)
+func (self *WarCrySkillChoice) PrintDefensiveHtml(w http.ResponseWriter) {
+	printDefensiveHtml(self, "War Cry", true, []string{"Hardened Wrath", "Impunity"}, w)
 }
-func (self *WeaponsMasterSkillChoice) PrintHtml(w http.ResponseWriter) {
+func (self *WeaponsMasterSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Weapons Master", w)
 }
-func (self *WrathOfTheBerzerkerSkillChoice) PrintHtml(w http.ResponseWriter) {
-	printHtml(self, "WotB", true, []string{"Insanity"}, w)
+func (self *WrathOfTheBerzerkerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "WotB", true, []string{"Insanity"}, w)
 }
