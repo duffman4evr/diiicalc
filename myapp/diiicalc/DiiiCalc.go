@@ -193,93 +193,12 @@ func printHeroSelect(w http.ResponseWriter, heroes string, selectedHeroId string
 
 func printHtmlIntro(w http.ResponseWriter) {
 
-	// TODO use a proper style sheet and JS file instead of this crap.
-
 	fmt.Fprintln(w, `<!DOCTYPE HTML>`)
 	fmt.Fprintln(w, `<html>`)
 
 	fmt.Fprintln(w, `<head>`)
-	fmt.Fprintln(w, `<style type="text/css">
-	.centerBlock
-	{
-		margin: 0 auto;
-	}
-
-	.centerText
-	{
-		text-align: center;
-	}
-
-	.fullWidth
-	{
-		width: 100%;
-	}
-
-	.halfWidth
-	{
-		width: 50%;
-	}
-
-	.thirdWidth
-	{
-		width: 33.33%;
-	}
-
-	.twoThirdsWidth
-	{
-		width: 66.66%;
-	}
-
-	.tableLeft
-	{
-		text-align: right;
-	}
-
-	.tableRight
-	{
-		text-align: left;
-	}
-
-	table {
-		border-spacing: 0px;
-	}
-
-	.rightBorder
-	{
-		border-right-style: solid;
-		border-width: 2px;
-		border-color: #555555;
-	}
-
- 	.footer
- 	{
-		position: fixed;
-		width: 100%;
-		bottom: 0px;
-		left: 0px;
-		z-index: 1;
-	}
-
-	.roundedBorder
-	{
-		border-style: solid;
-		border-width: 1px;
-		border-radius: 7px;
-		margin: 3px;
-		border-color: #555555;
-		background-color: #DDEDFF;
-		box-shadow:rgba(0,0,0,0.5) 0px 0px 24px;
-	}
-</style>`)
-
-	fmt.Fprintln(w, `<script type="text/javascript">
-	  
-      function showUpdateButton()
-      {
-          document.getElementById("updateButton").setAttribute("style", "display: inline;")
-      }
-
-	</script>`)
+	fmt.Fprintln(w, `<link rel="stylesheet" type="text/css" href="static/stylesheet.css" />`)
+	fmt.Fprintln(w, `<script src="static/javascript.js"></script>`)
 	fmt.Fprintln(w, `</head>`)
 
 	fmt.Fprintln(w, `<body style=" color: #2D2D2D; background-color: #CACACA; font-family: 'MS Sans Serif', Geneva, sans-serif;">`)

@@ -78,8 +78,7 @@ const (
 	UrlValueCompareTypeArmor          = "arm"
 	UrlValueCompareTypePercentLife    = "pli"
 	UrlValueCompareTypeDexterity      = "dex"
-	UrlValueCompareTypeStrength       = "str"
-	UrlValueCompareTypeIntelligence   = "int"
+	UrlValueCompareTypeMainStat       = "mas"
 	UrlValueCompareTypeAttackSpeed    = "apd"
 	UrlValueCompareTypeCritChance     = "crc"
 	UrlValueCompareTypeCritDamage     = "crd"
@@ -104,6 +103,9 @@ const (
 	UrlValueWeaponTypePolearm      = "polearm"
 	UrlValueWeaponTypeSpear        = "spear"
 	UrlValueWeaponTypeMightyWeapon = "mightyWeapon"
+	UrlValueWeaponTypeBow          = "bow"
+	UrlValueWeaponTypeCrossbow     = "crossbow"
+	UrlValueWeaponTypeHandCrossbow = "handCrossbow"
 
 	// Other
 	MitigationSourceArmor       = "Armor"
@@ -126,15 +128,13 @@ var (
 	}
 
 	CompareTypeMap = map[string]string{
-		UrlValueCompareTypeVitality:     "Vitality",
-		UrlValueCompareTypeResist:       "Resist",
-		UrlValueCompareTypeArmor:        "Armor",
-		UrlValueCompareTypePercentLife:  `% Life`,
-		UrlValueCompareTypeDexterity:    "Dexterity",
-		UrlValueCompareTypeStrength:     "Strength",
-		UrlValueCompareTypeIntelligence: "Intelligence",
-		UrlValueCompareTypeAttackSpeed:  "Attack Speed",
-		UrlValueCompareTypeCritChance:   "Crit Chance",
-		UrlValueCompareTypeCritDamage:   "Crit Damage",
+		UrlValueCompareTypeVitality:    "Vitality",
+		UrlValueCompareTypeResist:      "Resist",
+		UrlValueCompareTypeArmor:       "Armor",
+		UrlValueCompareTypePercentLife: `% Life`,
+		UrlValueCompareTypeDexterity:   "Dexterity",
+		UrlValueCompareTypeAttackSpeed: "Attack Speed",
+		UrlValueCompareTypeCritChance:  "Crit Chance",
+		UrlValueCompareTypeCritDamage:  "Crit Damage",
 	}
 )

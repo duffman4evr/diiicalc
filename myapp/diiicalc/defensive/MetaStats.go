@@ -187,15 +187,16 @@ func (self *MetaStats) CalculateStatChangeEffect(changeType string, changeValue 
 	var effectiveLifeOnHitChange float64 = 0
 	var effectiveLifeRegenChange float64 = 0
 
-	if changeType == util.UrlValueCompareTypeVitality {
+	switch {
+	case changeType == util.UrlValueCompareTypeVitality:
 		effectiveLifeChange = self.ComputeEffectiveLifeChangeForVitChange(changeValue)
-	} else if changeType == util.UrlValueCompareTypeResist {
+	case changeType == util.UrlValueCompareTypeResist:
 		effectiveLifeChange, effectiveLifeOnHitChange, effectiveLifeRegenChange = self.ComputeStatChangesForResistChange(changeValue)
-	} else if changeType == util.UrlValueCompareTypeArmor {
+	case changeType == util.UrlValueCompareTypeArmor:
 		effectiveLifeChange, effectiveLifeOnHitChange, effectiveLifeRegenChange = self.ComputeStatChangesForArmorChange(changeValue)
-	} else if changeType == util.UrlValueCompareTypePercentLife {
+	case changeType == util.UrlValueCompareTypePercentLife:
 		effectiveLifeChange = self.ComputeEffectiveLifeChangeForPercentLifeChange(changeValue)
-	} else if changeType == util.UrlValueCompareTypeDexterity {
+	case changeType == util.UrlValueCompareTypeDexterity:
 		effectiveLifeChange = self.ComputeEffectiveLifeChangeForDexterityChange(changeValue)
 	}
 

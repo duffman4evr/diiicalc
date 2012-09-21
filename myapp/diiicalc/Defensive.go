@@ -329,11 +329,11 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 	for i := 0; i < len(hero.Skills.Passive); i++ {
 		slug := hero.Skills.Passive[i].Skill.Slug
 
-		if slug == toughAsNailsSkillSlug {
+		if slug == new(ToughAsNailsSkillChoice).GetSkillSlug() {
 			armorBonus += .25
 		}
 
-		if slug == glassCannonSkillSlug {
+		if slug == new(GlassCannonSkillChoice).GetSkillSlug() {
 			armorBonus += -0.1
 			resistBonus += -0.1
 		}
@@ -342,11 +342,11 @@ func redirectToDefensivePage(heroId string, dashStyleBattleTag string, realm str
 	for i := 0; i < len(hero.Skills.Passive); i++ {
 		slug := hero.Skills.Passive[i].Skill.Slug
 
-		if slug == nervesOfSteelSkillSlug {
+		if slug == new(NervesOfSteelSkillChoice).GetSkillSlug() {
 			hero.Stats.Armor -= hero.Stats.Vitality * armorBonus
 		}
 
-		if slug == seizeTheInitiativeSkillSlug {
+		if slug == new(SeizeTheInitiativeSkillChoice).GetSkillSlug() {
 			hero.Stats.Armor -= hero.Stats.Dexterity * armorBonus
 		}
 	}

@@ -318,6 +318,12 @@ func (self *ApiItem) GetWeaponType() (weaponType string) {
 		weaponType = UrlValueWeaponTypeSpear
 	case t == "Mighty Weapon":
 		weaponType = UrlValueWeaponTypeMightyWeapon
+	case t == "Bow":
+		weaponType = UrlValueWeaponTypeBow
+	case t == "Xbow":
+		weaponType = UrlValueWeaponTypeCrossbow
+	case t == "HandXbow":
+		weaponType = UrlValueWeaponTypeHandCrossbow
 	}
 
 	return

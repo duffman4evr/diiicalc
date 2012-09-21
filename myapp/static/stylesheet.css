@@ -1,0 +1,70 @@
+.centerBlock
+{
+	margin: 0 auto;
+}
+
+.centerText
+{
+	text-align: center;
+}
+
+.fullWidth
+{
+	width: 100%;
+}
+
+.halfWidth
+{
+	width: 50%;
+}
+
+.thirdWidth
+{
+	width: 33.33%;
+}
+
+.twoThirdsWidth
+{
+	width: 66.66%;
+}
+
+.tableLeft
+{
+	text-align: right;
+}
+
+.tableRight
+{
+	text-align: left;
+}
+
+table {
+	border-spacing: 0px;
+}
+
+.rightBorder
+{
+	border-right-style: solid;
+	border-width: 2px;
+	border-color: #555555;
+}
+
+	.footer
+	{
+	position: fixed;
+	width: 100%;
+	bottom: 0px;
+	left: 0px;
+	z-index: 1;
+}
+
+.roundedBorder
+{
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 7px;
+	margin: 3px;
+	border-color: #555555;
+	background-color: #DDEDFF;
+	box-shadow:rgba(0,0,0,0.5) 0px 0px 24px;
+}

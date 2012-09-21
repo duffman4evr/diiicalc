@@ -34,8 +34,6 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 		mainStat = derivedStats.Intelligence
 	}
 
-	// TODO Question: are damage bonuses on rings and crap multiplied by the physical damage bonus on the weapon?
-
 	// Looks like the equation is this
 	//       Weapon Term: [AverageWeaponDamage] * 
 	// Attack Speed Term: [WeaponBaseAttackSpeed * (1 + WeaponAttackSpeedBonus + OtherAttackSpeedBonuses)] *
@@ -95,34 +93,12 @@ func (self *MetaStats) ComputeDpsChangeForAttackSpeedChange(attackSpeedChange fl
 
 }
 
-func (self *MetaStats) ComputeDpsChangeForIntelligenceChange(mainStatChange float64) (dps float64) {
-
-	modifiedDerivedStats := self.DerivedStats
-
-	modifiedDerivedStats.Intelligence += mainStatChange
-
-	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
-
-	return modifiedMetaStats.Dps - self.Dps
-
-}
-
-func (self *MetaStats) ComputeDpsChangeForStrengthChange(mainStatChange float64) (dps float64) {
+func (self *MetaStats) ComputeDpsChangeForMainStatChange(mainStatChange float64) (dps float64) {
 
 	modifiedDerivedStats := self.DerivedStats
 
 	modifiedDerivedStats.Strength += mainStatChange
-
-	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
-
-	return modifiedMetaStats.Dps - self.Dps
-
-}
-
-func (self *MetaStats) ComputeDpsChangeForDexterityChange(mainStatChange float64) (dps float64) {
-
-	modifiedDerivedStats := self.DerivedStats
-
+	modifiedDerivedStats.Intelligence += mainStatChange
 	modifiedDerivedStats.Dexterity += mainStatChange
 
 	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
@@ -132,21 +108,23 @@ func (self *MetaStats) ComputeDpsChangeForDexterityChange(mainStatChange float64
 }
 
 func (self *MetaStats) ComputeCritDamageEquivalentForCritChanceChange(critChanceChange float64) (dps float64) {
-	return (self.DerivedStats.CritChance + critChanceChange) * (self.DerivedStats.CritDamage - 1) / self.DerivedStats.CritChance
+
+	var (
+		cc  = self.DerivedStats.CritChance
+		cca = cc + critChanceChange
+		cd  = self.DerivedStats.CritDamage - 1
+	)
+
+	return (cca * cd / cc) - cd
 }
 
 func (self *MetaStats) CalculateDpsChange(changeType string, changeValue string) (dpsChange float64) {
 
 	changeValueFloat, _ := strconv.ParseFloat(changeValue, 64)
 
-	// TODO make this a switch on defensive side.
 	switch {
-	case changeType == util.UrlValueCompareTypeIntelligence:
-		dpsChange = self.ComputeDpsChangeForIntelligenceChange(changeValueFloat)
-	case changeType == util.UrlValueCompareTypeStrength:
-		dpsChange = self.ComputeDpsChangeForStrengthChange(changeValueFloat)
-	case changeType == util.UrlValueCompareTypeDexterity:
-		dpsChange = self.ComputeDpsChangeForDexterityChange(changeValueFloat)
+	case changeType == util.UrlValueCompareTypeMainStat:
+		dpsChange = self.ComputeDpsChangeForMainStatChange(changeValueFloat)
 	case changeType == util.UrlValueCompareTypeAttackSpeed:
 		dpsChange = self.ComputeDpsChangeForAttackSpeedChange(changeValueFloat * 0.01)
 	case changeType == util.UrlValueCompareTypeCritChance:

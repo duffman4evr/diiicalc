@@ -71,6 +71,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponAverageDamage, r.FormValue(util.UrlKeyMainWeaponAverageDamage), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponAttackSpeedBase, r.FormValue(util.UrlKeyMainWeaponAttackSpeedBase), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponAttackSpeedBonus, r.FormValue(util.UrlKeyMainWeaponAttackSpeedBonus), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponType, r.FormValue(util.UrlKeyMainWeaponType), "\n")
 
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeySkill1, r.FormValue(util.UrlKeySkill1), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeySkill2, r.FormValue(util.UrlKeySkill2), "\n")
@@ -180,7 +181,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	// TODO fix the 'space before %' on all my shit
 	fmt.Fprintln(w, `<tr>`)
 	fmt.Fprintln(w, `<td class="halfWidth tableLeft">1% Crit Chance =</td>`)
-	fmt.Fprintf(w, `<td class="halfWidth tableRight">%.0f%% Crit Damage</td>%s`, metaStats.ComputeCritDamageEquivalentForCritChanceChange(0.01)*100, "\n")
+	fmt.Fprintf(w, `<td class="halfWidth tableRight">%.1f%% Crit Damage</td>%s`, metaStats.ComputeCritDamageEquivalentForCritChanceChange(0.01)*100, "\n")
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
@@ -228,7 +229,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%.0f</td>%s`, util.GetColorForValue(leftCompareDpsChange), leftCompareDpsChange, "\n")
+	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%+.0f</td>%s`, util.GetColorForValue(leftCompareDpsChange), leftCompareDpsChange, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">DPS</td>`)
 	fmt.Fprintln(w, `</tr>`)
 
@@ -241,7 +242,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%.0f</td>%s`, util.GetColorForValue(centerCompareDpsChange), centerCompareDpsChange, "\n")
+	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%+.0f</td>%s`, util.GetColorForValue(centerCompareDpsChange), centerCompareDpsChange, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">DPS</td>`)
 	fmt.Fprintln(w, `</tr>`)
 
@@ -254,7 +255,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%.0f</td>%s`, util.GetColorForValue(rightCompareDpsChange), rightCompareDpsChange, "\n")
+	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%+.0f</td>%s`,  util.GetColorForValue(rightCompareDpsChange), rightCompareDpsChange, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">DPS</td>`)
 	fmt.Fprintln(w, `</tr>`)
 
@@ -376,8 +377,8 @@ func redirectToOffensivePage(heroId string, dashStyleBattleTag string, realm str
 		rightCompareValue  = "100"
 
 		leftCompareType   = util.UrlValueCompareTypeCritChance
-		centerCompareType = util.UrlValueCompareTypeAttackSpeed
-		rightCompareType  string
+		centerCompareType = util.UrlValueCompareTypeCritDamage
+		rightCompareType  = util.UrlValueCompareTypeMainStat
 	)
 
 	if r.FormValue(util.UrlKeyLeftCompareValue) != "" {
@@ -400,17 +401,8 @@ func redirectToOffensivePage(heroId string, dashStyleBattleTag string, realm str
 	if r.FormValue(util.UrlKeyCenterCompareType) != "" {
 		centerCompareType = r.FormValue(util.UrlKeyCenterCompareType)
 	}
-	if r.FormValue(util.UrlKeyRightCompareType) != "" {
+	if r.FormValue(util.UrlKeyCenterCompareType) != "" {
 		rightCompareType = r.FormValue(util.UrlKeyRightCompareType)
-	} else {
-		switch {
-		case hero.Class == util.UrlValueHeroClassBarbarian:
-			rightCompareType = util.UrlValueCompareTypeStrength
-		case hero.Class == util.UrlValueHeroClassWitchDoctor || hero.Class == util.UrlValueHeroClassWizard:
-			rightCompareType = util.UrlValueCompareTypeIntelligence
-		default:
-			rightCompareType = util.UrlValueCompareTypeDexterity
-		}
 	}
 
 	urlValues.Set(util.UrlKeyLeftCompareType, leftCompareType)
@@ -423,21 +415,16 @@ func redirectToOffensivePage(heroId string, dashStyleBattleTag string, realm str
 func printOffensiveComparisonSelect(w http.ResponseWriter, urlKey string, selectedCompareType string, heroClass string) {
 
 	var (
-		dexteritySelected    = ""
-		strengthSelected     = ""
-		intelligenceSelected = ""
-		attackSpeedSelected  = ""
-		critChanceSelected   = ""
-		critDamageSelected   = ""
+		mainStatSelected    = ""
+		attackSpeedSelected = ""
+		critChanceSelected  = ""
+		critDamageSelected  = ""
+		userVisibleMainStat = ""
 	)
 
 	switch {
-	case selectedCompareType == util.UrlValueCompareTypeDexterity:
-		dexteritySelected = "selected"
-	case selectedCompareType == util.UrlValueCompareTypeStrength:
-		strengthSelected = "selected"
-	case selectedCompareType == util.UrlValueCompareTypeIntelligence:
-		intelligenceSelected = "selected"
+	case selectedCompareType == util.UrlValueCompareTypeMainStat:
+		mainStatSelected = "selected"
 	case selectedCompareType == util.UrlValueCompareTypeAttackSpeed:
 		attackSpeedSelected = "selected"
 	case selectedCompareType == util.UrlValueCompareTypeCritChance:
@@ -446,20 +433,21 @@ func printOffensiveComparisonSelect(w http.ResponseWriter, urlKey string, select
 		critDamageSelected = "selected"
 	}
 
+	switch {
+	case heroClass == util.UrlValueHeroClassMonk:
+		fallthrough
+	case heroClass == util.UrlValueHeroClassDemonHunter:
+		userVisibleMainStat = "Dexterity"
+	case heroClass == util.UrlValueHeroClassWizard:
+		fallthrough
+	case heroClass == util.UrlValueHeroClassWitchDoctor:
+		userVisibleMainStat = "Intelligence"
+	case heroClass == util.UrlValueHeroClassBarbarian:
+		userVisibleMainStat = "Strength"
+	}
+
 	fmt.Fprintf(w, `<select name="%s" onchange="showUpdateButton();">%s`, urlKey, "\n")
-
-	if heroClass == util.UrlValueHeroClassMonk || heroClass == util.UrlValueHeroClassMonk {
-		fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeDexterity, dexteritySelected, util.CompareTypeMap[util.UrlValueCompareTypeDexterity], "\n")
-	}
-
-	if heroClass == util.UrlValueHeroClassBarbarian {
-		fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeStrength, strengthSelected, util.CompareTypeMap[util.UrlValueCompareTypeStrength], "\n")
-	}
-
-	if heroClass == util.UrlValueHeroClassWizard || heroClass == util.UrlValueHeroClassWitchDoctor {
-		fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeIntelligence, intelligenceSelected, util.CompareTypeMap[util.UrlValueCompareTypeIntelligence], "\n")
-	}
-
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeMainStat, mainStatSelected, userVisibleMainStat, "\n")
 	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeAttackSpeed, attackSpeedSelected, util.CompareTypeMap[util.UrlValueCompareTypeAttackSpeed], "\n")
 	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeCritChance, critChanceSelected, util.CompareTypeMap[util.UrlValueCompareTypeCritChance], "\n")
 	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueCompareTypeCritDamage, critDamageSelected, util.CompareTypeMap[util.UrlValueCompareTypeCritDamage], "\n")

@@ -48,7 +48,6 @@ func AddDodge(dodge float64, mitigationSources *map[string]float64) {
 
 }
 
-// TODO some issue here with really high dex.
 func ComputeDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 
 	//     Dex     | Chance per Dex, with 1 == 100% dodge chance
@@ -63,25 +62,31 @@ func ComputeDodgeChanceFromDexterity(dex float64) (dodgeChance float64) {
 	if dex <= 100 {
 		return dex * .001
 	} else {
-		dodgeChance += 100 * .001
+		dodgeChance += 0.1
 		dex -= 100
 	}
 
 	if dex <= 400 {
 		return dodgeChance + (dex * .00025)
 	} else {
-		dodgeChance += 400 * .00025
+		dodgeChance += 0.1
 		dex -= 400
 	}
 
 	if dex <= 500 {
 		return dodgeChance + (dex * .00020)
 	} else {
-		dodgeChance += 500 * .00020
+		dodgeChance += 0.1
 		dex -= 500
 	}
 
-	return dodgeChance + (dex * .00010)
+	dodgeChance += dex * .00010
+
+	if dodgeChance > 0.999 {
+		dodgeChance = 0.999
+	}
+
+	return dodgeChance
 }
 
 func ComputeArmorFromDr(dr float64, lvl float64) (armor float64) {
@@ -123,7 +128,6 @@ func GenerateCommaLadenValue(f float64) (value string) {
 	return
 }
 
-// TODO fix the usages of this to be consistent
 func GetSignForValue(f float64) (sign string) {
 
 	if f >= 0 {
