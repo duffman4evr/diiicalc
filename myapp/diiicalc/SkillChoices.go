@@ -15,8 +15,6 @@ const (
 
 var emptyRuneSlugs = []string{}
 
-// TODO bring the 'compare stats' title down a tad
-
 type SkillChoice interface {
 	GetValue() string
 	SetValue(value string)

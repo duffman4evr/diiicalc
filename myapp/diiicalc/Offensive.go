@@ -178,7 +178,6 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<td colspan="2" class="centerText" style="text-decoration: underline; font-size: 20px;">Stat Equivalencies</td>`)
 	fmt.Fprintln(w, `</tr>`)
 
-	// TODO fix the 'space before %' on all my shit
 	fmt.Fprintln(w, `<tr>`)
 	fmt.Fprintln(w, `<td class="halfWidth tableLeft">1% Crit Chance =</td>`)
 	fmt.Fprintf(w, `<td class="halfWidth tableRight">%.1f%% Crit Damage</td>%s`, metaStats.ComputeCritDamageEquivalentForCritChanceChange(0.01)*100, "\n")

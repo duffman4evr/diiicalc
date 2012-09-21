@@ -126,7 +126,6 @@ func characterFindPage(w http.ResponseWriter, r *http.Request) {
 
 func printBattleTagInput(w http.ResponseWriter, battleTag string, realm string) {
 
-	// TODO don't like this. Is there a more idiomatic way?
 	usSelected := ""
 	euSelected := ""
 	twSelected := ""

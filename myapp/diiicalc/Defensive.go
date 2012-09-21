@@ -123,8 +123,7 @@ func defensivePage(w http.ResponseWriter, r *http.Request) {
 	// Main summary.
 	fmt.Fprintln(w, `<div class="roundedBorder" style="float: left; width: 560px;">`)
 	fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Effective Life: <span style="font-weight: bold;">%s</span></div>%s`, util.GenerateCommaLadenValue(metaStats.EffectiveLife), "\n")
-	fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Mitigation: <span style="font-weight: bold;">%.2f `, metaStats.TotalMitigation*100.0)
-	fmt.Fprintln(w, `%</span></div>`)
+	fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Mitigation: <span style="font-weight: bold;">%.2f%%</span></div>%s`, metaStats.TotalMitigation*100.0, "\n")
 
 	if metaStats.EffectiveLifeOnHit > 1 {
 		fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">Effective Life on Hit: <span style="font-weight: bold;">%s</span></div>%s`, util.GenerateCommaLadenValue(metaStats.EffectiveLifeOnHit), "\n")
@@ -170,8 +169,7 @@ func defensivePage(w http.ResponseWriter, r *http.Request) {
 	for _, value := range alphabeticalMitigationSources {
 		fmt.Fprintln(w, `<tr>`)
 		fmt.Fprintf(w, `<td class="halfWidth tableLeft">%s:</td>`, value)
-		fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.2f `, metaStats.MitigationSources[value]*100)
-		fmt.Fprintln(w, `%</td>`)
+		fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.2f%%</td>%s`, metaStats.MitigationSources[value]*100, "\n")
 		fmt.Fprintln(w, `</tr>`)
 	}
 
