@@ -145,7 +145,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `</div>`)
 	fmt.Fprintln(w, `</div>`)
 
-	// Mitigation Sources and Stat Equivalencies.
+	// Key Stats and Stat Equivalencies.
 	fmt.Fprintln(w, `<div class="roundedBorder" style="width: 442px; clear: both; float: left">`)
 	fmt.Fprintln(w, `<table class="fullWidth">`)
 
@@ -159,12 +159,12 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintln(w, `<td class="halfWidth tableLeft">Crit Damage: </td>`)
+	fmt.Fprintln(w, `<td class="halfWidth tableLeft">Crit Damage Bonus: </td>`)
 	fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.0f%%</td>%s`, (metaStats.DerivedStats.CritDamage-1)*100, "\n")
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintln(w, `<td class="halfWidth tableLeft">Attack Speed: </td>`)
+	fmt.Fprintln(w, `<td class="halfWidth tableLeft">Attack Speed Bonus: </td>`)
 	fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.0f%%</td>%s`, metaStats.DerivedStats.AttackSpeedBonus*100, "\n")
 	fmt.Fprintln(w, `</tr>`)
 
@@ -254,7 +254,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%+.0f</td>%s`,  util.GetColorForValue(rightCompareDpsChange), rightCompareDpsChange, "\n")
+	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%+.0f</td>%s`, util.GetColorForValue(rightCompareDpsChange), rightCompareDpsChange, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">DPS</td>`)
 	fmt.Fprintln(w, `</tr>`)
 

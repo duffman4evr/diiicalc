@@ -60,7 +60,9 @@ func characterFindPage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, `<div style="font-size: 24px; margin-bottom: 30px;">Diablo III Stat Calculator</div>`)
 
-	fmt.Fprintln(w, `<form action="CharacterFind" method="GET">`)
+	fmt.Fprintln(w, `<form action="CharacterFind" id="characterFindForm" method="GET">`)
+
+	fmt.Fprintf(w, `<input type="hidden" id="%s" name="%s">%s`, util.UrlKeyFindButton, util.UrlKeyFindButton, "\n")
 
 	fmt.Fprintln(w, `<table style="margin-left: auto; margin-right: auto;">`)
 
@@ -162,7 +164,7 @@ func printBattleTagInput(w http.ResponseWriter, battleTag string, realm string) 
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
-	fmt.Fprintf(w, `<td colspan="2"><input type="submit" style="margin-top: 15px; font-size: 24px;" name="%s" value="Find" /></td>%s`, util.UrlKeyFindButton, "\n")
+	fmt.Fprintf(w, `<td colspan="2"><button class="skip" onclick="document.getElementById('%s').value='1';document.getElementById('characterFindForm').submit();" style="margin-top: 15px; font-size: 24px;">Search</button></td>%s`, util.UrlKeyFindButton, "\n")
 	fmt.Fprintln(w, `</tr>`)
 
 }

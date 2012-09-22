@@ -119,14 +119,14 @@ func ParseOffensiveSkillChoices(r *http.Request) (skillChoices []OffensiveSkillC
 
 		skillChoices = append(skillChoices, new(BashSkillChoice))
 		skillChoices = append(skillChoices, new(BattleRageSkillChoice))
-		skillChoices = append(skillChoices, new(BerzerkerRageSkillChoice))
+		skillChoices = append(skillChoices, new(BerserkerRageSkillChoice))
 		skillChoices = append(skillChoices, new(BrawlerSkillChoice))
 		skillChoices = append(skillChoices, new(FrenzySkillChoice))
 		skillChoices = append(skillChoices, new(OverpowerSkillChoice))
 		skillChoices = append(skillChoices, new(RevengeSkillChoice))
 		skillChoices = append(skillChoices, new(RuthlessSkillChoice))
 		skillChoices = append(skillChoices, new(WeaponsMasterSkillChoice))
-		skillChoices = append(skillChoices, new(WrathOfTheBerzerkerSkillChoice))
+		skillChoices = append(skillChoices, new(WrathOfTheBerserkerSkillChoice))
 
 	} else if heroClass == util.UrlValueHeroClassMonk {
 
@@ -142,6 +142,14 @@ func ParseOffensiveSkillChoices(r *http.Request) (skillChoices []OffensiveSkillC
 
 	} else if heroClass == util.UrlValueHeroClassWizard {
 
+		skillChoices = append(skillChoices, new(ColdBloodedSkillChoice))
+		skillChoices = append(skillChoices, new(EnergyArmorSkillChoice))
+		skillChoices = append(skillChoices, new(FamiliarSkillChoice))
+		skillChoices = append(skillChoices, new(FrostNovaSkillChoice))
+		skillChoices = append(skillChoices, new(GlassCannonSkillChoice))
+		skillChoices = append(skillChoices, new(MagicWeaponSkillChoice))
+		skillChoices = append(skillChoices, new(SlowTimeSkillChoice))
+
 	} else if heroClass == util.UrlValueHeroClassDemonHunter {
 
 		skillChoices = append(skillChoices, new(ArcherySkillChoice))
@@ -151,6 +159,13 @@ func ParseOffensiveSkillChoices(r *http.Request) (skillChoices []OffensiveSkillC
 		skillChoices = append(skillChoices, new(SteadyAimSkillChoice))
 
 	} else if heroClass == util.UrlValueHeroClassWitchDoctor {
+
+		skillChoices = append(skillChoices, new(BigBadVoodooSkillChoice))
+		skillChoices = append(skillChoices, new(GruesomeFeastSkillChoice))
+		skillChoices = append(skillChoices, new(HexSkillChoice))
+		skillChoices = append(skillChoices, new(MassConfusionSkillChoice))
+		skillChoices = append(skillChoices, new(PierceTheVeilSkillChoice))
+		skillChoices = append(skillChoices, new(SoulHarvestSkillChoice))
 
 	}
 
@@ -251,7 +266,10 @@ type BashSkillChoice struct {
 type BattleRageSkillChoice struct {
 	Value string
 }
-type BerzerkerRageSkillChoice struct {
+type BerserkerRageSkillChoice struct {
+	Value string
+}
+type BigBadVoodooSkillChoice struct {
 	Value string
 }
 type BrawlerSkillChoice struct {
@@ -261,6 +279,9 @@ type BreathOfHeavenSkillChoice struct {
 	Value string
 }
 type CaltropsSkillChoice struct {
+	Value string
+}
+type ColdBloodedSkillChoice struct {
 	Value string
 }
 type CombinationStrikeSkillChoice struct {
@@ -281,16 +302,28 @@ type EnergyArmorSkillChoice struct {
 type ExplodingPalmSkillChoice struct {
 	Value string
 }
+type FamiliarSkillChoice struct {
+	Value string
+}
 type FistsOfThunderSkillChoice struct {
 	Value string
 }
 type FrenzySkillChoice struct {
 	Value string
 }
+type FrostNovaSkillChoice struct {
+	Value string
+}
 type GlassCannonSkillChoice struct {
 	Value string
 }
+type GruesomeFeastSkillChoice struct {
+	Value string
+}
 type GuardiansPathSkillChoice struct {
+	Value string
+}
+type HexSkillChoice struct {
 	Value string
 }
 type HorrifySkillChoice struct {
@@ -308,6 +341,9 @@ type JungleFortitudeSkillChoice struct {
 type LeapSkillChoice struct {
 	Value string
 }
+type MagicWeaponSkillChoice struct {
+	Value string
+}
 type MantraOfConvictionSkillChoice struct {
 	Value string
 }
@@ -323,6 +359,9 @@ type MantraOfRetributionSkillChoice struct {
 type MarkedForDeathSkillChoice struct {
 	Value string
 }
+type MassConfusionSkillChoice struct {
+	Value string
+}
 type NervesOfSteelSkillChoice struct {
 	Value string
 }
@@ -330,6 +369,11 @@ type OneWithEverythingSkillChoice struct {
 	Value string
 }
 type OverpowerSkillChoice struct {
+	Value string
+}
+
+// TODO add follower attack speed bonus.
+type PierceTheVeilSkillChoice struct {
 	Value string
 }
 type PoweredArmorSkillChoice struct {
@@ -342,6 +386,12 @@ type RuthlessSkillChoice struct {
 	Value string
 }
 type SeizeTheInitiativeSkillChoice struct {
+	Value string
+}
+type SlowTimeSkillChoice struct {
+	Value string
+}
+type SoulHarvestSkillChoice struct {
 	Value string
 }
 type SteadyAimSkillChoice struct {
@@ -359,7 +409,7 @@ type WayOfTheHundredFistsSkillChoice struct {
 type WeaponsMasterSkillChoice struct {
 	Value string
 }
-type WrathOfTheBerzerkerSkillChoice struct {
+type WrathOfTheBerserkerSkillChoice struct {
 	Value string
 }
 
@@ -372,7 +422,10 @@ func (self *BashSkillChoice) GetValue() string {
 func (self *BattleRageSkillChoice) GetValue() string {
 	return self.Value
 }
-func (self *BerzerkerRageSkillChoice) GetValue() string {
+func (self *BerserkerRageSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *BigBadVoodooSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *BrawlerSkillChoice) GetValue() string {
@@ -382,6 +435,9 @@ func (self *BreathOfHeavenSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *CaltropsSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *ColdBloodedSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *CombinationStrikeSkillChoice) GetValue() string {
@@ -402,16 +458,28 @@ func (self *EnergyArmorSkillChoice) GetValue() string {
 func (self *ExplodingPalmSkillChoice) GetValue() string {
 	return self.Value
 }
+func (self *FamiliarSkillChoice) GetValue() string {
+	return self.Value
+}
 func (self *FistsOfThunderSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *FrenzySkillChoice) GetValue() string {
 	return self.Value
 }
+func (self *FrostNovaSkillChoice) GetValue() string {
+	return self.Value
+}
 func (self *GlassCannonSkillChoice) GetValue() string {
 	return self.Value
 }
+func (self *GruesomeFeastSkillChoice) GetValue() string {
+	return self.Value
+}
 func (self *GuardiansPathSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *HexSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *HorrifySkillChoice) GetValue() string {
@@ -429,6 +497,9 @@ func (self *JungleFortitudeSkillChoice) GetValue() string {
 func (self *LeapSkillChoice) GetValue() string {
 	return self.Value
 }
+func (self *MagicWeaponSkillChoice) GetValue() string {
+	return self.Value
+}
 func (self *MantraOfConvictionSkillChoice) GetValue() string {
 	return self.Value
 }
@@ -444,6 +515,9 @@ func (self *MantraOfRetributionSkillChoice) GetValue() string {
 func (self *MarkedForDeathSkillChoice) GetValue() string {
 	return self.Value
 }
+func (self *MassConfusionSkillChoice) GetValue() string {
+	return self.Value
+}
 func (self *NervesOfSteelSkillChoice) GetValue() string {
 	return self.Value
 }
@@ -451,6 +525,9 @@ func (self *OneWithEverythingSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *OverpowerSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *PierceTheVeilSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *PoweredArmorSkillChoice) GetValue() string {
@@ -463,6 +540,12 @@ func (self *RuthlessSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *SeizeTheInitiativeSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *SlowTimeSkillChoice) GetValue() string {
+	return self.Value
+}
+func (self *SoulHarvestSkillChoice) GetValue() string {
 	return self.Value
 }
 func (self *SteadyAimSkillChoice) GetValue() string {
@@ -480,7 +563,7 @@ func (self *WayOfTheHundredFistsSkillChoice) GetValue() string {
 func (self *WeaponsMasterSkillChoice) GetValue() string {
 	return self.Value
 }
-func (self *WrathOfTheBerzerkerSkillChoice) GetValue() string {
+func (self *WrathOfTheBerserkerSkillChoice) GetValue() string {
 	return self.Value
 }
 
@@ -493,7 +576,10 @@ func (self *BashSkillChoice) SetValue(value string) {
 func (self *BattleRageSkillChoice) SetValue(value string) {
 	self.Value = value
 }
-func (self *BerzerkerRageSkillChoice) SetValue(value string) {
+func (self *BerserkerRageSkillChoice) SetValue(value string) {
+	self.Value = value
+}
+func (self *BigBadVoodooSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *BrawlerSkillChoice) SetValue(value string) {
@@ -503,6 +589,9 @@ func (self *BreathOfHeavenSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *CaltropsSkillChoice) SetValue(value string) {
+	self.Value = value
+}
+func (self *ColdBloodedSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *CombinationStrikeSkillChoice) SetValue(value string) {
@@ -523,16 +612,28 @@ func (self *EnergyArmorSkillChoice) SetValue(value string) {
 func (self *ExplodingPalmSkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *FamiliarSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *FistsOfThunderSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *FrenzySkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *FrostNovaSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *GlassCannonSkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *GruesomeFeastSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *GuardiansPathSkillChoice) SetValue(value string) {
+	self.Value = value
+}
+func (self *HexSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *HorrifySkillChoice) SetValue(value string) {
@@ -550,6 +651,9 @@ func (self *JungleFortitudeSkillChoice) SetValue(value string) {
 func (self *LeapSkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *MagicWeaponSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *MantraOfConvictionSkillChoice) SetValue(value string) {
 	self.Value = value
 }
@@ -565,6 +669,9 @@ func (self *MantraOfRetributionSkillChoice) SetValue(value string) {
 func (self *MarkedForDeathSkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *MassConfusionSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *NervesOfSteelSkillChoice) SetValue(value string) {
 	self.Value = value
 }
@@ -572,6 +679,9 @@ func (self *OneWithEverythingSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *OverpowerSkillChoice) SetValue(value string) {
+	self.Value = value
+}
+func (self *PierceTheVeilSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *PoweredArmorSkillChoice) SetValue(value string) {
@@ -586,6 +696,12 @@ func (self *RuthlessSkillChoice) SetValue(value string) {
 func (self *SeizeTheInitiativeSkillChoice) SetValue(value string) {
 	self.Value = value
 }
+func (self *SlowTimeSkillChoice) SetValue(value string) {
+	self.Value = value
+}
+func (self *SoulHarvestSkillChoice) SetValue(value string) {
+	self.Value = value
+}
 func (self *SteadyAimSkillChoice) SetValue(value string) {
 	self.Value = value
 }
@@ -598,7 +714,7 @@ func (self *WarCrySkillChoice) SetValue(value string) {
 func (self *WeaponsMasterSkillChoice) SetValue(value string) {
 	self.Value = value
 }
-func (self *WrathOfTheBerzerkerSkillChoice) SetValue(value string) {
+func (self *WrathOfTheBerserkerSkillChoice) SetValue(value string) {
 	self.Value = value
 }
 func (self *WayOfTheHundredFistsSkillChoice) SetValue(value string) {
@@ -615,8 +731,11 @@ func (self *BashSkillChoice) GetUrlKey() string {
 func (self *BattleRageSkillChoice) GetUrlKey() string {
 	return "battleRage"
 }
-func (self *BerzerkerRageSkillChoice) GetUrlKey() string {
+func (self *BerserkerRageSkillChoice) GetUrlKey() string {
 	return "berzerkerRage"
+}
+func (self *BigBadVoodooSkillChoice) GetUrlKey() string {
+	return "bigBadVoodoo"
 }
 func (self *BrawlerSkillChoice) GetUrlKey() string {
 	return "brawler"
@@ -626,6 +745,9 @@ func (self *BreathOfHeavenSkillChoice) GetUrlKey() string {
 }
 func (self *CaltropsSkillChoice) GetUrlKey() string {
 	return "caltrops"
+}
+func (self *ColdBloodedSkillChoice) GetUrlKey() string {
+	return "coldBlooded"
 }
 func (self *CombinationStrikeSkillChoice) GetUrlKey() string {
 	return "combinationStrike"
@@ -645,17 +767,29 @@ func (self *EnergyArmorSkillChoice) GetUrlKey() string {
 func (self *ExplodingPalmSkillChoice) GetUrlKey() string {
 	return "explodingPalm"
 }
+func (self *FamiliarSkillChoice) GetUrlKey() string {
+	return "familiar"
+}
 func (self *FistsOfThunderSkillChoice) GetUrlKey() string {
 	return "fistsOfThunder"
 }
 func (self *FrenzySkillChoice) GetUrlKey() string {
 	return "frenzy"
 }
+func (self *FrostNovaSkillChoice) GetUrlKey() string {
+	return "frostNova"
+}
 func (self *GlassCannonSkillChoice) GetUrlKey() string {
 	return "glassCannon"
 }
+func (self *GruesomeFeastSkillChoice) GetUrlKey() string {
+	return "gruesomeFeast"
+}
 func (self *GuardiansPathSkillChoice) GetUrlKey() string {
 	return "guardiansPath"
+}
+func (self *HexSkillChoice) GetUrlKey() string {
+	return "horrify"
 }
 func (self *HorrifySkillChoice) GetUrlKey() string {
 	return "horrify"
@@ -672,6 +806,9 @@ func (self *JungleFortitudeSkillChoice) GetUrlKey() string {
 func (self *LeapSkillChoice) GetUrlKey() string {
 	return "leap"
 }
+func (self *MagicWeaponSkillChoice) GetUrlKey() string {
+	return "moc"
+}
 func (self *MantraOfConvictionSkillChoice) GetUrlKey() string {
 	return "moc"
 }
@@ -687,6 +824,9 @@ func (self *MantraOfRetributionSkillChoice) GetUrlKey() string {
 func (self *MarkedForDeathSkillChoice) GetUrlKey() string {
 	return "mfd"
 }
+func (self *MassConfusionSkillChoice) GetUrlKey() string {
+	return "mfd"
+}
 func (self *NervesOfSteelSkillChoice) GetUrlKey() string {
 	return "nervesOfSteel"
 }
@@ -695,6 +835,9 @@ func (self *OneWithEverythingSkillChoice) GetUrlKey() string {
 }
 func (self *OverpowerSkillChoice) GetUrlKey() string {
 	return "overpower"
+}
+func (self *PierceTheVeilSkillChoice) GetUrlKey() string {
+	return "pierceTheVeil"
 }
 func (self *PoweredArmorSkillChoice) GetUrlKey() string {
 	return "poweredArmor"
@@ -707,6 +850,12 @@ func (self *RuthlessSkillChoice) GetUrlKey() string {
 }
 func (self *SeizeTheInitiativeSkillChoice) GetUrlKey() string {
 	return "seizeTheInitiative"
+}
+func (self *SlowTimeSkillChoice) GetUrlKey() string {
+	return "slowTime"
+}
+func (self *SoulHarvestSkillChoice) GetUrlKey() string {
+	return "soulHarvest"
 }
 func (self *SteadyAimSkillChoice) GetUrlKey() string {
 	return "steadyAim"
@@ -723,7 +872,7 @@ func (self *WayOfTheHundredFistsSkillChoice) GetUrlKey() string {
 func (self *WeaponsMasterSkillChoice) GetUrlKey() string {
 	return "weaponsMaster"
 }
-func (self *WrathOfTheBerzerkerSkillChoice) GetUrlKey() string {
+func (self *WrathOfTheBerserkerSkillChoice) GetUrlKey() string {
 	return "wotb"
 }
 
@@ -736,8 +885,11 @@ func (self *BashSkillChoice) GetSkillSlug() string {
 func (self *BattleRageSkillChoice) GetSkillSlug() string {
 	return "battle-rage"
 }
-func (self *BerzerkerRageSkillChoice) GetSkillSlug() string {
-	return "berzerker-rage"
+func (self *BerserkerRageSkillChoice) GetSkillSlug() string {
+	return "berserker-rage"
+}
+func (self *BigBadVoodooSkillChoice) GetSkillSlug() string {
+	return "big-bad-voodoo"
 }
 func (self *BrawlerSkillChoice) GetSkillSlug() string {
 	return "brawler"
@@ -747,6 +899,9 @@ func (self *BreathOfHeavenSkillChoice) GetSkillSlug() string {
 }
 func (self *CaltropsSkillChoice) GetSkillSlug() string {
 	return "caltrops"
+}
+func (self *ColdBloodedSkillChoice) GetSkillSlug() string {
+	return "cold-blooded"
 }
 func (self *CombinationStrikeSkillChoice) GetSkillSlug() string {
 	return "combination-strike"
@@ -766,17 +921,29 @@ func (self *EnergyArmorSkillChoice) GetSkillSlug() string {
 func (self *ExplodingPalmSkillChoice) GetSkillSlug() string {
 	return "exploding-palm"
 }
+func (self *FamiliarSkillChoice) GetSkillSlug() string {
+	return "familiar"
+}
 func (self *FistsOfThunderSkillChoice) GetSkillSlug() string {
 	return "fists-of-thunder"
 }
 func (self *FrenzySkillChoice) GetSkillSlug() string {
 	return "frenzy"
 }
+func (self *FrostNovaSkillChoice) GetSkillSlug() string {
+	return "frost-nova"
+}
 func (self *GlassCannonSkillChoice) GetSkillSlug() string {
 	return "glass-cannon"
 }
+func (self *GruesomeFeastSkillChoice) GetSkillSlug() string {
+	return "gruesome-feast"
+}
 func (self *GuardiansPathSkillChoice) GetSkillSlug() string {
 	return "the-guardians-path"
+}
+func (self *HexSkillChoice) GetSkillSlug() string {
+	return "hex"
 }
 func (self *HorrifySkillChoice) GetSkillSlug() string {
 	return "horrify"
@@ -793,6 +960,9 @@ func (self *JungleFortitudeSkillChoice) GetSkillSlug() string {
 func (self *LeapSkillChoice) GetSkillSlug() string {
 	return "leap"
 }
+func (self *MagicWeaponSkillChoice) GetSkillSlug() string {
+	return "magic-weapon"
+}
 func (self *MantraOfConvictionSkillChoice) GetSkillSlug() string {
 	return "mantra-of-conviction"
 }
@@ -808,6 +978,9 @@ func (self *MantraOfRetributionSkillChoice) GetSkillSlug() string {
 func (self *MarkedForDeathSkillChoice) GetSkillSlug() string {
 	return "marked-for-death"
 }
+func (self *MassConfusionSkillChoice) GetSkillSlug() string {
+	return "mass-confusion"
+}
 func (self *NervesOfSteelSkillChoice) GetSkillSlug() string {
 	return "nerves-of-steel"
 }
@@ -816,6 +989,9 @@ func (self *OneWithEverythingSkillChoice) GetSkillSlug() string {
 }
 func (self *OverpowerSkillChoice) GetSkillSlug() string {
 	return "overpower"
+}
+func (self *PierceTheVeilSkillChoice) GetSkillSlug() string {
+	return "pierce-the-veil"
 }
 func (self *PoweredArmorSkillChoice) GetSkillSlug() string {
 	return ""
@@ -828,6 +1004,12 @@ func (self *RuthlessSkillChoice) GetSkillSlug() string {
 }
 func (self *SeizeTheInitiativeSkillChoice) GetSkillSlug() string {
 	return "seize-the-initiative"
+}
+func (self *SlowTimeSkillChoice) GetSkillSlug() string {
+	return "slow-time"
+}
+func (self *SoulHarvestSkillChoice) GetSkillSlug() string {
+	return "soul-harvest"
 }
 func (self *SteadyAimSkillChoice) GetSkillSlug() string {
 	return "steady-aim"
@@ -844,81 +1026,120 @@ func (self *WayOfTheHundredFistsSkillChoice) GetSkillSlug() string {
 func (self *WeaponsMasterSkillChoice) GetSkillSlug() string {
 	return "weapons-master"
 }
-func (self *WrathOfTheBerzerkerSkillChoice) GetSkillSlug() string {
-	return "wrath-of-the-berzerker"
+func (self *WrathOfTheBerserkerSkillChoice) GetSkillSlug() string {
+	return "wrath-of-the-berserker"
 }
 
 func (self *ArcherySkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
 func (self *BashSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"bash-a"}
+	return []string{"bash-b"}
 }
 func (self *BattleRageSkillChoice) GetOffensiveRuneSlugs() []string {
 	return []string{"battle-rage-a", "battle-rage-e"}
 }
-func (self *BerzerkerRageSkillChoice) GetOffensiveRuneSlugs() []string {
+func (self *BerserkerRageSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
+}
+func (self *BigBadVoodooSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"big-bad-voodoo-a"}
 }
 func (self *BrawlerSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
 func (self *BreathOfHeavenSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"breath-of-heaven-f"}
+	return []string{"breath-of-heaven-c"}
 }
 func (self *CaltropsSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"caltrops-a"}
+	return []string{"caltrops-e"}
+}
+func (self *ColdBloodedSkillChoice) GetOffensiveRuneSlugs() []string {
+	return emptyRuneSlugs
 }
 func (self *CombinationStrikeSkillChoice) GetOffensiveRuneSlugs() []string {
 	return []string{"1-stack", "2-stack", "combination-strike-f", "4-stack", "5-stack", "6-stack"}
 }
 func (self *CripplingWaveSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"crippling-wave-a"}
+	return []string{"crippling-wave-e"}
 }
 func (self *CullTheWeakSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
 func (self *DeadlyReachSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"deadly-reach-f"}
+	return []string{"deadly-reach-a"}
+}
+func (self *EnergyArmorSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"energy-armor-e"}
 }
 func (self *ExplodingPalmSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"exploding-palm-f"}
+	return []string{"exploding-palm-c"}
+}
+func (self *FamiliarSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"familiar-a"}
 }
 func (self *FrenzySkillChoice) GetOffensiveRuneSlugs() []string {
 	return []string{"frenzy-a"}
 }
+func (self *FrostNovaSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"frost-nova-e", "frost-nova-b"}
+}
+func (self *GlassCannonSkillChoice) GetOffensiveRuneSlugs() []string {
+	return emptyRuneSlugs
+}
+func (self *GruesomeFeastSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"1-stack", "gruesome-feast-a", "3-stack", "4-stack", "5-stack"}
+}
+func (self *HexSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"hex-e"}
+}
 func (self *InnerSanctuarySkillChoice) GetOffensiveRuneSlugs() []string {
 	return []string{"inner-sanctuary-a"}
+}
+func (self *MagicWeaponSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"magic-weapon-c"}
 }
 func (self *MantraOfConvictionSkillChoice) GetOffensiveRuneSlugs() []string {
 	return []string{"spam", "mantra-of-conviction-a", "Overawe Spam"}
 }
 func (self *MantraOfRetributionSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"mantra-of-retribution-a"}
+	return []string{"mantra-of-retribution-b"}
 }
 func (self *MarkedForDeathSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
+func (self *MassConfusionSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"mass-confusion-a"}
+}
 func (self *OverpowerSkillChoice) GetOffensiveRuneSlugs() []string {
 	return []string{"overpower-a"}
 }
+func (self *PierceTheVeilSkillChoice) GetOffensiveRuneSlugs() []string {
+	return emptyRuneSlugs
+}
 func (self *RevengeSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"revenge-a"}
+	return []string{"revenge-e"}
 }
 func (self *RuthlessSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
+}
+func (self *SlowTimeSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"slow-time-a", "slow-time-b"}
+}
+func (self *SoulHarvestSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"1-stack", "2-stack", "3-stack", "4-stack", "5-stack"}
 }
 func (self *SteadyAimSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
 func (self *WayOfTheHundredFistsSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"1-stack", "2-stack", "way-of-the-hundred-fists-a"}
+	return []string{"1-stack", "2-stack", "way-of-the-hundred-fists-c"}
 }
 func (self *WeaponsMasterSkillChoice) GetOffensiveRuneSlugs() []string {
 	return emptyRuneSlugs
 }
-func (self *WrathOfTheBerzerkerSkillChoice) GetOffensiveRuneSlugs() []string {
-	return []string{"wrath-of-the-berzerker-a", "wrath-of-the-berzerker-c"}
+func (self *WrathOfTheBerserkerSkillChoice) GetOffensiveRuneSlugs() []string {
+	return []string{"wrath-of-the-berserker-a"}
 }
 
 func (self *DeadlyReachSkillChoice) GetDefensiveRuneSlugs() []string {
@@ -1002,9 +1223,19 @@ func (self *BattleRageSkillChoice) ModifyOffensiveDerivedStats(derivedStats *off
 		derivedStats.CritChance += 0.03
 	}
 }
-func (self *BerzerkerRageSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+func (self *BerserkerRageSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	if self.Value == standardUrlValueOn {
 		derivedStats.SkillDamageBonus += 0.25
+	}
+}
+func (self *BigBadVoodooSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	switch {
+	case self.Value == standardUrlValueOn:
+		derivedStats.AttackSpeedBonus += 0.20
+	case self.Value == runeSlugs[0]: // Slam Dance
+		derivedStats.AttackSpeedBonus += 0.20
+		derivedStats.SkillDamageBonus += 0.30
 	}
 }
 func (self *BrawlerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
@@ -1023,20 +1254,25 @@ func (self *CaltropsSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offen
 		derivedStats.CritChance += 0.10
 	}
 }
+func (self *ColdBloodedSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	if self.Value == standardUrlValueOn {
+		derivedStats.SkillDamageBonus += 0.20
+	}
+}
 func (self *CombinationStrikeSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	runeSlugs := self.GetOffensiveRuneSlugs()
 	switch {
 	case self.Value == runeSlugs[0]:
 		derivedStats.SkillDamageBonus += 0.08
-	case self.Value == runeSlugs[0]:
+	case self.Value == runeSlugs[1]:
 		derivedStats.SkillDamageBonus += 0.16
-	case self.Value == runeSlugs[0]:
+	case self.Value == runeSlugs[2]:
 		derivedStats.SkillDamageBonus += 0.24
-	case self.Value == runeSlugs[0]:
+	case self.Value == runeSlugs[3]:
 		derivedStats.SkillDamageBonus += 0.32
-	case self.Value == runeSlugs[0]:
+	case self.Value == runeSlugs[4]:
 		derivedStats.SkillDamageBonus += 0.40
-	case self.Value == runeSlugs[0]:
+	case self.Value == runeSlugs[5]:
 		derivedStats.SkillDamageBonus += 0.48
 	}
 }
@@ -1057,9 +1293,37 @@ func (self *DeadlyReachSkillChoice) ModifyOffensiveDerivedStats(derivedStats *of
 		derivedStats.SkillDamageBonus += 0.18
 	}
 }
+func (self *EnergyArmorSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] {
+		derivedStats.CritChance += 0.05
+	}
+}
 func (self *ExplodingPalmSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	runeSlugs := self.GetOffensiveRuneSlugs()
 	if self.Value == runeSlugs[0] {
+		derivedStats.SkillDamageBonus += 0.12
+	}
+}
+func (self *GruesomeFeastSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	switch {
+	// TODO test this.
+	case self.Value == runeSlugs[0]: // 1 Stack
+		derivedStats.Intelligence *= 1.10
+	case self.Value == runeSlugs[1]: // 2 Stack
+		derivedStats.Intelligence *= 1.20
+	case self.Value == runeSlugs[2]: // 3 Stack
+		derivedStats.Intelligence *= 1.30
+	case self.Value == runeSlugs[3]: // 4 Stack
+		derivedStats.Intelligence *= 1.40
+	case self.Value == runeSlugs[4]: // 5 Stack
+		derivedStats.Intelligence *= 1.50
+	}
+}
+func (self *FamiliarSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Sparkflint.
 		derivedStats.SkillDamageBonus += 0.12
 	}
 }
@@ -1069,10 +1333,39 @@ func (self *FrenzySkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensi
 		derivedStats.SkillDamageBonus += 0.20
 	}
 }
+func (self *FrostNovaSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	switch {
+	case self.Value == standardUrlValueOn: // Deep Freeze
+		derivedStats.CritChance += 0.15
+	case self.Value == runeSlugs[0]: // Bone Chill
+		derivedStats.SkillDamageBonus += 0.15
+	}
+}
+func (self *GlassCannonSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	if self.Value == standardUrlValueOn {
+		derivedStats.SkillDamageBonus += 0.15
+	}
+}
+func (self *HexSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Jinx
+		derivedStats.SkillDamageBonus += 0.20
+	}
+}
 func (self *InnerSanctuarySkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	runeSlugs := self.GetOffensiveRuneSlugs()
 	if self.Value == runeSlugs[0] { // Forbidden Palace
 		derivedStats.SkillDamageBonus += 0.10
+	}
+}
+func (self *MagicWeaponSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	switch {
+	case self.Value == standardUrlValueOn:
+		derivedStats.SkillDamageBonus += 0.10
+	case self.Value == runeSlugs[0]: // Force Weapon
+		derivedStats.SkillDamageBonus += 0.15
 	}
 }
 func (self *MantraOfConvictionSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
@@ -1099,10 +1392,21 @@ func (self *MarkedForDeathSkillChoice) ModifyOffensiveDerivedStats(derivedStats 
 		derivedStats.SkillDamageBonus += 0.12
 	}
 }
+func (self *MassConfusionSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	if self.Value == runeSlugs[0] { // Paranoia
+		derivedStats.CritChance += 0.20
+	}
+}
 func (self *OverpowerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	runeSlugs := self.GetOffensiveRuneSlugs()
 	if self.Value == runeSlugs[0] { // Killing Spree
 		derivedStats.CritChance += 0.10
+	}
+}
+func (self *PierceTheVeilSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	if self.Value == standardUrlValueOn {
+		derivedStats.SkillDamageBonus += 0.20
 	}
 }
 func (self *RevengeSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
@@ -1115,6 +1419,30 @@ func (self *RuthlessSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offen
 	if self.Value == standardUrlValueOn {
 		derivedStats.CritChance += 0.05
 		derivedStats.CritDamage += 0.50
+	}
+}
+func (self *SlowTimeSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	switch {
+	case self.Value == runeSlugs[0]: // Time Warp
+		derivedStats.SkillDamageBonus += 0.20
+	case self.Value == runeSlugs[1]: // Strech Time
+		derivedStats.AttackSpeedBonus += 0.10
+	}
+}
+func (self *SoulHarvestSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+	runeSlugs := self.GetOffensiveRuneSlugs()
+	switch {
+	case self.Value == runeSlugs[0]: // 1 Stack
+		derivedStats.Intelligence += 130
+	case self.Value == runeSlugs[1]: // 2 Stack
+		derivedStats.Intelligence += 260
+	case self.Value == runeSlugs[2]: // 3 Stack
+		derivedStats.Intelligence += 390
+	case self.Value == runeSlugs[3]: // 4 Stack
+		derivedStats.Intelligence += 520
+	case self.Value == runeSlugs[4]: // 5 Stack
+		derivedStats.Intelligence += 650
 	}
 }
 func (self *SteadyAimSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
@@ -1145,7 +1473,7 @@ func (self *WeaponsMasterSkillChoice) ModifyOffensiveDerivedStats(derivedStats *
 		}
 	}
 }
-func (self *WrathOfTheBerzerkerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
+func (self *WrathOfTheBerserkerSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	runeSlugs := self.GetOffensiveRuneSlugs()
 	switch {
 	case self.Value == standardUrlValueOn:
@@ -1317,8 +1645,11 @@ func (self *BashSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 func (self *BattleRageSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Battle Rage", true, []string{"Marauder's Rage"}, w)
 }
-func (self *BerzerkerRageSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+func (self *BerserkerRageSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Berzerker Rage", w)
+}
+func (self *BigBadVoodooSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Big Bad Voodoo", true, []string{"Slam Dance"}, w)
 }
 func (self *BrawlerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Brawler", w)
@@ -1328,6 +1659,9 @@ func (self *BreathOfHeavenSkillChoice) PrintOffensiveHtml(w http.ResponseWriter)
 }
 func (self *CaltropsSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Caltrops", false, []string{"Bait the Trap"}, w)
+}
+func (self *ColdBloodedSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printSimpleOnOffHtml(self, "Cold Blooded", w)
 }
 func (self *CombinationStrikeSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Combination Strike", false, []string{"1 Stack", "2 Stacks", "3 Stacks", "4 Stacks", "5 Stacks", "6 Stacks"}, w)
@@ -1341,17 +1675,35 @@ func (self *CullTheWeakSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 func (self *DeadlyReachSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Deadly Reach", false, []string{"Foresight"}, w)
 }
+func (self *EnergyArmorSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Energy Armor", false, []string{"Pinpoint Barrier"}, w)
+}
 func (self *ExplodingPalmSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Exploding Palm", false, []string{"The Flesh Is Weak"}, w)
+}
+func (self *FamiliarSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Familiar", false, []string{"Sparkflint"}, w)
 }
 func (self *FrenzySkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Frenzy", false, []string{"Maniac"}, w)
 }
+func (self *FrostNovaSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Frost Nova", false, []string{"Deep Freeze", "Bone Chill"}, w)
+}
+func (self *GlassCannonSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printSimpleOnOffHtml(self, "Glass Cannon", w)
+}
+func (self *GruesomeFeastSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Gruesome Feast", false, []string{"1 Stack", "2 Stack", "3 Stack", "4 Stack", "5 Stack"}, w)
+}
+func (self *HexSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Hex", false, []string{"Jinx"}, w)
+}
 func (self *InnerSanctuarySkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Inner Sanctuary", false, []string{"Forbidden Palace"}, w)
 }
-func (self *OverpowerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
-	printOffensiveHtml(self, "Overpower", false, []string{"Killing Spree"}, w)
+func (self *MagicWeaponSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Magic Weapon", true, []string{"Force Weapon"}, w)
 }
 func (self *MantraOfConvictionSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Mantra of Conviction", true, []string{"Spam", "Overawe", "Overawe Spam"}, w)
@@ -1362,11 +1714,26 @@ func (self *MantraOfRetributionSkillChoice) PrintOffensiveHtml(w http.ResponseWr
 func (self *MarkedForDeathSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Marked for Death", w)
 }
+func (self *MassConfusionSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Mass Confusion", false, []string{"Paranoia"}, w)
+}
+func (self *OverpowerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Overpower", false, []string{"Killing Spree"}, w)
+}
+func (self *PierceTheVeilSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printSimpleOnOffHtml(self, "Pierce the Veil", w)
+}
 func (self *RevengeSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "Revenge", false, []string{"Best Served Cold"}, w)
 }
 func (self *RuthlessSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Ruthless", w)
+}
+func (self *SlowTimeSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Slow Time", true, []string{"Time Warp", "Strech Time"}, w)
+}
+func (self *SoulHarvestSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+	printOffensiveHtml(self, "Soul Harvest", false, []string{"1 Stack", "2 Stack", "3 Stack", "4 Stack", "5 Stack"}, w)
 }
 func (self *SteadyAimSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Steady Aim", w)
@@ -1377,7 +1744,7 @@ func (self *WayOfTheHundredFistsSkillChoice) PrintOffensiveHtml(w http.ResponseW
 func (self *WeaponsMasterSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printSimpleOnOffHtml(self, "Weapons Master", w)
 }
-func (self *WrathOfTheBerzerkerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
+func (self *WrathOfTheBerserkerSkillChoice) PrintOffensiveHtml(w http.ResponseWriter) {
 	printOffensiveHtml(self, "WotB", true, []string{"Insanity"}, w)
 }
 
