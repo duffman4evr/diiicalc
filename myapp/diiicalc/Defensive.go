@@ -57,9 +57,10 @@ func defensivePage(w http.ResponseWriter, r *http.Request) {
 	// Print HTML Stuff.
 	printHtmlIntro(w)
 
-	fmt.Fprintln(w, `<form id="defensiveForm" method="GET" autocomplete="off">`)
+	fmt.Fprintln(w, `<form id="mainForm" method="GET" autocomplete="off">`)
 
 	// Stuff all of your URL params into the form as hidden elements.
+	// TODO turn this into a for loop over defensive URL keys
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyBattleTagSystem, r.FormValue(util.UrlKeyBattleTagSystem), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyHeroId, r.FormValue(util.UrlKeyHeroId), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyHeroes, r.FormValue(util.UrlKeyHeroes), "\n")

@@ -48,9 +48,11 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	// Print HTML Stuff.
 	printHtmlIntro(w)
 
-	fmt.Fprintln(w, `<form id="defensiveForm" method="GET" autocomplete="off">`)
+	fmt.Fprintln(w, `<form id="mainForm" method="GET" autocomplete="off">`)
 
 	// Stuff all of your URL params into the form as hidden elements.
+
+	// TODO turn this into a for loop over offensive URL keys
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyBattleTagSystem, r.FormValue(util.UrlKeyBattleTagSystem), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyHeroId, r.FormValue(util.UrlKeyHeroId), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyHeroes, r.FormValue(util.UrlKeyHeroes), "\n")
@@ -62,16 +64,20 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyStrength, r.FormValue(util.UrlKeyStrength), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyIntelligence, r.FormValue(util.UrlKeyIntelligence), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyDexterity, r.FormValue(util.UrlKeyDexterity), "\n")
-	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyVitality, r.FormValue(util.UrlKeyVitality), "\n")
+
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyWeaponSetup, r.FormValue(util.UrlKeyWeaponSetup), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponType, r.FormValue(util.UrlKeyMainWeaponType), "\n")
 
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyCritChance, r.FormValue(util.UrlKeyCritChance), "\n")
-	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyCritDamage, r.FormValue(util.UrlKeyCritDamage), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyCritDamageBonus, r.FormValue(util.UrlKeyCritDamageBonus), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyAttackSpeedBonus, r.FormValue(util.UrlKeyAttackSpeedBonus), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyAverageDamageBonus, r.FormValue(util.UrlKeyAverageDamageBonus), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponAverageDamage, r.FormValue(util.UrlKeyMainWeaponAverageDamage), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponAttackSpeedBase, r.FormValue(util.UrlKeyMainWeaponAttackSpeedBase), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponAttackSpeedBonus, r.FormValue(util.UrlKeyMainWeaponAttackSpeedBonus), "\n")
-	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyMainWeaponType, r.FormValue(util.UrlKeyMainWeaponType), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyOffWeaponAverageDamage, r.FormValue(util.UrlKeyOffWeaponAverageDamage), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyOffWeaponAttackSpeedBase, r.FormValue(util.UrlKeyOffWeaponAttackSpeedBase), "\n")
+	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyOffWeaponAttackSpeedBonus, r.FormValue(util.UrlKeyOffWeaponAttackSpeedBonus), "\n")
 
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeySkill1, r.FormValue(util.UrlKeySkill1), "\n")
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeySkill2, r.FormValue(util.UrlKeySkill2), "\n")
@@ -90,6 +96,8 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, util.UrlKeyRune6, r.FormValue(util.UrlKeyRune6), "\n")
 
 	// Header.
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td>`)
 	fmt.Fprintln(w, `<table>`)
 	fmt.Fprintln(w, `<tr>`)
 
@@ -109,14 +117,21 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `</tr>`)
 	fmt.Fprintln(w, `</table>`)
 
+	// Main Summary + Skill Selection
+	fmt.Fprintln(w, `<table class="fullWidth">`)
+	fmt.Fprintln(w, `<tr>`)
+
 	// Main summary.
-	fmt.Fprintln(w, `<div class="roundedBorder" style="float: left; width: 360px;">`)
+	fmt.Fprintln(w, `<td style="width: 30%">`)
+	fmt.Fprintln(w, `<div class="roundedBorder" style="width: auto;">`)
 	fmt.Fprintf(w, `<div style="font-size: 18px; margin: 5px;">DPS: <span style="font-weight: bold;">%s</span></div>%s`, util.GenerateCommaLadenValue(metaStats.Dps), "\n")
 	fmt.Fprintln(w, `</div>`)
+	fmt.Fprintln(w, `</td>`)
 
 	// Skill selection.
-	fmt.Fprintln(w, `<div class="roundedBorder centerText" style="float: right; width: 523px; height:65px; background-color: #B2D1B2; display: table;">`)
-	fmt.Fprintln(w, `<div style="display: table-cell; vertical-align: middle;">`)
+	fmt.Fprintln(w, `<td style="width: 70%">`)
+	fmt.Fprintln(w, `<div class="roundedBorder centerText" style="width: auto; background-color: #B2D1B2;">`)
+	fmt.Fprintln(w, `<div style="vertical-align: middle;">`)
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 	fmt.Fprintln(w, `<tr>`)
 
@@ -144,9 +159,17 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `</table>`)
 	fmt.Fprintln(w, `</div>`)
 	fmt.Fprintln(w, `</div>`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `</tr>`)
+	fmt.Fprintln(w, `</table>`)
 
 	// Key Stats and Stat Equivalencies.
-	fmt.Fprintln(w, `<div class="roundedBorder" style="width: 442px; clear: both; float: left">`)
+	fmt.Fprintln(w, `<table class="fullWidth">`)
+	fmt.Fprintln(w, `<tr>`)
+
+	fmt.Fprintln(w, `<td class="halfWidth">`)
+	fmt.Fprintln(w, `<div class="roundedBorder" style="width: auto;">`)
 	fmt.Fprintln(w, `<table class="fullWidth">`)
 
 	fmt.Fprintln(w, `<tr>`)
@@ -160,7 +183,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, `<tr>`)
 	fmt.Fprintln(w, `<td class="halfWidth tableLeft">Crit Damage Bonus: </td>`)
-	fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.0f%%</td>%s`, (metaStats.DerivedStats.CritDamage-1)*100, "\n")
+	fmt.Fprintf(w, `<td class="halfWidth tableRight" style="font-weight: bold;">%.0f%%</td>%s`, (metaStats.DerivedStats.CritDamageBonus)*100, "\n")
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
@@ -170,8 +193,10 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, `</table>`)
 	fmt.Fprintln(w, `</div>`)
+	fmt.Fprintln(w, `</td>`)
 
-	fmt.Fprintln(w, `<div class="roundedBorder" style="width: 442px; float: right;">`)
+	fmt.Fprintln(w, `<td class="halfWidth">`)
+	fmt.Fprintln(w, `<div class="roundedBorder" style="width: auto;">`)
 	fmt.Fprintln(w, `<table class="fullWidth">`)
 
 	fmt.Fprintln(w, `<tr>`)
@@ -195,30 +220,53 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, `</table>`)
 	fmt.Fprintln(w, `</div>`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `</tr>`)
+	fmt.Fprintln(w, `</table>`)
 
 	// Print stat comparison utility.
-	fmt.Fprintln(w, `<div id="statCompare" style="clear: both;">`)
+	fmt.Fprintln(w, `<div id="statCompare" class="roundedBorder centerText" style="background-color: #B2D1B2;">`)
+
+	fmt.Fprintln(w, `<table class="fullWidth">`)
+	fmt.Fprintln(w, `<tr>`)
+
+	fmt.Fprintln(w, `<td class="thirdWidth">`)
+	fmt.Fprintln(w, `<input type="submit" id="updateButton" value="Update!" style="font-size: 24px; display: none;" />`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `<td class="thirdWidth">`)
 	fmt.Fprintln(w, `<div class="centerText" style="margin-top: 10px; margin-bottom: 10px; font-size: 24px;">Compare Stats:</div>`)
+	fmt.Fprintln(w, `</td>`)
 
-	fmt.Fprintln(w, `<table class="fullWidth" style="margin-top:10px">`)
+	fmt.Fprintln(w, `<td class="thirdWidth">`)
+	fmt.Fprintln(w, `</td>`)
 
+	fmt.Fprintln(w, `</tr>`)
+	fmt.Fprintln(w, `</table>`)
+
+	fmt.Fprintln(w, `<table class="fullWidth">`)
 	fmt.Fprintln(w, `<tr>`)
 
 	fmt.Fprintln(w, `<td class="centerText thirdWidth">`)
-	fmt.Fprintf(w, `<input name="%s" type="text" size="10" value="%s" onkeyup="showUpdateButton();" />%s`, util.UrlKeyLeftCompareValue, r.FormValue(util.UrlKeyLeftCompareValue), "\n")
+	fmt.Fprintf(w, `<input class="smallInput" name="%s" type="text" size="10" value="%s" onkeyup="showUpdateButton();" />%s`, util.UrlKeyLeftCompareValue, r.FormValue(util.UrlKeyLeftCompareValue), "\n")
 	printOffensiveComparisonSelect(w, util.UrlKeyLeftCompareType, r.FormValue(util.UrlKeyLeftCompareType), baseStats.HeroClass)
 	fmt.Fprintln(w, `</td>`)
 
 	fmt.Fprintln(w, `<td class="centerText thirdWidth">`)
-	fmt.Fprintf(w, `<input name="%s" type="text" size="10" value="%s" onkeyup="showUpdateButton();" />%s`, util.UrlKeyCenterCompareValue, r.FormValue(util.UrlKeyCenterCompareValue), "\n")
+	fmt.Fprintf(w, `<input class="smallInput" name="%s" type="text" size="10" value="%s" onkeyup="showUpdateButton();" />%s`, util.UrlKeyCenterCompareValue, r.FormValue(util.UrlKeyCenterCompareValue), "\n")
 	printOffensiveComparisonSelect(w, util.UrlKeyCenterCompareType, r.FormValue(util.UrlKeyCenterCompareType), baseStats.HeroClass)
 	fmt.Fprintln(w, `</td>`)
 
 	fmt.Fprintln(w, `<td class="centerText thirdWidth">`)
-	fmt.Fprintf(w, `<input name="%s" type="text" size="10" value="%s" onkeyup="showUpdateButton();" />%s`, util.UrlKeyRightCompareValue, r.FormValue(util.UrlKeyRightCompareValue), "\n")
+	fmt.Fprintf(w, `<input class="smallInput" name="%s" type="text" size="10" value="%s" onkeyup="showUpdateButton();" />%s`, util.UrlKeyRightCompareValue, r.FormValue(util.UrlKeyRightCompareValue), "\n")
 	printOffensiveComparisonSelect(w, util.UrlKeyRightCompareType, r.FormValue(util.UrlKeyRightCompareType), baseStats.HeroClass)
 	fmt.Fprintln(w, `</td>`)
 
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td colspan="3"><div style="height: 5px"></div></td>`)
 	fmt.Fprintln(w, `</tr>`)
 
 	fmt.Fprintln(w, `<tr>`)
@@ -227,7 +275,7 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, `<div class="fullWidth centerText">`)
 	fmt.Fprintln(w, `<table class="centerBlock">`)
 
-	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<tr">`)
 	fmt.Fprintf(w, `<td class="tableLeft" style="color: %s;">%+.0f</td>%s`, util.GetColorForValue(leftCompareDpsChange), leftCompareDpsChange, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">DPS</td>`)
 	fmt.Fprintln(w, `</tr>`)
@@ -264,9 +312,61 @@ func offensivePage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, `</tr>`)
 
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td colspan="3"><div style="height: 5px"></div></td>`)
+	fmt.Fprintln(w, `</tr>`)
+
 	fmt.Fprintln(w, `</table>`)
 
-	fmt.Fprintln(w, `<div class="centerText" style="height: 26px;"><input type="submit" id="updateButton" value="Update!" style="font-size: 24px; display: none;" /></div>`)
+	fmt.Fprintln(w, `</div>`)
+
+	// Weapon Comparison
+	fmt.Fprintln(w, `<div id="weapCompare" class="roundedBorder centerText" style="background-color: #B2D1B2; margin-top: 6px;">`)
+	fmt.Fprintln(w, `<table class="fullWidth">`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td colspan="2">`)
+	fmt.Fprintln(w, `<div class="centerText" style="margin-top: 10px; margin-bottom: 10px; font-size: 24px;">Compare Weapon Upgrades:</div>`)
+	fmt.Fprintln(w, `</td>`)
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+
+	fmt.Fprintln(w, `<td class="halfWidth">`)
+	printWeaponComparisonWidget(w, r, util.LeftCompareMap)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `<td class="halfWidth">`)
+	printWeaponComparisonWidget(w, r, util.RightCompareMap)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+
+	fmt.Fprintln(w, `<table class="fullWidth">`)
+	fmt.Fprintln(w, `<tr>`)
+
+	fmt.Fprintln(w, `<td style="width: 10%;"></td>`)
+
+	fmt.Fprintln(w, `<td style="width: 30%l">`)
+	fmt.Fprintln(w, `+1234 DPS`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `<td style="width: 20%;"><button class="skip" onclick="">Compare!</button></td>`)
+
+	fmt.Fprintln(w, `<td style="width: 30%l">`)
+	fmt.Fprintln(w, `+1234 DPS`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `<td style="width: 10%;"></td>`)
+
+	fmt.Fprintln(w, `</tr>`)
+	fmt.Fprintln(w, `</table>`)
+
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `</table>`)
 	fmt.Fprintln(w, `</div>`)
 
 	fmt.Fprintln(w, `</form>`)
@@ -282,49 +382,42 @@ func redirectToOffensivePage(heroId string, dashStyleBattleTag string, realm str
 		return
 	}
 
-	doneChannel := make(chan int, 5)
-
-	// Look up each item in a goroutine. 
-	// Send a signal when done.
-	go func() {
-		util.LookUpItem(&hero.Items.MainHand, realm, r)
-		doneChannel <- 1
-	}()
-	go func() {
-		util.LookUpItem(&hero.Items.OffHand, realm, r)
-		doneChannel <- 1
-	}()
-	go func() {
-		util.LookUpItem(&hero.Items.LeftFinger, realm, r)
-		doneChannel <- 1
-	}()
-	go func() {
-		util.LookUpItem(&hero.Items.RightFinger, realm, r)
-		doneChannel <- 1
-	}()
-	go func() {
-		util.LookUpItem(&hero.Items.Neck, realm, r)
-		doneChannel <- 1
-	}()
-
-	for i := 0; i < 5; i++ {
-		<-doneChannel
-	}
+	hero.Items.LookUpAll(realm, r)
 
 	var (
-		twoHandedWeapon            = hero.Items.MainHand.IsTwoHandedWeapon()
+		weaponSetup                = hero.DeduceWeaponSetup()
 		mainWeaponType             = hero.Items.MainHand.GetWeaponType()
+		mainWeaponDps  = hero.Items.MainHand.GetWeaponDps()
 		mainWeaponAverageDamage    = hero.Items.MainHand.CalculateAverageWeaponDamage()
-		mainWeaponAttackSpeedBase  = hero.Items.MainHand.Attributes.AttacksPerSecondBase.Min
-		mainWeaponAttackSpeedBonus = hero.Items.MainHand.Attributes.AttacksPerSecondBonus.Min
-		attackSpeedBonus           = (hero.Stats.AttackSpeed / mainWeaponAttackSpeedBase) - 1 - mainWeaponAttackSpeedBonus
-		averageDamageBonus         = 0.0
+		mainWeaponAttackSpeedBase  = hero.Items.MainHand.GetWeaponBaseAttackSpeed()
+		mainWeaponAttackSpeedBonus = hero.Items.MainHand.GetWeaponAttackSpeedBonus()
+		mainWeaponCritDamageBonus = hero.Items.MainHand.GetCritDamageBonus()
+		offWeaponType              = hero.Items.OffHand.GetWeaponType()
+		offWeaponDps  = hero.Items.OffHand.GetWeaponDps()
+		offWeaponAverageDamage     = hero.Items.OffHand.CalculateAverageWeaponDamage()
+		offWeaponAttackSpeedBase   = hero.Items.OffHand.GetWeaponBaseAttackSpeed()
+		offWeaponAttackSpeedBonus  = hero.Items.OffHand.GetWeaponAttackSpeedBonus()
+		offWeaponCritDamageBonus = hero.Items.OffHand.GetCritDamageBonus()
+		attackSpeedBonus           = hero.CalculateTotalAttackSpeedBonus(weaponSetup)
+		averageDamageBonus         = hero.CalculateTotalAverageDamageBonus()
+		totalCritChance            = hero.CalculateTotalCritChance()
+		totalCritDamageBonus       = hero.CalculateTotalCritDamageBonus()
+		totalIntelligence          = hero.CalculateTotalIntelligence()
+		totalStrength              = hero.CalculateTotalStrength()
+		totalDexterity             = hero.CalculateTotalDexterity()
 	)
 
-	averageDamageBonus += hero.Items.OffHand.CalculateAverageDamageBonus()
-	averageDamageBonus += hero.Items.LeftFinger.CalculateAverageDamageBonus()
-	averageDamageBonus += hero.Items.RightFinger.CalculateAverageDamageBonus()
-	averageDamageBonus += hero.Items.Neck.CalculateAverageDamageBonus()
+	mainWeaponMainStatBonus := hero.Items.MainHand.GetStrengthBonus() 
+	offHandMainStatBonus := hero.Items.OffHand.GetStrengthBonus() 
+
+	switch c := hero.Class; {
+	case c == util.UrlValueHeroClassMonk || c == util.UrlValueHeroClassDemonHunter:
+		mainWeaponMainStatBonus = hero.Items.MainHand.GetDexterityBonus() 
+		offHandMainStatBonus = hero.Items.OffHand.GetDexterityBonus() 
+	case c == util.UrlValueHeroClassWizard || c == util.UrlValueHeroClassWitchDoctor:
+		mainWeaponMainStatBonus = hero.Items.MainHand.GetIntelligenceBonus() 
+		offHandMainStatBonus = hero.Items.OffHand.GetIntelligenceBonus() 
+	}
 
 	// Build the actual URL.
 	urlValues := url.Values{}
@@ -337,20 +430,22 @@ func redirectToOffensivePage(heroId string, dashStyleBattleTag string, realm str
 	urlValues.Set(util.UrlKeyHeroName, hero.Name)
 	urlValues.Set(util.UrlKeyHeroClass, hero.Class)
 	urlValues.Set(util.UrlKeyLevel, strconv.FormatFloat(hero.Level, 'f', 0, 64))
-	urlValues.Set(util.UrlKeyStrength, strconv.FormatFloat(hero.Stats.Strength, 'f', 0, 64))
-	urlValues.Set(util.UrlKeyIntelligence, strconv.FormatFloat(hero.Stats.Intelligence, 'f', 0, 64))
-	urlValues.Set(util.UrlKeyDexterity, strconv.FormatFloat(hero.Stats.Dexterity, 'f', 0, 64))
-	urlValues.Set(util.UrlKeyVitality, strconv.FormatFloat(hero.Stats.Vitality, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyStrength, strconv.FormatFloat(totalStrength, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyIntelligence, strconv.FormatFloat(totalIntelligence, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyDexterity, strconv.FormatFloat(totalDexterity, 'f', 0, 64))
 
-	urlValues.Set(util.UrlKeyTwoHandedWeapon, strconv.FormatBool(twoHandedWeapon))
-	urlValues.Set(util.UrlKeyCritChance, strconv.FormatFloat(hero.Stats.CritChance, 'f', 3, 64))
-	urlValues.Set(util.UrlKeyCritDamage, strconv.FormatFloat(hero.Stats.CritDamage, 'f', 2, 64))
-	urlValues.Set(util.UrlKeyAttackSpeedBonus, strconv.FormatFloat(attackSpeedBonus, 'f', 6, 64))
+	urlValues.Set(util.UrlKeyWeaponSetup, weaponSetup)
+	urlValues.Set(util.UrlKeyMainWeaponType, mainWeaponType)
+	urlValues.Set(util.UrlKeyCritChance, strconv.FormatFloat(totalCritChance, 'f', 3, 64))
+	urlValues.Set(util.UrlKeyCritDamageBonus, strconv.FormatFloat(totalCritDamageBonus, 'f', 2, 64))
+	urlValues.Set(util.UrlKeyAttackSpeedBonus, strconv.FormatFloat(attackSpeedBonus, 'f', 2, 64))
 	urlValues.Set(util.UrlKeyAverageDamageBonus, strconv.FormatFloat(averageDamageBonus, 'f', 6, 64))
 	urlValues.Set(util.UrlKeyMainWeaponAverageDamage, strconv.FormatFloat(mainWeaponAverageDamage, 'f', 6, 64))
-	urlValues.Set(util.UrlKeyMainWeaponAttackSpeedBase, strconv.FormatFloat(mainWeaponAttackSpeedBase, 'f', 6, 64))
-	urlValues.Set(util.UrlKeyMainWeaponAttackSpeedBonus, strconv.FormatFloat(mainWeaponAttackSpeedBonus, 'f', 6, 64))
-	urlValues.Set(util.UrlKeyMainWeaponType, mainWeaponType)
+	urlValues.Set(util.UrlKeyMainWeaponAttackSpeedBase, strconv.FormatFloat(mainWeaponAttackSpeedBase, 'f', 2, 64))
+	urlValues.Set(util.UrlKeyMainWeaponAttackSpeedBonus, strconv.FormatFloat(mainWeaponAttackSpeedBonus, 'f', 2, 64))
+	urlValues.Set(util.UrlKeyOffWeaponAverageDamage, strconv.FormatFloat(offWeaponAverageDamage, 'f', 6, 64))
+	urlValues.Set(util.UrlKeyOffWeaponAttackSpeedBase, strconv.FormatFloat(offWeaponAttackSpeedBase, 'f', 2, 64))
+	urlValues.Set(util.UrlKeyOffWeaponAttackSpeedBonus, strconv.FormatFloat(offWeaponAttackSpeedBonus, 'f', 2, 64))
 
 	urlValues.Set(util.UrlKeySkill1, hero.Skills.Active[0].Skill.Slug)
 	urlValues.Set(util.UrlKeySkill2, hero.Skills.Active[1].Skill.Slug)
@@ -408,7 +503,275 @@ func redirectToOffensivePage(heroId string, dashStyleBattleTag string, realm str
 	urlValues.Set(util.UrlKeyCenterCompareType, centerCompareType)
 	urlValues.Set(util.UrlKeyRightCompareType, rightCompareType)
 
+	// Set up values for our weapon comparator.
+	urlValues.Set(util.UrlKeyLwcWeaponSetup, weaponSetup)
+	urlValues.Set(util.UrlKeyRwcWeaponSetup, weaponSetup)
+
+	urlValues.Set(util.UrlKeyLwcMainHandWeaponType, mainWeaponType)
+	urlValues.Set(util.UrlKeyRwcMainHandWeaponType, mainWeaponType)
+	urlValues.Set(util.UrlKeyLwcOffHandWeaponType, offWeaponType)
+	urlValues.Set(util.UrlKeyRwcOffHandWeaponType, offWeaponType)
+
+	urlValues.Set(util.UrlKeyLwcMainHandWeaponDps, strconv.FormatFloat(mainWeaponDps - 50.0, 'f', 1, 64))
+	urlValues.Set(util.UrlKeyRwcMainHandWeaponDps, strconv.FormatFloat(mainWeaponDps + 50.0, 'f', 1, 64))
+	urlValues.Set(util.UrlKeyLwcOffHandWeaponDps, strconv.FormatFloat(offWeaponDps, 'f', 1, 64))
+	urlValues.Set(util.UrlKeyRwcOffHandWeaponDps, strconv.FormatFloat(offWeaponDps, 'f', 1, 64))
+
+	urlValues.Set(util.UrlKeyLwcMainHandWeaponAttackSpeedBonus, strconv.FormatFloat(mainWeaponAttackSpeedBonus * 100.0, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcMainHandWeaponAttackSpeedBonus, strconv.FormatFloat(mainWeaponAttackSpeedBonus * 100.0, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyLwcOffHandWeaponAttackSpeedBonus, strconv.FormatFloat(offWeaponAttackSpeedBonus * 100.0, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcOffHandWeaponAttackSpeedBonus, strconv.FormatFloat(offWeaponAttackSpeedBonus * 100.0, 'f', 0, 64))
+
+	urlValues.Set(util.UrlKeyLwcMainHandWeaponCritDamageBonus, strconv.FormatFloat(mainWeaponCritDamageBonus * 100.0, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcMainHandWeaponCritDamageBonus, strconv.FormatFloat(mainWeaponCritDamageBonus * 100.0, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyLwcOffHandWeaponCritDamageBonus, strconv.FormatFloat(offWeaponCritDamageBonus * 100.0, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcOffHandWeaponCritDamageBonus, strconv.FormatFloat(offWeaponCritDamageBonus * 100.0, 'f', 0, 64))
+
+	urlValues.Set(util.UrlKeyLwcMainHandWeaponMainStatBonus, strconv.FormatFloat(mainWeaponMainStatBonus, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcMainHandWeaponMainStatBonus, strconv.FormatFloat(mainWeaponMainStatBonus, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyLwcOffHandWeaponMainStatBonus, strconv.FormatFloat(offHandMainStatBonus, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcOffHandWeaponMainStatBonus, strconv.FormatFloat(offHandMainStatBonus, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyLwcOffHandMainStatBonus, strconv.FormatFloat(offHandMainStatBonus, 'f', 0, 64))
+	urlValues.Set(util.UrlKeyRwcOffHandMainStatBonus, strconv.FormatFloat(offHandMainStatBonus, 'f', 0, 64))
+
+	/*                                      
+	UrlKeyLwcOffHandType                   
+	UrlKeyLwcOffHandAverageDamage          
+	UrlKeyLwcOffHandAttackSpeedBonus       
+	UrlKeyLwcOffHandCritChanceBonus          
+    
+	UrlKeyRwcOffHandType                   
+	UrlKeyRwcOffHandAverageDamage          
+	UrlKeyRwcOffHandAttackSpeedBonus       
+	UrlKeyRwcOffHandCritChanceBonus           */
+
 	http.Redirect(w, r, "Offensive?"+urlValues.Encode(), 301)
+}
+
+func printWeaponComparisonWidget(w http.ResponseWriter, r *http.Request, lookupMap map[string]string) {
+
+	weaponSetup := r.FormValue(lookupMap[util.MapKeyWeaponSetup])
+
+	var (
+		mhohSelected = ""
+		dwSelected   = ""
+		thSelected   = ""
+	)
+
+	switch {
+	case weaponSetup == util.UrlValueWeaponSetupMainHandOffHand:
+		mhohSelected = "selected"
+	case weaponSetup == util.UrlValueWeaponSetupDualWield:
+		dwSelected = "selected"
+	case weaponSetup == util.UrlValueWeaponSetupTwoHander:
+		thSelected = "selected"
+	}
+
+	fmt.Fprintln(w, `<div class="roundedBorder centerText" style="background-color: #FFE0B2;">`)
+	fmt.Fprintln(w, `<table class="fullWidth">`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td colspan="2">`)
+	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('mainForm').submit();">%s`, lookupMap[util.MapKeyWeaponSetup], "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueWeaponSetupMainHandOffHand, mhohSelected, util.WeaponSetupMap[util.UrlValueWeaponSetupMainHandOffHand], "\n")
+	fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueWeaponSetupDualWield, dwSelected, util.WeaponSetupMap[util.UrlValueWeaponSetupDualWield], "\n")
+	if r.FormValue(util.UrlKeyHeroClass) != util.UrlValueHeroClassDemonHunter {
+		fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, util.UrlValueWeaponSetupTwoHander, thSelected, util.WeaponSetupMap[util.UrlValueWeaponSetupTwoHander], "\n")
+	}
+	fmt.Fprintln(w, `</select>`)
+	fmt.Fprintln(w, `</td>`)
+	fmt.Fprintln(w, `</tr>`)
+
+	if weaponSetup != util.UrlValueWeaponSetupTwoHander {
+
+		fmt.Fprintln(w, `<tr>`)
+		fmt.Fprintln(w, `<td style="text-decoration: underline;">Main Hand</td>`)
+		fmt.Fprintln(w, `<td style="text-decoration: underline;">Off Hand</td>`)
+		fmt.Fprintln(w, `</tr>`)
+
+	}
+
+	fmt.Fprintln(w, `<tr>`)
+
+	if weaponSetup == util.UrlValueWeaponSetupTwoHander {
+
+		fmt.Fprintln(w, `<td colspan="2">`)
+		printWeaponWidget(w, r, true, true, lookupMap)
+		fmt.Fprintln(w, `</td>`)
+
+	} else {
+
+		fmt.Fprintln(w, `<td class="halfWidth rightBorder">`)
+		printWeaponWidget(w, r, false, true, lookupMap)
+		fmt.Fprintln(w, `</td>`)
+
+		fmt.Fprintln(w, `<td class="halfWidth">`)
+
+		if weaponSetup == util.UrlValueWeaponSetupDualWield {
+
+			printWeaponWidget(w, r, false, false, lookupMap)
+
+			// Print the Offhand values into hidden input so that we remember them.
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandType], r.FormValue(lookupMap[util.MapKeyOffHandType]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandAverageDamage], r.FormValue(lookupMap[util.MapKeyOffHandAverageDamage]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandAttackSpeedBonus], r.FormValue(lookupMap[util.MapKeyOffHandAttackSpeedBonus]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandCritChanceBonus], r.FormValue(lookupMap[util.MapKeyOffHandCritChanceBonus]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandMainStatBonus], r.FormValue(lookupMap[util.MapKeyOffHandMainStatBonus]), "\n")
+
+		} else {
+
+			printOffHandWidget(w, r, lookupMap)
+
+			// Print the weapon Offhand values into hidden input so that we remember them.
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandWeaponType], r.FormValue(lookupMap[util.MapKeyOffHandWeaponType]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandWeaponDps], r.FormValue(lookupMap[util.MapKeyOffHandWeaponDps]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandWeaponAttackSpeedBonus], r.FormValue(lookupMap[util.MapKeyOffHandWeaponAttackSpeedBonus]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandWeaponCritDamageBonus], r.FormValue(lookupMap[util.MapKeyOffHandWeaponCritDamageBonus]), "\n")
+			fmt.Fprintf(w, `<input type="hidden" name="%s" value="%s" />%s`, lookupMap[util.MapKeyOffHandWeaponMainStatBonus], r.FormValue(lookupMap[util.MapKeyOffHandWeaponMainStatBonus]), "\n")
+			
+		}
+
+		fmt.Fprintln(w, `</td>`)
+
+	}
+
+	fmt.Fprintln(w, `<td>`)
+	fmt.Fprintln(w, `</td>`)
+
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `</table>`)
+	fmt.Fprintln(w, `</div>`)
+}
+
+func printWeaponWidget(w http.ResponseWriter, r *http.Request, twoHand bool, mainHand bool, lookupMap map[string]string) {
+
+	var (
+		weaponTypeMapKey        = util.MapKeyMainHandWeaponType
+		weaponDpsMapKey         = util.MapKeyMainHandWeaponDps
+		weaponAttackSpeedMapKey = util.MapKeyMainHandWeaponAttackSpeedBonus
+		weaponCritDamageMapKey  = util.MapKeyMainHandWeaponCritDamageBonus
+		weaponMainStatMapKey    = util.MapKeyMainHandWeaponMainStatBonus
+	)
+
+	if !mainHand {
+		weaponTypeMapKey = util.MapKeyOffHandWeaponType
+		weaponDpsMapKey = util.MapKeyOffHandWeaponDps
+		weaponAttackSpeedMapKey = util.MapKeyOffHandWeaponAttackSpeedBonus
+		weaponCritDamageMapKey = util.MapKeyOffHandWeaponCritDamageBonus
+		weaponMainStatMapKey = util.MapKeyOffHandWeaponMainStatBonus
+	}
+
+	weaponType := r.FormValue(lookupMap[weaponTypeMapKey])
+	weaponTypeLookupMap := util.WearableOhWeaponMap
+
+	if twoHand {
+		weaponTypeLookupMap = util.WearableThWeaponMap
+	}
+
+	validWeaponTypes := weaponTypeLookupMap[r.FormValue(util.UrlKeyHeroClass)]
+
+	fmt.Fprintln(w, `<table class="centerBlock">`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td colspan="2">`)
+	fmt.Fprintf(w, `<select name="%s" onchange="showUpdateButton();">%s`, lookupMap[weaponTypeMapKey], "\n")
+
+	for i := 0; i < len(validWeaponTypes); i++ {
+
+		selected := ""
+
+		if weaponType == validWeaponTypes[i] {
+			selected = "selected"
+		}
+
+		fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, validWeaponTypes[i], selected, util.WeaponTypeMap[validWeaponTypes[i]], "\n")
+
+	}
+
+	fmt.Fprintln(w, `</select>`)
+	fmt.Fprintln(w, `</td>`)
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">DPS:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="mediumInput" name="%s" value="%s" /></td>%s`, lookupMap[weaponDpsMapKey], r.FormValue(lookupMap[weaponDpsMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Atk Speed:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[weaponAttackSpeedMapKey], r.FormValue(lookupMap[weaponAttackSpeedMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Crit Dmg:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[weaponCritDamageMapKey], r.FormValue(lookupMap[weaponCritDamageMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Main Stat:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[weaponMainStatMapKey], r.FormValue(lookupMap[weaponMainStatMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `</table>`)
+}
+
+func printOffHandWidget(w http.ResponseWriter, r *http.Request, lookupMap map[string]string) {
+
+	var (
+		offHandTypeMapKey = util.MapKeyOffHandType
+		offHandAverageDamageMapKey = util.MapKeyOffHandAverageDamage
+		offHandAttackSpeedMapKey   = util.MapKeyMainHandWeaponAttackSpeedBonus
+		offHandCritChanceMapKey    = util.MapKeyOffHandCritChanceBonus
+		offHandMainStatMapKey      = util.MapKeyOffHandMainStatBonus
+	)
+
+	offHandType := r.FormValue(lookupMap[offHandTypeMapKey])
+	validOffHandTypes := util.WearableOhMap[r.FormValue(util.UrlKeyHeroClass)]
+
+	fmt.Fprintln(w, `<table class="centerBlock">`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td colspan="2">`)
+	fmt.Fprintf(w, `<select name="%s" onchange="showUpdateButton();">%s`, lookupMap[offHandTypeMapKey], "\n")
+
+	for i := 0; i < len(validOffHandTypes); i++ {
+
+		selected := ""
+
+		if offHandType == validOffHandTypes[i] {
+			selected = "selected"
+		}
+
+		fmt.Fprintf(w, `<option value="%s" %s>%s</option>%s`, validOffHandTypes[i], selected, util.OffHandTypeMap[validOffHandTypes[i]], "\n")
+
+	}
+
+	fmt.Fprintln(w, `</select>`)
+	fmt.Fprintln(w, `</td>`)
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Avg Damage:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[offHandAverageDamageMapKey], r.FormValue(lookupMap[offHandAverageDamageMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Atk Speed:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[offHandAttackSpeedMapKey], r.FormValue(lookupMap[offHandAttackSpeedMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Crit Chance:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[offHandCritChanceMapKey], r.FormValue(lookupMap[offHandCritChanceMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `<tr>`)
+	fmt.Fprintln(w, `<td class="tableLeft">Main Stat:</td>`)
+	fmt.Fprintf(w, `<td class="tableRight"><input class="smallInput" name="%s" value="%s" /></td>%s`, lookupMap[offHandMainStatMapKey], r.FormValue(lookupMap[offHandMainStatMapKey]), "\n")
+	fmt.Fprintln(w, `</tr>`)
+
+	fmt.Fprintln(w, `</table>`)
 }
 
 func printOffensiveComparisonSelect(w http.ResponseWriter, urlKey string, selectedCompareType string, heroClass string) {

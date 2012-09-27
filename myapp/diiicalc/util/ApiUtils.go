@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -17,17 +18,18 @@ type ApiProfileLookupResponse struct {
 }
 
 type ApiHero struct {
-	Name        string    `json:"name"`
-	Class       string    `json:"class"`
-	Id          float64   `json:"id"`
-	Level       float64   `json:"level"`
-	Hardcore    bool      `json:"hardcore"`
-	Gender      float64   `json:"gender"`
-	LastUpdated float64   `json:"last-updated"`
-	Dead        bool      `json:"dead"`
-	Stats       ApiStats  `json:"stats"`
-	Skills      ApiSkills `json:"skills"`
-	Items       ApiItems  `json:"skills"`
+	Name         string    `json:"name"`
+	Class        string    `json:"class"`
+	Id           float64   `json:"id"`
+	Level        float64   `json:"level"`
+	ParagonLevel float64   `json:"paragonLevel"`
+	Hardcore     bool      `json:"hardcore"`
+	Gender       float64   `json:"gender"`
+	LastUpdated  float64   `json:"last-updated"`
+	Dead         bool      `json:"dead"`
+	Stats        ApiStats  `json:"stats"`
+	Skills       ApiSkills `json:"skills"`
+	Items        ApiItems  `json:"skills"`
 }
 
 type ApiStats struct {
@@ -165,9 +167,17 @@ type ApiItemType struct {
 }
 
 type ApiItemAttributes struct {
-	CritDamagePercent    ApiMinMax `json:"Crit_Damage_Percent"`
-	Sockets              ApiMinMax `json:"Sockets"`
-	Crossbow             ApiMinMax `json:"Crossbow"`
+	CritDamagePercent      ApiMinMax `json:"Crit_Damage_Percent"`
+	CritChancePercent      ApiMinMax `json:"Crit_Chance_Percent"`
+	CritPercentBonusCapped ApiMinMax `json:"Crit_Percent_Bonus_Capped"`
+	AttacksPerSecondBonus  ApiMinMax `json:"Attacks_Per_Second_Percent"`
+	Strength               ApiMinMax `json:"Strength_Item"`
+	Intelligence           ApiMinMax `json:"Intelligence_Item"`
+	Dexterity              ApiMinMax `json:"Dexterity_Item"`
+	Vitality               ApiMinMax `json:"Vitality_Item"`
+	// TODO remove these if not used
+	//Sockets              ApiMinMax `json:"Sockets"`
+	//Crossbow             ApiMinMax `json:"Crossbow"`
 	AttacksPerSecondBase ApiMinMax `json:"Attacks_Per_Second_Item"`
 
 	// These values describe damage affixes that are usually present on
@@ -192,10 +202,10 @@ type ApiItemAttributes struct {
 	// Following are properties for weapons specifically.
 	// -----
 
-	// This describes the attacks per second bonus on an
-	// item. E.G. it is 0.11 if there is an 11% attack
+	// This describes the attacks per second bonus on a
+	// weapon only. E.G. it is 0.11 if there is an 11% attack
 	// speed bonus.
-	AttacksPerSecondBonus ApiMinMax `json:"Attacks_Per_Second_Item_Percent"`
+	AttacksPerSecondWeaponBonus ApiMinMax `json:"Attacks_Per_Second_Item_Percent"`
 
 	// These values describe the minimums and deltas of 
 	// both physical and elemental damage on this weapon.
@@ -237,6 +247,308 @@ func (self *ApiHero) GenerateSelectionString() string {
 	buffer.WriteString(")")
 
 	return buffer.String()
+}
+
+func (self *ApiItems) LookUpAll(realm string, r *http.Request) {
+
+	numItems := 13
+	doneChannel := make(chan int, numItems)
+
+	// Look up each item in a goroutine. 
+	// Send a signal when done.
+	go func() {
+		LookUpItem(&self.Head, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Torso, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Feet, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Hands, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Shoulders, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Legs, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Bracers, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.MainHand, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.OffHand, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Waist, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.RightFinger, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.LeftFinger, realm, r)
+		doneChannel <- 1
+	}()
+	go func() {
+		LookUpItem(&self.Neck, realm, r)
+		doneChannel <- 1
+	}()
+
+	for i := 0; i < numItems; i++ {
+		<-doneChannel
+	}
+}
+
+func (self *ApiHero) DeduceWeaponSetup() string {
+
+	if self.Items.MainHand.Type.TwoHanded {
+		return UrlValueWeaponSetupTwoHander
+	}
+
+	switch oh := self.Items.OffHand.Type.Id; {
+	case oh == "Orb":
+		fallthrough
+	case oh == "Shield":
+		fallthrough
+	case oh == "Mojo":
+		fallthrough
+	case oh == "Quiver":
+		fallthrough
+	case oh == "": // In the case that they are not wearing an offhand at all.
+		return UrlValueWeaponSetupMainHandOffHand
+	}
+
+	return UrlValueWeaponSetupDualWield
+}
+
+func (self *ApiHero) CalculateTotalAverageDamageBonus() float64 {
+
+	bonus := 0.0
+
+	bonus += self.Items.Head.CalculateAverageDamageBonus()
+	bonus += self.Items.Torso.CalculateAverageDamageBonus()
+	bonus += self.Items.Feet.CalculateAverageDamageBonus()
+	bonus += self.Items.Hands.CalculateAverageDamageBonus()
+	bonus += self.Items.Shoulders.CalculateAverageDamageBonus()
+	bonus += self.Items.Legs.CalculateAverageDamageBonus()
+	bonus += self.Items.Bracers.CalculateAverageDamageBonus()
+	bonus += self.Items.Waist.CalculateAverageDamageBonus()
+	bonus += self.Items.RightFinger.CalculateAverageDamageBonus()
+	bonus += self.Items.LeftFinger.CalculateAverageDamageBonus()
+	bonus += self.Items.Neck.CalculateAverageDamageBonus()
+
+	return bonus
+}
+
+func (self *ApiHero) CalculateTotalAttackSpeedBonus(weaponSetup string) float64 {
+
+	bonus := 0.0
+
+	if weaponSetup == UrlValueWeaponSetupDualWield {
+		bonus += 0.15
+	}
+	fmt.Printf("\n\n1:%v\n", bonus)
+	bonus += self.Items.Head.GetAttackSpeedBonus()
+	bonus += self.Items.Torso.GetAttackSpeedBonus()
+	bonus += self.Items.Feet.GetAttackSpeedBonus()
+	bonus += self.Items.Hands.GetAttackSpeedBonus()
+	bonus += self.Items.Shoulders.GetAttackSpeedBonus()
+	bonus += self.Items.Legs.GetAttackSpeedBonus()
+	bonus += self.Items.Bracers.GetAttackSpeedBonus()
+	bonus += self.Items.Waist.GetAttackSpeedBonus()
+	bonus += self.Items.RightFinger.GetAttackSpeedBonus()
+	bonus += self.Items.LeftFinger.GetAttackSpeedBonus()
+	bonus += self.Items.Neck.GetAttackSpeedBonus()
+	fmt.Printf("\n\n2:%v\n", bonus)
+
+	return bonus
+}
+
+func (self *ApiHero) CalculateTotalCritChance() float64 {
+
+	chance := 0.05
+
+	chance += self.Items.Head.GetCritChanceBonus()
+	chance += self.Items.Torso.GetCritChanceBonus()
+	chance += self.Items.Feet.GetCritChanceBonus()
+	chance += self.Items.Hands.GetCritChanceBonus()
+	chance += self.Items.Shoulders.GetCritChanceBonus()
+	chance += self.Items.Legs.GetCritChanceBonus()
+	chance += self.Items.Bracers.GetCritChanceBonus()
+	chance += self.Items.MainHand.GetCritChanceBonus()
+	chance += self.Items.OffHand.GetCritChanceBonus()
+	chance += self.Items.Waist.GetCritChanceBonus()
+	chance += self.Items.RightFinger.GetCritChanceBonus()
+	chance += self.Items.LeftFinger.GetCritChanceBonus()
+	chance += self.Items.Neck.GetCritChanceBonus()
+
+	return chance
+}
+
+func (self *ApiHero) CalculateTotalCritDamageBonus() float64 {
+
+	damage := 0.50
+
+	damage += self.Items.Head.GetCritDamageBonus()
+	damage += self.Items.Torso.GetCritDamageBonus()
+	damage += self.Items.Feet.GetCritDamageBonus()
+	damage += self.Items.Hands.GetCritDamageBonus()
+	damage += self.Items.Shoulders.GetCritDamageBonus()
+	damage += self.Items.Legs.GetCritDamageBonus()
+	damage += self.Items.Bracers.GetCritDamageBonus()
+	damage += self.Items.MainHand.GetCritDamageBonus()
+	damage += self.Items.OffHand.GetCritDamageBonus()
+	damage += self.Items.Waist.GetCritDamageBonus()
+	damage += self.Items.RightFinger.GetCritDamageBonus()
+	damage += self.Items.LeftFinger.GetCritDamageBonus()
+	damage += self.Items.Neck.GetCritDamageBonus()
+
+	return damage
+}
+
+func (self *ApiHero) CalculateTotalStrength() float64 {
+
+	strength := 0.0
+
+	// Get base value from class and level.
+	if self.Class == UrlValueHeroClassBarbarian {
+		strength += 10
+		strength += (self.Level - 1) * 3.0
+		strength += self.ParagonLevel * 3.0
+	} else {
+		strength += 8
+		strength += (self.Level - 1)
+		strength += self.ParagonLevel
+	}
+
+	// Add in gear bonuses.
+	strength += self.Items.Head.GetStrengthBonus()
+	strength += self.Items.Torso.GetStrengthBonus()
+	strength += self.Items.Feet.GetStrengthBonus()
+	strength += self.Items.Hands.GetStrengthBonus()
+	strength += self.Items.Shoulders.GetStrengthBonus()
+	strength += self.Items.Legs.GetStrengthBonus()
+	strength += self.Items.Bracers.GetStrengthBonus()
+	strength += self.Items.MainHand.GetStrengthBonus()
+	strength += self.Items.OffHand.GetStrengthBonus()
+	strength += self.Items.Waist.GetStrengthBonus()
+	strength += self.Items.RightFinger.GetStrengthBonus()
+	strength += self.Items.LeftFinger.GetStrengthBonus()
+	strength += self.Items.Neck.GetStrengthBonus()
+
+	return strength
+}
+
+func (self *ApiHero) CalculateTotalDexterity() float64 {
+
+	dexterity := 0.0
+
+	// Get base value from class and level.
+	if self.Class == UrlValueHeroClassMonk || self.Class == UrlValueHeroClassDemonHunter {
+		dexterity += 10
+		dexterity += (self.Level - 1) * 3.0
+		dexterity += self.ParagonLevel * 3.0
+	} else {
+		dexterity += 8
+		dexterity += (self.Level - 1)
+		dexterity += self.ParagonLevel
+	}
+
+	// Add in gear bonuses.
+	dexterity += self.Items.Head.GetDexterityBonus()
+	dexterity += self.Items.Torso.GetDexterityBonus()
+	dexterity += self.Items.Feet.GetDexterityBonus()
+	dexterity += self.Items.Hands.GetDexterityBonus()
+	dexterity += self.Items.Shoulders.GetDexterityBonus()
+	dexterity += self.Items.Legs.GetDexterityBonus()
+	dexterity += self.Items.Bracers.GetDexterityBonus()
+	dexterity += self.Items.MainHand.GetDexterityBonus()
+	dexterity += self.Items.OffHand.GetDexterityBonus()
+	dexterity += self.Items.Waist.GetDexterityBonus()
+	dexterity += self.Items.RightFinger.GetDexterityBonus()
+	dexterity += self.Items.LeftFinger.GetDexterityBonus()
+	dexterity += self.Items.Neck.GetDexterityBonus()
+
+	return dexterity
+}
+
+func (self *ApiHero) CalculateTotalIntelligence() float64 {
+
+	intelligence := 0.0
+
+	// Get base value from class and level.
+	if self.Class == UrlValueHeroClassWizard || self.Class == UrlValueHeroClassWitchDoctor {
+		intelligence += 10
+		intelligence += (self.Level - 1) * 3.0
+		intelligence += self.ParagonLevel * 3.0
+	} else {
+		intelligence += 8
+		intelligence += self.Level - 1
+		intelligence += self.ParagonLevel
+	}
+
+	// Add in gear bonuses.
+	intelligence += self.Items.Head.GetIntelligenceBonus()
+	intelligence += self.Items.Torso.GetIntelligenceBonus()
+	intelligence += self.Items.Feet.GetIntelligenceBonus()
+	intelligence += self.Items.Hands.GetIntelligenceBonus()
+	intelligence += self.Items.Shoulders.GetIntelligenceBonus()
+	intelligence += self.Items.Legs.GetIntelligenceBonus()
+	intelligence += self.Items.Bracers.GetIntelligenceBonus()
+	intelligence += self.Items.MainHand.GetIntelligenceBonus()
+	intelligence += self.Items.OffHand.GetIntelligenceBonus()
+	intelligence += self.Items.Waist.GetIntelligenceBonus()
+	intelligence += self.Items.RightFinger.GetIntelligenceBonus()
+	intelligence += self.Items.LeftFinger.GetIntelligenceBonus()
+	intelligence += self.Items.Neck.GetIntelligenceBonus()
+
+	return intelligence
+}
+
+func (self *ApiHero) CalculateTotalVitality() float64 {
+
+	vitality := 0.0
+
+	// Get base value from class and level.
+	vitality += 9
+	vitality += (self.Level - 1) * 2.0
+	vitality += self.ParagonLevel * 2.0
+
+	// Add in gear bonuses.
+	vitality += self.Items.Head.GetVitalityBonus()
+	vitality += self.Items.Torso.GetVitalityBonus()
+	vitality += self.Items.Feet.GetVitalityBonus()
+	vitality += self.Items.Hands.GetVitalityBonus()
+	vitality += self.Items.Shoulders.GetVitalityBonus()
+	vitality += self.Items.Legs.GetVitalityBonus()
+	vitality += self.Items.Bracers.GetVitalityBonus()
+	vitality += self.Items.MainHand.GetVitalityBonus()
+	vitality += self.Items.OffHand.GetVitalityBonus()
+	vitality += self.Items.Waist.GetVitalityBonus()
+	vitality += self.Items.RightFinger.GetVitalityBonus()
+	vitality += self.Items.LeftFinger.GetVitalityBonus()
+	vitality += self.Items.Neck.GetVitalityBonus()
+
+	return vitality
+}
+
+func (self *ApiItem) GetWeaponDps() float64 {
+	return self.Dps.Min
 }
 
 func (self *ApiItem) CalculateAverageDamageBonus() float64 {
@@ -301,36 +613,119 @@ func (self *ApiItem) CalculateAverageWeaponDamage() float64 {
 	return (min + max) / 2
 }
 
+func (self *ApiItem) GetWeaponBaseAttackSpeed() float64 {
+	return self.Attributes.AttacksPerSecondBase.Min
+}
+
+func (self *ApiItem) GetWeaponAttackSpeedBonus() float64 {
+	return self.Attributes.AttacksPerSecondWeaponBonus.Min
+}
+
+func (self *ApiItem) GetAttackSpeedBonus() float64 {
+	return self.Attributes.AttacksPerSecondBonus.Min
+}
+
+func (self *ApiItem) GetCritChanceBonus() float64 {
+	return self.Attributes.CritPercentBonusCapped.Min
+}
+
+func (self *ApiItem) GetCritDamageBonus() float64 {
+
+	damage := self.Attributes.CritDamagePercent.Min
+
+	for i := 0; i < len(self.Gems); i++ {
+		damage += self.Gems[i].Attributes.CritDamagePercent.Min
+	}
+
+	return damage
+}
+
+func (self *ApiItem) GetStrengthBonus() float64 {
+
+	strength := self.Attributes.Strength.Min
+
+	for i := 0; i < len(self.Gems); i++ {
+		strength += self.Gems[i].Attributes.Strength.Min
+	}
+
+	return strength
+}
+
+func (self *ApiItem) GetIntelligenceBonus() float64 {
+
+	intelligence := self.Attributes.Intelligence.Min
+
+	for i := 0; i < len(self.Gems); i++ {
+		intelligence += self.Gems[i].Attributes.Intelligence.Min
+	}
+
+	return intelligence
+}
+
+func (self *ApiItem) GetVitalityBonus() float64 {
+
+	vitality := self.Attributes.Vitality.Min
+
+	for i := 0; i < len(self.Gems); i++ {
+		vitality += self.Gems[i].Attributes.Vitality.Min
+	}
+
+	return vitality
+}
+
+func (self *ApiItem) GetDexterityBonus() float64 {
+
+	dexterity := self.Attributes.Dexterity.Min
+
+	for i := 0; i < len(self.Gems); i++ {
+		dexterity += self.Gems[i].Attributes.Dexterity.Min
+	}
+
+	return dexterity
+}
+
 func (self *ApiItem) GetWeaponType() (weaponType string) {
 
-	switch t := self.Type.Id; {
-	case t == "Dagger":
+	switch t := self.Type; {
+	case t.Id == "Dagger":
 		weaponType = UrlValueWeaponTypeDagger
-	case t == "Sword":
-		weaponType = UrlValueWeaponTypeSword
-	case t == "Mace":
-		weaponType = UrlValueWeaponTypeMace
-	case t == "Axe":
-		weaponType = UrlValueWeaponTypeAxe
-	case t == "Polearm":
+	case t.Id == "Sword":
+		if t.TwoHanded {
+			weaponType = UrlValueWeaponTypeThSword
+		} else {
+			weaponType = UrlValueWeaponTypeOhSword
+		}
+	case t.Id == "Mace":
+		if t.TwoHanded {
+			weaponType = UrlValueWeaponTypeThMace
+		} else {
+			weaponType = UrlValueWeaponTypeOhMace
+		}
+	case t.Id == "Axe":
+		if t.TwoHanded {
+			weaponType = UrlValueWeaponTypeThAxe
+		} else {
+			weaponType = UrlValueWeaponTypeOhAxe
+		}
+	case t.Id == "Polearm":
 		weaponType = UrlValueWeaponTypePolearm
-	case t == "Spear":
+	case t.Id == "Spear":
 		weaponType = UrlValueWeaponTypeSpear
-	case t == "Mighty Weapon":
-		weaponType = UrlValueWeaponTypeMightyWeapon
-	case t == "Bow":
+	case t.Id == "Mighty Weapon":
+		if t.TwoHanded {
+			weaponType = UrlValueWeaponTypeThMightyWeapon
+		} else {
+			weaponType = UrlValueWeaponTypeOhMightyWeapon
+		}
+	case t.Id == "Bow":
 		weaponType = UrlValueWeaponTypeBow
-	case t == "Xbow":
+	case t.Id == "Xbow":
 		weaponType = UrlValueWeaponTypeCrossbow
-	case t == "HandXbow":
+	case t.Id == "HandXbow":
 		weaponType = UrlValueWeaponTypeHandCrossbow
 	}
 
 	return
-}
-
-func (self *ApiItem) IsTwoHandedWeapon() bool {
-	return self.Type.TwoHanded
 }
 
 // Static utilities.

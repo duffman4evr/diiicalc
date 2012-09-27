@@ -142,7 +142,7 @@ func GetColorForValue(f float64) (color string) {
 	if f < 0 {
 		color = "#A31919"
 	} else {
-		color = "#008A2E"
+		color = "#195919"
 	}
 
 	return color

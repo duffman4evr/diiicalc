@@ -69,6 +69,7 @@ func characterFindPage(w http.ResponseWriter, r *http.Request) {
 	if !findButtonUsed {
 
 		printBattleTagInput(w, battleTag, realm)
+		fmt.Fprintln(w, `</table>`)
 
 	} else {
 
@@ -171,7 +172,7 @@ func printBattleTagInput(w http.ResponseWriter, battleTag string, realm string) 
 
 func printHeroSelect(w http.ResponseWriter, heroes string, selectedHeroId string) {
 
-	fmt.Fprintf(w, `<select onchange="document.getElementById('defensiveForm').submit();" style="font-size: 24px; width:auto; height:auto; vertical-align: middle;" name="%s" id="%s">`, util.UrlKeyHeroIdUser, util.UrlKeyHeroIdUser)
+	fmt.Fprintf(w, `<select onchange="document.getElementById('mainForm').submit();" style="font-size: 24px; width:auto; height:auto; vertical-align: middle;" name="%s" id="%s">`, util.UrlKeyHeroIdUser, util.UrlKeyHeroIdUser)
 
 	heroTokens := strings.Split(heroes, "|")
 
@@ -208,7 +209,7 @@ func printHtmlIntro(w http.ResponseWriter) {
 }
 
 func printHtmlOutro(w http.ResponseWriter) {
-	fmt.Fprintln(w, `<div class="footer" style="margin-bottom: 5px; font-size: 12px;"><span>Concerns? Email me: <a href="mailto:duffman4evr@gmail.com">duffman4evr@gmail.com</a></span></div>`)
+	fmt.Fprintln(w, `<div class="footer" style="margin-top: 50px; font-size: 12px;"><span>Concerns? Email me: <a href="mailto:duffman4evr@gmail.com">duffman4evr@gmail.com</a></span></div>`)
 	fmt.Fprintln(w, `</div>`)
 	fmt.Fprintln(w, `</body>`)
 	fmt.Fprintln(w, `</html>`)

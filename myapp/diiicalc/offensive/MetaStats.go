@@ -2,6 +2,7 @@ package offensive
 
 import (
 	"diiicalc/util"
+	_"fmt"
 	"strconv"
 )
 
@@ -34,19 +35,35 @@ func NewMetaStats(derivedStats *DerivedStats) *MetaStats {
 		mainStat = derivedStats.Intelligence
 	}
 
-	// Looks like the equation is this
-	//       Weapon Term: [AverageWeaponDamage] * 
+	baseStats := &self.DerivedStats.BaseStats
+
+	// Do some special setup in case of dual wielding. Got to make those two weapons look like one.
+	var (
+		averagedWeaponDamage      = baseStats.MainWeaponAverageDamage
+		averagedWeaponAttackSpeed = baseStats.MainWeaponAttackSpeedBase * (1 + baseStats.MainWeaponAttackSpeedBonus + derivedStats.AttackSpeedBonus)
+	)
+
+	// TODO sometimes in-game damage does not match the damage you see when browsing blizz's own profiles...
+	if baseStats.WeaponSetup == util.UrlValueWeaponSetupDualWield {
+
+		averagedWeaponDamage += baseStats.OffWeaponAverageDamage
+		averagedWeaponDamage *= 0.5
+		averagedWeaponAttackSpeed += baseStats.OffWeaponAttackSpeedBase * (1 + baseStats.OffWeaponAttackSpeedBonus + derivedStats.AttackSpeedBonus)
+		averagedWeaponAttackSpeed *= 0.5
+
+	}
+
+	// Looks like the equation is this:
+	//       Weapon Term: [((AverageMainHandWeaponDamage + AverageOffHandWeaponDamage) / 2) + DamageBonusFromOtherItems] * 
 	// Attack Speed Term: [WeaponBaseAttackSpeed * (1 + WeaponAttackSpeedBonus + OtherAttackSpeedBonuses)] *
 	//    Main Stat Term: [1 + (MainStat * .01)] *
 	//         Crit Term: [1 + (CritChance * CritDamageBonus)] *
 	//        Skill Term: [1 + SkillBonus]
 	var (
-		baseStats = &self.DerivedStats.BaseStats
-
-		weaponTerm      = baseStats.MainWeaponAverageDamage + baseStats.AverageDamageBonus
-		attackSpeedTerm = baseStats.MainWeaponAttackSpeedBase * (1 + baseStats.MainWeaponAttackSpeedBonus + derivedStats.AttackSpeedBonus)
+		weaponTerm      = averagedWeaponDamage + baseStats.AverageDamageBonus
+		attackSpeedTerm = averagedWeaponAttackSpeed
 		mainStatTerm    = 1 + (mainStat * .01)
-		critTerm        = 1 + (derivedStats.CritChance * (derivedStats.CritDamage - 1))
+		critTerm        = 1 + (derivedStats.CritChance * derivedStats.CritDamageBonus)
 		skillTerm       = 1 + derivedStats.SkillDamageBonus
 	)
 
@@ -73,7 +90,7 @@ func (self *MetaStats) ComputeDpsChangeForCritDamageChange(critDamageChange floa
 
 	modifiedDerivedStats := self.DerivedStats
 
-	modifiedDerivedStats.CritDamage += critDamageChange
+	modifiedDerivedStats.CritDamageBonus += critDamageChange
 
 	modifiedMetaStats := NewMetaStats(&modifiedDerivedStats)
 
@@ -112,10 +129,10 @@ func (self *MetaStats) ComputeCritDamageEquivalentForCritChanceChange(critChance
 	var (
 		cc  = self.DerivedStats.CritChance
 		cca = cc + critChanceChange
-		cd  = self.DerivedStats.CritDamage - 1
+		cdb = self.DerivedStats.CritDamageBonus
 	)
 
-	return (cca * cd / cc) - cd
+	return (cca * cdb / cc) - cdb
 }
 
 func (self *MetaStats) CalculateDpsChange(changeType string, changeValue string) (dpsChange float64) {

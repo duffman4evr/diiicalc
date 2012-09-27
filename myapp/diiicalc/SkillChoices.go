@@ -241,7 +241,7 @@ func printAgnosticHtml(sc SkillChoice, title string, hasSimpleOn bool, runeChoic
 	fmt.Fprintln(w, `<tr>`)
 	fmt.Fprintf(w, `<td class="tableLeft">%s:</td>%s`, title, "\n")
 	fmt.Fprintln(w, `<td class="tableRight">`)
-	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('defensiveForm').submit();">%s`, sc.GetUrlKey(), "\n")
+	fmt.Fprintf(w, `<select name="%s" onchange="document.getElementById('mainForm').submit();">%s`, sc.GetUrlKey(), "\n")
 	fmt.Fprintf(w, `<option value="%s" %s >Off</option>%s`, standardUrlValueOff, GetSelected(sc, standardUrlValueOff), "\n")
 
 	if hasSimpleOn {
@@ -1200,7 +1200,7 @@ func (self *ArcherySkillChoice) ModifyOffensiveDerivedStats(derivedStats *offens
 		case t == util.UrlValueWeaponTypeBow:
 			derivedStats.SkillDamageBonus += 0.15
 		case t == util.UrlValueWeaponTypeCrossbow:
-			derivedStats.CritDamage += 0.50
+			derivedStats.CritDamageBonus += 0.50
 		case t == util.UrlValueWeaponTypeHandCrossbow:
 			derivedStats.CritChance += 0.10
 		}
@@ -1418,7 +1418,7 @@ func (self *RevengeSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offens
 func (self *RuthlessSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	if self.Value == standardUrlValueOn {
 		derivedStats.CritChance += 0.05
-		derivedStats.CritDamage += 0.50
+		derivedStats.CritDamageBonus += 0.50
 	}
 }
 func (self *SlowTimeSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
@@ -1464,9 +1464,14 @@ func (self *WayOfTheHundredFistsSkillChoice) ModifyOffensiveDerivedStats(derived
 func (self *WeaponsMasterSkillChoice) ModifyOffensiveDerivedStats(derivedStats *offensive.DerivedStats) {
 	if self.Value == standardUrlValueOn {
 		switch t := derivedStats.BaseStats.MainWeaponType; {
-		case t == util.UrlValueWeaponTypeSword || t == util.UrlValueWeaponTypeDagger:
+		case t == util.UrlValueWeaponTypeThSword ||
+			t == util.UrlValueWeaponTypeOhSword ||
+			t == util.UrlValueWeaponTypeDagger:
 			derivedStats.SkillDamageBonus += 0.15
-		case t == util.UrlValueWeaponTypeMace || t == util.UrlValueWeaponTypeAxe:
+		case t == util.UrlValueWeaponTypeOhMace ||
+			t == util.UrlValueWeaponTypeThMace ||
+			t == util.UrlValueWeaponTypeOhAxe ||
+			t == util.UrlValueWeaponTypeThAxe:
 			derivedStats.CritChance += 0.10
 		case t == util.UrlValueWeaponTypePolearm || t == util.UrlValueWeaponTypeSpear:
 			derivedStats.AttackSpeedBonus += 0.10
