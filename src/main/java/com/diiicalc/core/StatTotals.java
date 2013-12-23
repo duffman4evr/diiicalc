@@ -137,10 +137,15 @@ public class StatTotals
    {
       double lifePerVitality = Utils.computeLifePerVitality(this.getHeroLevel());
 
+      double base = 36;
+      double fromLevels = 4 * this.getHeroLevel();
       double fromVitality = lifePerVitality * this.getVitality();
-      double fromPercentLife = fromVitality * this.statsFromItems.getLifePercent();
 
-      return fromVitality + fromPercentLife;
+      double beforePercent = base + fromLevels + fromVitality;
+
+      double afterPercent = beforePercent * (1 + this.statsFromItems.getLifePercent());
+
+      return afterPercent;
    }
 
    public double getDodgeChance()
@@ -155,12 +160,12 @@ public class StatTotals
       return this.getBlockChance() * (this.getBlockAmountMin() + (0.5 * this.getBlockAmountDelta()));
    }
 
-   public Map<String, Double> getIncomingDamageModifiers()
+   public Map<String, Double> getIncomingDamageModifiers(long monsterLevel)
    {
       Map<String, Double> incomingDamageModifiers = new HashMap<String, Double>();
 
-      double armor = 1.0 - (this.getArmor() / ((50.0 * this.getHeroLevel()) + this.getArmor()));
-      double allResist = 1.0 - (this.getAllResist() / ((5.0 * this.getHeroLevel()) + this.getAllResist()));
+      double armor = 1.0 - (this.getArmor() / ((50.0 * monsterLevel) + this.getArmor()));
+      double allResist = 1.0 - (this.getAllResist() / ((5.0 * monsterLevel) + this.getAllResist()));
 
       incomingDamageModifiers.put(Constants.DAMAGE_MODIFIER_ARMOR, armor);
       incomingDamageModifiers.put(Constants.DAMAGE_MODIFIER_RESISTS, allResist);
@@ -221,9 +226,9 @@ public class StatTotals
    public double getAttackSpeedBonus()
    {
       double fromItems = this.statsFromItems.getAttackSpeedBonus();
-      double fromDualWield = this.getWeaponSetup() == WeaponSetup.DUAL_WIELD ? 1.15 : 1.0;
+      double fromDualWield = (this.getWeaponSetup() == WeaponSetup.DUAL_WIELD) ? 0.15 : 0.0;
 
-      return fromItems * fromDualWield;
+      return fromItems + fromDualWield;
    }
 
    public double getAverageWeaponDamage()
@@ -342,7 +347,7 @@ public class StatTotals
    {
       double attackSpeed = Utils.getAttackSpeedForWeaponType(weapon.getType());
 
-      attackSpeed *= 1 + weapon.getDamagePercentBonus();
+      attackSpeed *= 1 + weapon.getAttackSpeedPercentBonus();
       attackSpeed += weapon.getAttackSpeedRawBonus();
 
       return attackSpeed;
@@ -350,7 +355,7 @@ public class StatTotals
 
    private WeaponSetup getWeaponSetup()
    {
-      if (this.statsFromItems.getMainWeapon().isTwoHanded())
+      if (this.statsFromItems.getMainWeapon().getType().isTwoHanded())
       {
          return WeaponSetup.TWO_HANDER;
       }

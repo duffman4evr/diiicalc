@@ -94,14 +94,14 @@ public class Utils
       return itemMap;
    }
 
-   public static DefensiveStats computeDefensiveStats(StatTotals statTotals)
+   public static DefensiveStats computeDefensiveStats(StatTotals statTotals, long monsterLevel)
    {
       double armor = statTotals.getArmor();
       double resistAll = statTotals.getAllResist();
       double dodgeChance = statTotals.getDodgeChance();
       double averageBlockAmount = statTotals.getAverageBlockAmount();
 
-      Map<String, Double> incomingDamageModifiers = statTotals.getIncomingDamageModifiers();
+      Map<String, Double> incomingDamageModifiers = statTotals.getIncomingDamageModifiers(monsterLevel);
 
       double totalIncomingDamageModifier = 1.0;
 
@@ -144,9 +144,10 @@ public class Utils
       double critTerm = 1 + (critChance * (critDamage - 1));
       double skillTerm = 1 + statTotals.getSkillDamageBonus();
 
-      double dps = weaponTerm * attackSpeedTerm * mainStatTerm * critTerm * skillTerm;
+      double weaponDamage = weaponTerm * mainStatTerm * critTerm * skillTerm;
+      double dps = weaponDamage * attackSpeedTerm;
 
-      return new OffensiveStats(dps, attackSpeedTerm, critChance, critDamage);
+      return new OffensiveStats(dps, weaponDamage, attackSpeedTerm, critChance, critDamage);
    }
 
    // Some publicly exposed helper functions.
@@ -154,18 +155,18 @@ public class Utils
    {
       long levelWithParagon = level + paragonLevel;
 
-      return 9 + (2 * levelWithParagon);
+      return 7 + (2 * levelWithParagon);
    }
 
    public static long computeBaseDexterity(long level, long paragonLevel, String heroType)
    {
       if (Constants.HERO_TYPE_DEMON_HUNTER.equals(heroType) || Constants.HERO_TYPE_MONK.equals(heroType))
       {
-         return 10 + (3 * (level + paragonLevel));
+         return 7 + (3 * (level + paragonLevel));
       }
       else
       {
-         return 8 + (level + paragonLevel);
+         return 7 + (level + paragonLevel);
       }
    }
 
@@ -173,11 +174,11 @@ public class Utils
    {
       if (Constants.HERO_TYPE_WITCH_DOCTOR.equals(heroType) || Constants.HERO_TYPE_WIZARD.equals(heroType))
       {
-         return 10 + (3 * (level + paragonLevel));
+         return 7 + (3 * (level + paragonLevel));
       }
       else
       {
-         return 8 + (level + paragonLevel);
+         return 7 + (level + paragonLevel);
       }
    }
 
@@ -185,11 +186,11 @@ public class Utils
    {
       if (Constants.HERO_TYPE_BARBARIAN.equals(heroType))
       {
-         return 10 + (3 * (level + paragonLevel));
+         return 7 + (3 * (level + paragonLevel));
       }
       else
       {
-         return 8 + (level + paragonLevel);
+         return 7 + (level + paragonLevel);
       }
    }
 
@@ -276,9 +277,9 @@ public class Utils
       return WEAPON_TYPES.contains(type);
    }
 
-   public static double getAttackSpeedForWeaponType(String type)
+   public static Double getAttackSpeedForWeaponType(Item.Type type)
    {
-      return 1.5;
+      return WEAPON_TYPE_TO_ATTACK_SPEED_MAP.get(type);
    }
 
    // -----
@@ -286,6 +287,7 @@ public class Utils
    // -----
    private static final Map<String, ModifierInjector> INJECTOR_MAP = new HashMap<String, ModifierInjector>();
    private static Set<String> WEAPON_TYPES = new HashSet<String>();
+   private static final Map<Item.Type, Double> WEAPON_TYPE_TO_ATTACK_SPEED_MAP = new HashMap<Item.Type, Double>();
 
    static
    {
@@ -300,6 +302,30 @@ public class Utils
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_CROSSBOW);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_HAND_CROSSBOW);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_WAND);
+      WEAPON_TYPES.add(Constants.WEAPON_TYPE_DIABO);
+      WEAPON_TYPES.add(Constants.WEAPON_TYPE_FIST_WEAPON);
+      WEAPON_TYPES.add(Constants.WEAPON_TYPE_CEREMONIAL_KNIFE);
+      WEAPON_TYPES.add(Constants.WEAPON_TYPE_STAFF);
+
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_DAGGER, false), 1.5);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SWORD, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SWORD, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE, false), 1.2);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE, true), 0.9);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE, false), 1.3);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_POLEARM, true), 0.95);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SPEAR, false), 1.5);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, false), 1.3);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, true), 1.0);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_BOW, true), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CROSSBOW, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_HAND_CROSSBOW, false), 1.6);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_WAND, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_DIABO, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_FIST_WEAPON, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CEREMONIAL_KNIFE, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_STAFF, true), 1.0);
 
       INJECTOR_MAP.put("big-bad-voodoo|big-bad-voodoo-a", new ModifierInjector()
       {

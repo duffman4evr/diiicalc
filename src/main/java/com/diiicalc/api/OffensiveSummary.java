@@ -7,6 +7,9 @@ public class OffensiveSummary
    @JsonProperty("dps")
    private double dps;
 
+   @JsonProperty("weapon-damage")
+   private double weaponDamage;
+
    @JsonProperty("attacks-per-second")
    private double attacksPerSecond;
 
@@ -31,6 +34,7 @@ public class OffensiveSummary
    public OffensiveSummary
    (
       double dps,
+      double weaponDamage,
       double attacksPerSecond,
       double critChance,
       double critDamage,
@@ -41,6 +45,7 @@ public class OffensiveSummary
    )
    {
       this.dps = dps;
+      this.weaponDamage = weaponDamage;
       this.attacksPerSecond = attacksPerSecond;
       this.critChance = critChance;
       this.critDamage = critDamage;

@@ -44,23 +44,24 @@ public class OffensiveSummaries
       OffensiveStats primaryStatValue = Utils.computeOffensiveStats(statTotals);
 
       statTotals.addPrimaryStat(-1);
-      statTotals.addCritChance(1);
+      statTotals.addCritChance(.01);
 
       OffensiveStats critChanceValue = Utils.computeOffensiveStats(statTotals);
 
-      statTotals.addCritChance(-1);
-      statTotals.addCritDamage(1);
+      statTotals.addCritChance(-0.01);
+      statTotals.addCritDamage(0.01);
 
       OffensiveStats critDamageValue = Utils.computeOffensiveStats(statTotals);
 
-      statTotals.addCritDamage(-1);
-      statTotals.addAttackSpeed(1);
+      statTotals.addCritDamage(-0.01);
+      statTotals.addAttackSpeed(0.01);
 
       OffensiveStats attackSpeedValue = Utils.computeOffensiveStats(statTotals);
 
       return new OffensiveSummary
       (
          normalOffensiveStats.getDps(),
+         normalOffensiveStats.getWeaponDamage(),
          normalOffensiveStats.getAttacksPerSecond(),
          normalOffensiveStats.getCritChance(),
          normalOffensiveStats.getCritDamage(),

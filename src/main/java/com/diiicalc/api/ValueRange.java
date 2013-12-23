@@ -52,4 +52,9 @@ public class ValueRange
    {
       return (this.min + this.max) * 0.5;
    }
+
+   public String toString()
+   {
+      return this.min + " - " + this.max;
+   }
 }

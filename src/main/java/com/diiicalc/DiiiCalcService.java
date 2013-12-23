@@ -1,6 +1,7 @@
 package com.diiicalc;
 
 import com.diiicalc.core.commands.DefensiveSummaries;
+import com.diiicalc.core.commands.OffensiveSummaries;
 import com.diiicalc.core.resources.CareerProfiles;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
@@ -22,6 +23,7 @@ public class DiiiCalcService extends Service<DiiiCalcConfiguration>
       // Set up resources (top 2 are used by the Connectors).
       environment.addResource(new CareerProfiles());
       environment.addResource(new DefensiveSummaries());
+      environment.addResource(new OffensiveSummaries());
    }
 
    public static void main(String[] args) throws Exception

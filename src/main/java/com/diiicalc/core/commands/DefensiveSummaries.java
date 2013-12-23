@@ -18,7 +18,7 @@ public class DefensiveSummaries
    @GET
    @Timed
    @Path("/{heroId}")
-   public DefensiveSummary getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag) throws Exception
+   public DefensiveSummary getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag, @QueryParam("monsterLevel") Long monsterLevel) throws Exception
    {
       if (battleTag == null)
       {
@@ -26,6 +26,11 @@ public class DefensiveSummaries
             .type(MediaType.TEXT_PLAIN_TYPE)
             .entity("No BattleTag given.")
             .build());
+      }
+
+      if (monsterLevel == null)
+      {
+         monsterLevel = 63L;
       }
 
       String heroPath = Constants.PROFILE_API_URL_PREFIX + "/" + battleTag + "/hero/" + heroId;
@@ -36,21 +41,21 @@ public class DefensiveSummaries
 
       StatTotals statTotals = new StatTotals(itemMap, hero);
 
-      DefensiveStats normalDefensiveStats = Utils.computeDefensiveStats(statTotals);
+      DefensiveStats normalDefensiveStats = Utils.computeDefensiveStats(statTotals, monsterLevel);
 
       statTotals.addResistAll(1);
 
-      DefensiveStats resistAllValue = Utils.computeDefensiveStats(statTotals);
+      DefensiveStats resistAllValue = Utils.computeDefensiveStats(statTotals, monsterLevel);
 
       statTotals.addResistAll(-1);
       statTotals.addVitality(1);
 
-      DefensiveStats vitalityValue = Utils.computeDefensiveStats(statTotals);
+      DefensiveStats vitalityValue = Utils.computeDefensiveStats(statTotals, monsterLevel);
 
       statTotals.addVitality(-1);
       statTotals.addArmor(1);
 
-      DefensiveStats armorValue = Utils.computeDefensiveStats(statTotals);
+      DefensiveStats armorValue = Utils.computeDefensiveStats(statTotals, monsterLevel);
 
       return new DefensiveSummary
       (

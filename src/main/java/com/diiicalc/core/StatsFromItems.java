@@ -1,6 +1,8 @@
 package com.diiicalc.core;
 
+import com.diiicalc.api.Gem;
 import com.diiicalc.api.Item;
+import com.diiicalc.api.SetRank;
 import com.diiicalc.api.ValueRange;
 
 import java.util.*;
@@ -46,130 +48,214 @@ class StatsFromItems
 
    StatsFromItems(Map<String, Item> itemMap)
    {
+      Map<String, List<SetRank>> setDefinition = new HashMap<String, List<SetRank>>();
+      Map<String, Integer> setOwnership = new HashMap<String, Integer>();
+
+      List<Map<String, ValueRange>> attributesList = new ArrayList<Map<String, ValueRange>>();
+
       for (Map.Entry<String, Item> entry : itemMap.entrySet())
       {
          String slotType = entry.getKey();
          Item item = entry.getValue();
-         Map<String, ValueRange> attributes = item.getAttributesRaw();
-
-         // Base stats.
-         {
-            ValueRange dexterity = attributes.get(Constants.ITEM_ATTR_DEXTERITY);
-            ValueRange strength = attributes.get(Constants.ITEM_ATTR_STRENGTH);
-            ValueRange intelligence = attributes.get(Constants.ITEM_ATTR_INTELLIGENCE);
-            ValueRange vitality = attributes.get(Constants.ITEM_ATTR_VITALITY);
-
-            if (dexterity != null) this.dexterity += dexterity.getMin();
-            if (strength != null) this.strength += strength.getMin();
-            if (intelligence != null) this.intelligence += intelligence.getMin();
-            if (vitality != null) this.vitality += vitality.getMin();
-         }
-
-         // Direct life-related.
-         {
-            ValueRange lifePercent = attributes.get(Constants.ITEM_ATTR_LIFE_PERCENT);
-            ValueRange lifeOnHit = attributes.get(Constants.ITEM_ATTR_LIFE_ON_HIT);
-            ValueRange lifeRegen = attributes.get(Constants.ITEM_ATTR_LIFE_REGEN);
-
-            if (lifePercent != null) this.lifePercent += lifePercent.getMin();
-            if (lifeOnHit != null) this.lifeOnHit += lifeOnHit.getMin();
-            if (lifeRegen != null) this.lifeRegen += lifeRegen.getMin();
-         }
-
-         // Shield.
-         {
-            ValueRange blockChance = attributes.get(Constants.ITEM_ATTR_BLOCK_CHANCE);
-            ValueRange blockChanceBonus = attributes.get(Constants.ITEM_ATTR_BLOCK_CHANCE_BONUS);
-            ValueRange blockAmountMin = attributes.get(Constants.ITEM_ATTR_BLOCK_AMOUNT_MIN);
-            ValueRange blockAmountDelta = attributes.get(Constants.ITEM_ATTR_BLOCK_AMOUNT_DELTA);
-
-            if (blockChance != null) this.blockChance += blockChance.getMin();
-            if (blockChanceBonus != null) this.blockChance += blockChanceBonus.getMin();
-            if (blockAmountMin != null) this.blockAmountMin += blockAmountMin.getMin();
-            if (blockAmountDelta != null) this.blockAmountDelta += blockAmountDelta.getMin();
-         }
-
-         // Armor.
-         {
-            ValueRange armor = attributes.get(Constants.ITEM_ATTR_ARMOR);
-            ValueRange armorBonus = attributes.get(Constants.ITEM_ATTR_ARMOR_BONUS);
-
-            if (armor != null) this.armor += armor.getMin();
-            if (armorBonus != null) this.armor += armorBonus.getMin();
-         }
-
-         // Resists.
-         {
-            ValueRange resistAll = attributes.get(Constants.ITEM_ATTR_RESIST_ALL);
-            ValueRange resistArcane = attributes.get(Constants.ITEM_ATTR_RESIST_ARCANE);
-            ValueRange resistFire = attributes.get(Constants.ITEM_ATTR_RESIST_FIRE);
-            ValueRange resistLightning = attributes.get(Constants.ITEM_ATTR_RESIST_LIGHTNING);
-            ValueRange resistPoison = attributes.get(Constants.ITEM_ATTR_RESIST_POISON);
-            ValueRange resistCold = attributes.get(Constants.ITEM_ATTR_RESIST_COLD);
-            ValueRange resistPhysical = attributes.get(Constants.ITEM_ATTR_RESIST_PHYSICAL);
-
-            if (resistAll != null) this.resistAll += resistAll.getMin();
-            if (resistArcane != null) this.resistArcane += resistArcane.getMin();
-            if (resistFire != null) this.resistFire += resistFire.getMin();
-            if (resistLightning != null) this.resistLightning += resistLightning.getMin();
-            if (resistPoison != null) this.resistPoison += resistPoison.getMin();
-            if (resistCold != null) this.resistCold += resistCold.getMin();
-            if (resistPhysical != null) this.resistPhysical += resistPhysical.getMin();
-         }
-
-         // Bonus damage.
-         {
-            List<String> damageTypes = new ArrayList<String>();
-
-            damageTypes.add(Constants.PHYSICAL_DAMAGE_TYPE);
-            damageTypes.addAll(Arrays.asList(Constants.ELEMENTAL_DAMAGE_TYPES));
-
-            for (String damageType : damageTypes)
-            {
-               ValueRange min = attributes.get(Constants.ITEM_ATTR_DAMAGE_MIN_PREFIX + damageType);
-               ValueRange delta = attributes.get(Constants.ITEM_ATTR_DAMAGE_DELTA_PREFIX + damageType);
-
-               if (min != null && delta != null)
-               {
-                  this.damageBonuses.put(damageType, ValueRange.fromMinAndDelta(min, delta));
-               }
-            }
-         }
-
-         // Crit chance.
-         {
-            ValueRange critChance = attributes.get(Constants.ITEM_ATTR_CRIT_CHANCE);
-
-            if (critChance != null) this.critChance += critChance.getMin();
-         }
-
-         // Crit damage.
-         {
-            ValueRange critDamageBonus = attributes.get(Constants.ITEM_ATTR_CRIT_DMG);
-
-            if (critDamageBonus != null) this.critDamageBonus += critDamageBonus.getMin();
-         }
 
          if (Constants.ITEM_SLOT_MAIN_HAND.equals(slotType))
          {
             this.mainWeapon = new Weapon(item);
          }
-         else if (Constants.ITEM_SLOT_OFF_HAND.equals(slotType))
+
+         if (Constants.ITEM_SLOT_OFF_HAND.equals(slotType))
          {
             if (Utils.isWeapon(item.getType().getId()))
             {
                this.offWeapon = new Weapon(item);
             }
          }
-         else
-         {
-            // Generic attack speed bonus.
-            {
-               ValueRange attackSpeedBonus = attributes.get(Constants.ITEM_ATTR_ATTACK_SPEED_PERCENT);
 
-               if (attackSpeedBonus != null) this.attackSpeedBonus += attackSpeedBonus.getMin();
+         // Armor is quirky, deal with it here.
+         item.getAttributesRaw().remove(Constants.ITEM_ATTR_ARMOR);
+         item.getAttributesRaw().remove(Constants.ITEM_ATTR_ARMOR_BONUS);
+
+         item.getAttributesRaw().put(Constants.ITEM_ATTR_ARMOR, item.getArmor());
+
+         // Base attributes.
+         attributesList.add(item.getAttributesRaw());
+
+         // Gems.
+         if (item.getGems() != null)
+         {
+            for (Gem gem : item.getGems())
+            {
+               attributesList.add(gem.getAttributesRaw());
             }
          }
+
+         // Sets.
+         if (item.getSet() != null)
+         {
+            String slug = item.getSet().getSlug();
+
+            if (!setDefinition.containsKey(slug))
+            {
+               setDefinition.put(slug, item.getSet().getRanks());
+            }
+
+            Integer ownershipCount = setOwnership.get(slug);
+
+            if (ownershipCount == null)
+            {
+               ownershipCount = 0;
+            }
+
+            ownershipCount++;
+
+            setOwnership.put(slug, ownershipCount);
+         }
+      }
+
+      // Do Set post-processing.
+      for (Map.Entry<String, Integer> entry : setOwnership.entrySet())
+      {
+         String slug = entry.getKey();
+         int ownership = entry.getValue();
+
+         List<SetRank> setRanks = setDefinition.get(slug);
+
+         for (SetRank setRank : setRanks)
+         {
+            if (setRank.getRequiredOwnership() > ownership)
+            {
+               continue;
+            }
+
+            attributesList.add(setRank.getAttributesRaw());
+         }
+      }
+
+      // Process the attribute maps.
+      for (Map<String, ValueRange> attributesRaw : attributesList)
+      {
+         this.addAttributes(attributesRaw);
+      }
+   }
+
+   private void addAttributes(Map<String, ValueRange> attributes)
+   {
+      // Base stats.
+      {
+         ValueRange dexterity = attributes.get(Constants.ITEM_ATTR_DEXTERITY);
+         ValueRange strength = attributes.get(Constants.ITEM_ATTR_STRENGTH);
+         ValueRange intelligence = attributes.get(Constants.ITEM_ATTR_INTELLIGENCE);
+         ValueRange vitality = attributes.get(Constants.ITEM_ATTR_VITALITY);
+
+         if (dexterity != null) this.dexterity += dexterity.getMin();
+         if (strength != null) this.strength += strength.getMin();
+         if (intelligence != null) this.intelligence += intelligence.getMin();
+         if (vitality != null) this.vitality += vitality.getMin();
+      }
+
+      // Base stats (try to get bugged names).
+      {
+         ValueRange dexterity = attributes.get(Constants.BUG_ITEM_ATTR_DEXTERITY);
+         ValueRange strength = attributes.get(Constants.BUG_ITEM_ATTR_STRENGTH);
+         ValueRange intelligence = attributes.get(Constants.BUG_ITEM_ATTR_INTELLIGENCE);
+         ValueRange vitality = attributes.get(Constants.BUG_ITEM_ATTR_VITALITY);
+
+         if (dexterity != null) this.dexterity += dexterity.getMin();
+         if (strength != null) this.strength += strength.getMin();
+         if (intelligence != null) this.intelligence += intelligence.getMin();
+         if (vitality != null) this.vitality += vitality.getMin();
+      }
+
+      // Direct life-related.
+      {
+         ValueRange lifePercent = attributes.get(Constants.ITEM_ATTR_LIFE_PERCENT);
+         ValueRange lifeOnHit = attributes.get(Constants.ITEM_ATTR_LIFE_ON_HIT);
+         ValueRange lifeRegen = attributes.get(Constants.ITEM_ATTR_LIFE_REGEN);
+
+         if (lifePercent != null) this.lifePercent += lifePercent.getMin();
+         if (lifeOnHit != null) this.lifeOnHit += lifeOnHit.getMin();
+         if (lifeRegen != null) this.lifeRegen += lifeRegen.getMin();
+      }
+
+      // Shield.
+      {
+         ValueRange blockChance = attributes.get(Constants.ITEM_ATTR_BLOCK_CHANCE);
+         ValueRange blockChanceBonus = attributes.get(Constants.ITEM_ATTR_BLOCK_CHANCE_BONUS);
+         ValueRange blockAmountMin = attributes.get(Constants.ITEM_ATTR_BLOCK_AMOUNT_MIN);
+         ValueRange blockAmountDelta = attributes.get(Constants.ITEM_ATTR_BLOCK_AMOUNT_DELTA);
+
+         if (blockChance != null) this.blockChance += blockChance.getMin();
+         if (blockChanceBonus != null) this.blockChance += blockChanceBonus.getMin();
+         if (blockAmountMin != null) this.blockAmountMin += blockAmountMin.getMin();
+         if (blockAmountDelta != null) this.blockAmountDelta += blockAmountDelta.getMin();
+      }
+
+      // Armor.
+      {
+         ValueRange armor = attributes.get(Constants.ITEM_ATTR_ARMOR);
+         ValueRange armorBonus = attributes.get(Constants.ITEM_ATTR_ARMOR_BONUS);
+
+         if (armor != null) this.armor += armor.getMin();
+         if (armorBonus != null) this.armor += armorBonus.getMin();
+      }
+
+      // Resists.
+      {
+         ValueRange resistAll = attributes.get(Constants.ITEM_ATTR_RESIST_ALL);
+         ValueRange resistArcane = attributes.get(Constants.ITEM_ATTR_RESIST_ARCANE);
+         ValueRange resistFire = attributes.get(Constants.ITEM_ATTR_RESIST_FIRE);
+         ValueRange resistLightning = attributes.get(Constants.ITEM_ATTR_RESIST_LIGHTNING);
+         ValueRange resistPoison = attributes.get(Constants.ITEM_ATTR_RESIST_POISON);
+         ValueRange resistCold = attributes.get(Constants.ITEM_ATTR_RESIST_COLD);
+         ValueRange resistPhysical = attributes.get(Constants.ITEM_ATTR_RESIST_PHYSICAL);
+
+         if (resistAll != null) this.resistAll += resistAll.getMin();
+         if (resistArcane != null) this.resistArcane += resistArcane.getMin();
+         if (resistFire != null) this.resistFire += resistFire.getMin();
+         if (resistLightning != null) this.resistLightning += resistLightning.getMin();
+         if (resistPoison != null) this.resistPoison += resistPoison.getMin();
+         if (resistCold != null) this.resistCold += resistCold.getMin();
+         if (resistPhysical != null) this.resistPhysical += resistPhysical.getMin();
+      }
+
+      // Bonus damage.
+      {
+         List<String> damageTypes = new ArrayList<String>();
+
+         damageTypes.add(Constants.PHYSICAL_DAMAGE_TYPE);
+         damageTypes.addAll(Arrays.asList(Constants.ELEMENTAL_DAMAGE_TYPES));
+
+         for (String damageType : damageTypes)
+         {
+            ValueRange min = attributes.get(Constants.ITEM_ATTR_DAMAGE_MIN_PREFIX + damageType);
+            ValueRange delta = attributes.get(Constants.ITEM_ATTR_DAMAGE_DELTA_PREFIX + damageType);
+
+            if (min != null && delta != null)
+            {
+               this.damageBonuses.put(damageType, ValueRange.fromMinAndDelta(min, delta));
+            }
+         }
+      }
+
+      // Crit chance.
+      {
+         ValueRange critChance = attributes.get(Constants.ITEM_ATTR_CRIT_CHANCE);
+
+         if (critChance != null) this.critChance += critChance.getMin();
+      }
+
+      // Crit damage.
+      {
+         ValueRange critDamageBonus = attributes.get(Constants.ITEM_ATTR_CRIT_DMG);
+
+         if (critDamageBonus != null) this.critDamageBonus += critDamageBonus.getMin();
+      }
+
+      // Attack speed bonus.
+      {
+         ValueRange attackSpeedBonus = attributes.get(Constants.ITEM_ATTR_ATTACK_SPEED_PERCENT);
+
+         if (attackSpeedBonus != null) this.attackSpeedBonus += attackSpeedBonus.getMin();
       }
    }
 
@@ -417,8 +503,7 @@ class StatsFromItems
       private Map<String, ValueRange> elementalDamageBonusRanges = new HashMap<String, ValueRange>();
 
       // To determine attacks per second.
-      private String type;
-      private boolean twoHanded;
+      private Item.Type type;
       private double attackSpeedPercentBonus;
       private double attackSpeedRawBonus;
 
@@ -470,8 +555,7 @@ class StatsFromItems
          }
 
          // Type (determines base attack speed).
-         this.type = item.getType().getId();
-         this.twoHanded = item.getType().isTwoHanded();
+         this.type = item.getType();
 
          // % bonus to attack speed.
          {
@@ -523,24 +607,14 @@ class StatsFromItems
          return elementalDamageBonusRanges;
       }
 
-      public String getType()
+      public Item.Type getType()
       {
          return type;
       }
 
-      public void setType(String type)
+      public void setType(Item.Type type)
       {
          this.type = type;
-      }
-
-      public boolean isTwoHanded()
-      {
-         return twoHanded;
-      }
-
-      public void setTwoHanded(boolean twoHanded)
-      {
-         this.twoHanded = twoHanded;
       }
 
       public double getAttackSpeedPercentBonus()

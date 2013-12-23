@@ -25,6 +25,10 @@ public class Constants
    public static final String WEAPON_TYPE_CROSSBOW = "Xbow";
    public static final String WEAPON_TYPE_HAND_CROSSBOW = "HandXbow";
    public static final String WEAPON_TYPE_WAND = "Wand";
+   public static final String WEAPON_TYPE_DIABO = "Diabo";
+   public static final String WEAPON_TYPE_FIST_WEAPON = "Fist Weapon";
+   public static final String WEAPON_TYPE_CEREMONIAL_KNIFE = "Ceremonial Knife";
+   public static final String WEAPON_TYPE_STAFF = "Staff";
 
    public static final String DAMAGE_MODIFIER_ARMOR = "Armor";
    public static final String DAMAGE_MODIFIER_RESISTS = "All Resist";
@@ -46,6 +50,11 @@ public class Constants
    public static final String ITEM_ATTR_INTELLIGENCE = "Intelligence_Item";
    public static final String ITEM_ATTR_DEXTERITY = "Dexterity_Item";
    public static final String ITEM_ATTR_VITALITY = "Vitality_Item";
+
+   public static final String BUG_ITEM_ATTR_STRENGTH = "Strength";
+   public static final String BUG_ITEM_ATTR_INTELLIGENCE = "Intelligence";
+   public static final String BUG_ITEM_ATTR_DEXTERITY = "Dexterity";
+   public static final String BUG_ITEM_ATTR_VITALITY = "Vitality";
 
    // Life related.
    public static final String ITEM_ATTR_LIFE_REGEN = "Hitpoints_Regen_Per_Second";
@@ -79,7 +88,7 @@ public class Constants
 
    // Crit related.
    public static final String ITEM_ATTR_CRIT_DMG = "Crit_Damage_Percent";
-   public static final String ITEM_ATTR_CRIT_CHANCE = "Crit_Chance_Percent";
+   public static final String ITEM_ATTR_CRIT_CHANCE = "Crit_Percent_Bonus_Capped";
 
    // Attack speed related.
    public static final String ITEM_ATTR_ATTACK_SPEED_PERCENT = "Attacks_Per_Second_Percent";
