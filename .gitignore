@@ -1,1 +1,6 @@
+logs/
+target/
+
 .DS_Store
+
+*.iml
