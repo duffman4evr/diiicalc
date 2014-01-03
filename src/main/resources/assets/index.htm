@@ -20,11 +20,39 @@
       <a class="navbar-brand" href="#">DIII Calc</a>
     </div>
     <div id="header">
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <button class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#donateModal">
+            Donate
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>
 
 <div class="container" id="content" style="padding: 15px;">
+</div>
+
+<div class="modal fade" id="donateModal" tabindex="-1" role="dialog" aria-labelledby="donateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 id="donateModalLabel" class="modal-title">Donate</h4>
+      </div>
+      <div class="modal-body">
+        <p>I accept donations in Bitcoin. My address is:</p>
+        <a href="https://blockchain.info/address/18w63e1q6DUbsMpKx6Hhf5HdDRhX3zSQXb">18w63e1q6DUbsMpKx6Hhf5HdDRhX3zSQXb</a>
+        <br/>
+        <img src="img/qr.jpg" />
+        <p>Thank you!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Templates -->
@@ -59,12 +87,118 @@
 </script>
 
 <script type="text/template" id="heroTemplate">
-  <div class="row">
-    <div class="col-md-9"></div>
-    <div class="col-md-3">
-      <div id="offensive-stats"></div>
-      <div id="defensive-stats"></div>
+  <div class="row" style="margin-bottom: 10px;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <table style="width: 100%;">
+        <col style="width: auto;" />
+        <col style="width: auto;" />
+        <col style="width: 70px;" />
+        <tr>
+          <td style="vertical-align: middle;">
+            <a href="#heroes/<%= DiiiCalcApp.battleTag %>" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Hero Select</a>
+          </td>
+          <td style="vertical-align: middle;">
+            <p class="text-right" style="margin: 2px;"><strong><%= hero.name %></strong></p>
+            <p class="text-right" style="margin: 2px;">Level <%= hero.level %></p>
+            <p class="text-right" style="margin: 2px;">
+              <span class="label label-danger"><%= hero.hardcore ? 'HARDCORE' : '' %></span>
+              <span class="label label-success"><%= hero.hardcore ? '' : 'SOFTCORE' %></span>
+            </p>
+          </td>
+          <td><img src="<%= 'img/' + hero.class + '_' + ((hero.gender == 0) ? 'male' : 'female') + '.png' %>" class="img-thumbnail pull-right"></td>
+        </tr>
+      </table>
     </div>
+    <div class="col-md-2"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-4" id="offensive-stats"></div>
+    <div class="col-md-4" id="defensive-stats"></div>
+    <div class="col-md-2"></div>
+  </div>
+</script>
+
+<script type="text/template" id="defensiveSummaryTemplate">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">Defensive</h3>
+    </div>
+    <table class="table">
+      <col style="width: 45%" />
+      <col style="width: 55%" />
+      <tr>
+        <td class="text-right bold-text">EHP</td>
+        <td><%= effectiveLife.numberFormat(1) %></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text">Armor</td>
+        <td><%= armor.numberFormat(1) %></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text">All Resist</td>
+        <td><%= allResist.numberFormat(1) %></td>
+      </tr>
+    </table>
+    <div class="equivalencies-text">Equivalencies</div>
+    <table class="table">
+      <col style="width: 55%" />
+      <col style="width: 45%" />
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="armor-ehp-input" style="width: 40px;" value="1" /> Armor =</td>
+        <td class="armor-ehp-output" style="vertical-align: middle;"></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="resist-ehp-input" style="width: 40px;" value="1" /> All Resist =</td>
+        <td class="resist-ehp-output" style="vertical-align: middle;"></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="vitality-ehp-input" style="width: 40px;" value="1" /> Vitality =</td>
+        <td class="vitality-ehp-output" style="vertical-align: middle;"></td>
+      </tr>
+    </table>
+  </div>
+</script>
+
+<script type="text/template" id="offensiveSummaryTemplate">
+  <div class="panel panel-warning">
+    <div class="panel-heading">
+      <h3 class="panel-title">Offensive</h3>
+    </div>
+    <table class="table">
+      <col style="width: 45%" />
+      <col style="width: 55%" />
+      <tr>
+        <td class="text-right bold-text">DPS</td>
+        <td><%= dps.numberFormat(2) %></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text">Weapon Damage</td>
+        <td><%= weaponDamage.numberFormat(2) %></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text">Attacks/sec</td>
+        <td><%= attacksPerSecond.numberFormat(4) %></td>
+      </tr>
+    </table>
+    <div class="equivalencies-text">Equivalencies</div>
+    <table class="table">
+      <col style="width: 55%" />
+      <col style="width: 45%" />
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="crit-chance-dps-input" style="width: 40px;" value="1" /> % Crit Chance =</td>
+        <td class="crit-chance-dps-output" style="vertical-align: middle;"></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="crit-damage-dps-input" style="width: 40px;" value="1" /> % Crit Damage =</td>
+        <td class="crit-damage-dps-output" style="vertical-align: middle;"></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="attack-speed-dps-input" style="width: 40px;" value="1" /> % Attack Speed =</td>
+        <td class="attack-speed-dps-output" style="vertical-align: middle;"></td>
+      </tr>
+    </table>
   </div>
 </script>
 

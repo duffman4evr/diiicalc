@@ -7,28 +7,28 @@ public class OffensiveSummary
    @JsonProperty("dps")
    private double dps;
 
-   @JsonProperty("weapon-damage")
+   @JsonProperty("weaponDamage")
    private double weaponDamage;
 
-   @JsonProperty("attacks-per-second")
+   @JsonProperty("attacksPerSecond")
    private double attacksPerSecond;
 
-   @JsonProperty("crit-chance")
+   @JsonProperty("critChance")
    private double critChance;
 
-   @JsonProperty("crit-damage")
+   @JsonProperty("critDamage")
    private double critDamage;
 
-   @JsonProperty("one-primary-stat-dps")
+   @JsonProperty("onePrimaryStatDps")
    private double primaryStatDps;
 
-   @JsonProperty("one-percent-crit-chance-dps")
+   @JsonProperty("onePercentCritChanceDps")
    private double critChanceDps;
 
-   @JsonProperty("one-percent-crit-damage-dps")
+   @JsonProperty("onePercentCritDamageDps")
    private double critDamageDps;
 
-   @JsonProperty("one-percent-attack-speed-dps")
+   @JsonProperty("onePercentAttackSpeedDps")
    private double attackSpeedDps;
 
    public OffensiveSummary

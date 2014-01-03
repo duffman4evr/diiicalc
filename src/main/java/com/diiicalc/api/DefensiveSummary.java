@@ -25,14 +25,14 @@ public class DefensiveSummary
    @JsonProperty("armorDamageModifier")
    private double armorDamageModifier;
 
-   @JsonProperty("oneArmorEhpValue")
-   private double oneArmorEhpValue;
+   @JsonProperty("oneArmorEhp")
+   private double oneArmorEhp;
 
-   @JsonProperty("oneAllResistEhpValue")
-   private double oneAllResistEhpValue;
+   @JsonProperty("oneAllResistEhp")
+   private double oneAllResistEhp;
 
-   @JsonProperty("oneVitalityEhpValue")
-   private double oneVitalityEhpValue;
+   @JsonProperty("oneVitalityEhp")
+   private double oneVitalityEhp;
 
    public DefensiveSummary
    (
@@ -43,9 +43,9 @@ public class DefensiveSummary
       double totalIncomingDamageModifier,
       double resistAllDamageModifier,
       double armorDamageModifier,
-      double oneArmorEhpValue,
-      double oneAllResistEhpValue,
-      double oneVitalityEhpValue
+      double oneArmorEhp,
+      double oneAllResistEhp,
+      double oneVitalityEhp
    )
    {
       this.effectiveLife = effectiveLife;
@@ -55,8 +55,8 @@ public class DefensiveSummary
       this.totalIncomingDamageModifier = totalIncomingDamageModifier;
       this.resistAllDamageModifier = resistAllDamageModifier;
       this.armorDamageModifier = armorDamageModifier;
-      this.oneArmorEhpValue = oneArmorEhpValue;
-      this.oneAllResistEhpValue = oneAllResistEhpValue;
-      this.oneVitalityEhpValue = oneVitalityEhpValue;
+      this.oneArmorEhp = oneArmorEhp;
+      this.oneAllResistEhp = oneAllResistEhp;
+      this.oneVitalityEhp = oneVitalityEhp;
    }
 }

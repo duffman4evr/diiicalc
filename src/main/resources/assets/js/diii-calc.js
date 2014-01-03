@@ -1,3 +1,19 @@
+// Helpers.
+Number.prototype.numberFormat = function (decimals, dec_point, thousands_sep)
+{
+   dec_point = typeof dec_point !== 'undefined' ? dec_point : '.';
+   thousands_sep = typeof thousands_sep !== 'undefined' ? thousands_sep : ',';
+
+   var parts = this.toFixed(decimals).toString().split('.');
+   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_sep);
+
+   return parts.join(dec_point);
+}
+
+// ----
+// DIII Calc
+// ----
+
 DiiiCalcApp = new Backbone.Marionette.Application();
 
 // Regions.
@@ -8,7 +24,8 @@ DiiiCalcApp.addRegions
 
 // Models.
 DiiiCalcApp.CareerProfileModel = Backbone.Model.extend( { urlRoot: '/service/career-profiles' } );
-DiiiCalcApp.HeroModel = Backbone.Model.extend( { urlRoot: '/service/heroes' } );
+DiiiCalcApp.DefensiveSummaryModel = Backbone.Model.extend( { urlRoot: '/service/defensive-summaries' } );
+DiiiCalcApp.OffensiveSummaryModel = Backbone.Model.extend( { urlRoot: '/service/offensive-summaries' } );
 
 // Views / Layouts.
 DiiiCalcApp.BattleTagLookupView = Backbone.Marionette.ItemView.extend
@@ -69,13 +86,21 @@ DiiiCalcApp.HeroesView = Backbone.Marionette.ItemView.extend
    {
       var clickTarget = $(ev.originalEvent.target);
       var heroId = clickTarget.parent().attr('id');
-      alert("hello" + heroId);
+      DiiiCalcApp.controller.showBreakdownForHero(heroId);
+      DiiiCalcApp.router.navigate('breakdowns/' + heroId);
    }
 });
 
 DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 ({
-   template: '#heroTemplate',
+   template : function(model)
+   {
+      return _.template($("#heroTemplate").html(), model, {variable: 'hero'});
+   },
+   initialize: function(options)
+   {
+      this.heroId = options.heroId;
+   },
    regions:
    {
       offensiveStatsRegion: '#offensive-stats',
@@ -83,55 +108,155 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
    },
    onShow: function()
    {
-      if (this.model.get('customer'))
-      {
-         var that = this;
-         var connectors = new ProxyClients();
-         connectors.fetch
-         ({
-            data: $.param({ customerId: this.model.get('customer').get('id') }),
-            success: function(response)
-            {
-               var tempModel = new Backbone.Model
-               ({
-                  customerId: that.model.get('customer').get('id'),
-                  proxyClients: response.models,
-                  username: username,
-                  password: password
-               });
+      var that = this;
 
-               that.proxyClientsRegion.show(new ProxyClientsView({ model: tempModel }));
-            }
-         });
+      var defensiveModel = new DiiiCalcApp.DefensiveSummaryModel({ id: this.model.id });
+      var offensiveModel = new DiiiCalcApp.OffensiveSummaryModel({ id: this.model.id });
 
-         var connectorsWithData = new ProxyClients();
-         connectorsWithData.fetch
-         ({
-            data: $.param({ customerId: this.model.get('customer').get('id'), requireData: 'true' }),
-            success: function(response)
-            {
-               that.renderReports(that, response.models);
-            }
-         });
-      }
+      defensiveModel.fetch
+      ({
+         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
+         success: function(model)
+         {
+            DiiiCalcApp.oneArmorEhp = model.get("oneArmorEhp");
+            DiiiCalcApp.oneAllResistEhp = model.get("oneAllResistEhp");
+            DiiiCalcApp.oneVitalityEhp = model.get("oneVitalityEhp");
+
+            var view = new DiiiCalcApp.DefensiveSummaryView({ model: model });
+
+            that.defensiveStatsRegion.show(view);
+         }
+      });
+
+      offensiveModel.fetch
+      ({
+         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
+         success: function(model)
+         {
+            DiiiCalcApp.onePercentCritChanceDps = model.get("onePercentCritChanceDps");
+            DiiiCalcApp.onePercentCritDamageDps = model.get("onePercentCritDamageDps");
+            DiiiCalcApp.onePercentAttackSpeedDps = model.get("onePercentAttackSpeedDps");
+
+            var view = new DiiiCalcApp.OffensiveSummaryView({ model: model });
+
+            that.offensiveStatsRegion.show(view);
+         }
+      })
+   }
+});
+
+DiiiCalcApp.DefensiveSummaryView = Backbone.Marionette.ItemView.extend
+({
+   template: '#defensiveSummaryTemplate',
+   events:
+   {
+      'submit .battle-tag-form' : 'findHeroes',
+      'keyup  .armor-ehp-input': 'armorChanged',
+      'change .armor-ehp-input': 'armorChanged',
+      'input  .armor-ehp-input': 'armorChanged',
+      'paste  .armor-ehp-input': 'armorChanged',
+      'keyup  .resist-ehp-input': 'resistChanged',
+      'change .resist-ehp-input': 'resistChanged',
+      'input  .resist-ehp-input': 'resistChanged',
+      'paste  .resist-ehp-input': 'resistChanged',
+      'keyup  .vitality-ehp-input': 'vitalityChanged',
+      'change .vitality-ehp-input': 'vitalityChanged',
+      'input  .vitality-ehp-input': 'vitalityChanged',
+      'paste  .vitality-ehp-input': 'vitalityChanged'
    },
+   onShow: function()
+   {
+      $(".armor-ehp-input").val("200")
+      $(".resist-ehp-input").val("80")
+      $(".vitality-ehp-input").val("100");
+
+      this.armorChanged();
+      this.resistChanged();
+      this.vitalityChanged();
+   },
+   armorChanged: function()
+   {
+      var input = $(".armor-ehp-input").val();
+      var ehpValue = DiiiCalcApp.oneArmorEhp * input;
+
+      $(".armor-ehp-output").html(ehpValue.numberFormat(0) + " EHP");
+   },
+   resistChanged: function()
+   {
+      var input = $(".resist-ehp-input").val();
+      var ehpValue = DiiiCalcApp.oneAllResistEhp * input;
+
+      $(".resist-ehp-output").html(ehpValue.numberFormat(0) + " EHP");
+   },
+   vitalityChanged: function()
+   {
+      var input = $(".vitality-ehp-input").val();
+      var ehpValue = DiiiCalcApp.oneVitalityEhp * input;
+
+      $(".vitality-ehp-output").html(ehpValue.numberFormat(0) + " EHP");
+   }
+});
+
+DiiiCalcApp.OffensiveSummaryView = Backbone.Marionette.ItemView.extend
+({
+   template: '#offensiveSummaryTemplate',
+   events:
+   {
+      'submit .battle-tag-form' : 'findHeroes',
+      'keyup  .crit-chance-dps-input': 'critChanceChanged',
+      'change .crit-chance-dps-input': 'critChanceChanged',
+      'input  .crit-chance-dps-input': 'critChanceChanged',
+      'paste  .crit-chance-dps-input': 'critChanceChanged',
+      'keyup  .crit-damage-dps-input': 'critDamageChanged',
+      'change .crit-damage-dps-input': 'critDamageChanged',
+      'input  .crit-damage-dps-input': 'critDamageChanged',
+      'paste  .crit-damage-dps-input': 'critDamageChanged',
+      'keyup  .attack-speed-dps-input': 'attackSpeedChanged',
+      'change .attack-speed-dps-input': 'attackSpeedChanged',
+      'input  .attack-speed-dps-input': 'attackSpeedChanged',
+      'paste  .attack-speed-dps-input': 'attackSpeedChanged'
+   },
+   onShow: function()
+   {
+      $(".crit-chance-dps-input").val("5")
+      $(".crit-damage-dps-input").val("50")
+      $(".attack-speed-dps-input").val("9");
+
+      this.critChanceChanged();
+      this.critDamageChanged();
+      this.attackSpeedChanged();
+   },
+   critChanceChanged: function()
+   {
+      var input = $(".crit-chance-dps-input").val();
+      var dpsValue = DiiiCalcApp.onePercentCritChanceDps * input;
+
+      $(".crit-chance-dps-output").html(dpsValue.numberFormat(0) + " DPS");
+   },
+   critDamageChanged: function()
+   {
+      var input = $(".crit-damage-dps-input").val();
+      var dpsValue = DiiiCalcApp.onePercentCritDamageDps * input;
+
+      $(".crit-damage-dps-output").html(dpsValue.numberFormat(0) + " DPS");
+   },
+   attackSpeedChanged: function()
+   {
+      var input = $(".attack-speed-dps-input").val();
+      var dpsValue = DiiiCalcApp.onePercentAttackSpeedDps * input;
+
+      $(".attack-speed-dps-output").html(dpsValue.numberFormat(0) + " DPS");
+   }
 });
 
 // Controller.
 DiiiCalcApp.Controller = Marionette.Controller.extend
 ({
-   showHeroForId: function(heroId)
+   showBreakdownForHero: function(heroId)
    {
-      var heroModel = new DiiiCalcApp.HeroModel({ id: heroId });
-      heroModel.fetch
-      ({
-         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
-         success: function(model)
-         {
-            var heroView = new DiiiCalcApp.HeroView({ model: model });
-            DiiiCalcApp.contentRegion.show(heroView);
-         }
-      });
+      var heroModel = new Backbone.Model(DiiiCalcApp.heroMap[heroId]);
+
+      DiiiCalcApp.contentRegion.show(new DiiiCalcApp.HeroLayout({ model: heroModel }));
    },
    showHeroesForBattleTag: function(battleTag)
    {
@@ -146,7 +271,18 @@ DiiiCalcApp.Controller = Marionette.Controller.extend
    },
    showHeroesForModel: function(model)
    {
+      DiiiCalcApp.heroMap = {};
+
+      model.get("heroes").forEach
+      (
+         function(hero)
+         {
+            DiiiCalcApp.heroMap[hero.id] = hero;
+         }
+      );
+
       var heroesView = new DiiiCalcApp.HeroesView({ model: model });
+
       DiiiCalcApp.contentRegion.show(heroesView);
    },
    showBattleTagPrompt: function()
@@ -167,7 +303,8 @@ DiiiCalcApp.addInitializer
          appRoutes:
          {
             "": "showBattleTagPrompt",
-            "heroes/:id": "showHeroesForBattleTag"
+            "heroes/:id": "showHeroesForBattleTag",
+            "breakdowns/:id": "showBreakdownForHero"
          }
       });
    }

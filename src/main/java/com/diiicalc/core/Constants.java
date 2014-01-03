@@ -22,8 +22,10 @@ public class Constants
    public static final String WEAPON_TYPE_SPEAR = "Spear";
    public static final String WEAPON_TYPE_MIGHTY_WEAPON = "Mighty Weapon";
    public static final String WEAPON_TYPE_BOW = "Bow";
-   public static final String WEAPON_TYPE_CROSSBOW = "Xbow";
-   public static final String WEAPON_TYPE_HAND_CROSSBOW = "HandXbow";
+   public static final String WEAPON_TYPE_XBOW = "Xbow";
+   public static final String WEAPON_TYPE_HAND_XBOW = "HandXbow";
+   public static final String WEAPON_TYPE_CROSSBOW = "Crossbow";
+   public static final String WEAPON_TYPE_HAND_CROSSBOW = "HandCrossbow";
    public static final String WEAPON_TYPE_WAND = "Wand";
    public static final String WEAPON_TYPE_DIABO = "Diabo";
    public static final String WEAPON_TYPE_FIST_WEAPON = "Fist Weapon";

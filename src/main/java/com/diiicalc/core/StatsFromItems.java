@@ -35,6 +35,10 @@ class StatsFromItems
 
    private double resistAll;
 
+   private double incomingRangedDamageReduction;
+   private double incomingMeleeDamageReduction;
+   private double incomingEliteDamageReduction;
+
    // Offensive.
    private double critChance;
    private double critDamageBonus;
@@ -175,6 +179,17 @@ class StatsFromItems
          if (lifePercent != null) this.lifePercent += lifePercent.getMin();
          if (lifeOnHit != null) this.lifeOnHit += lifeOnHit.getMin();
          if (lifeRegen != null) this.lifeRegen += lifeRegen.getMin();
+      }
+
+      // Percent DR
+      {
+         ValueRange ranged = attributes.get(Constants.ITEM_ATTR_RANGED_DR_PERCENT);
+         ValueRange melee = attributes.get(Constants.ITEM_ATTR_MELEE_DR_PERCENT);
+         ValueRange elite = attributes.get(Constants.ITEM_ATTR_ELITE_DR_PERCENT);
+
+         if (ranged != null) this.incomingRangedDamageReduction += ranged.getMin();
+         if (melee != null) this.incomingMeleeDamageReduction += melee.getMin();
+         if (elite != null) this.incomingEliteDamageReduction += elite.getMin();
       }
 
       // Shield.
@@ -437,6 +452,36 @@ class StatsFromItems
    public void setResistAll(double resistAll)
    {
       this.resistAll = resistAll;
+   }
+
+   public double getIncomingRangedDamageReduction()
+   {
+      return incomingRangedDamageReduction;
+   }
+
+   public void setIncomingRangedDamageReduction(double incomingRangedDamageReduction)
+   {
+      this.incomingRangedDamageReduction = incomingRangedDamageReduction;
+   }
+
+   public double getIncomingMeleeDamageReduction()
+   {
+      return incomingMeleeDamageReduction;
+   }
+
+   public void setIncomingMeleeDamageReduction(double incomingMeleeDamageReduction)
+   {
+      this.incomingMeleeDamageReduction = incomingMeleeDamageReduction;
+   }
+
+   public double getIncomingEliteDamageReduction()
+   {
+      return incomingEliteDamageReduction;
+   }
+
+   public void setIncomingEliteDamageReduction(double incomingEliteDamageReduction)
+   {
+      this.incomingEliteDamageReduction = incomingEliteDamageReduction;
    }
 
    public double getCritChance()

@@ -18,7 +18,12 @@ public class DefensiveSummaries
    @GET
    @Timed
    @Path("/{heroId}")
-   public DefensiveSummary getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag, @QueryParam("monsterLevel") Long monsterLevel) throws Exception
+   public DefensiveSummary getSingle
+   (
+      @PathParam("heroId") long heroId,
+      @QueryParam("battleTag") String battleTag,
+      @QueryParam("monsterLevel") Long monsterLevel
+   ) throws Exception
    {
       if (battleTag == null)
       {

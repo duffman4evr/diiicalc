@@ -299,6 +299,8 @@ public class Utils
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_SPEAR);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_MIGHTY_WEAPON);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_BOW);
+      WEAPON_TYPES.add(Constants.WEAPON_TYPE_XBOW);
+      WEAPON_TYPES.add(Constants.WEAPON_TYPE_HAND_XBOW);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_CROSSBOW);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_HAND_CROSSBOW);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_WAND);
@@ -319,6 +321,8 @@ public class Utils
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, false), 1.3);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, true), 1.0);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_BOW, true), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_XBOW, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_HAND_XBOW, false), 1.6);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CROSSBOW, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_HAND_CROSSBOW, false), 1.6);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_WAND, false), 1.4);
