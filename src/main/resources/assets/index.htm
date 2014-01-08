@@ -47,6 +47,7 @@
         <br/>
         <img src="img/qr.jpg" />
         <p>Thank you!</p>
+        <p style="font-size: 9px;">Don't have bitcoin? <a href="http://www.youtube.com/watch?v=24ce5tV-pgg">Join the revolution!</a></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -118,6 +119,11 @@
     <div class="col-md-4" id="defensive-stats"></div>
     <div class="col-md-2"></div>
   </div>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8" id="skills"></div>
+    <div class="col-md-2"></div>
+  </div>
 </script>
 
 <script type="text/template" id="defensiveSummaryTemplate">
@@ -141,7 +147,7 @@
         <td><%= allResist.numberFormat(1) %></td>
       </tr>
     </table>
-    <div class="equivalencies-text">Equivalencies</div>
+    <div class="equivalencies-text">EHP Equivalencies</div>
     <table class="table">
       <col style="width: 55%" />
       <col style="width: 45%" />
@@ -156,6 +162,10 @@
       <tr>
         <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="vitality-ehp-input" style="width: 40px;" value="1" /> Vitality =</td>
         <td class="vitality-ehp-output" style="vertical-align: middle;"></td>
+      </tr>
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="percent-life-ehp-input" style="width: 40px;" value="1" /> % Life =</td>
+        <td class="percent-life-ehp-output" style="vertical-align: middle;"></td>
       </tr>
     </table>
   </div>
@@ -182,10 +192,14 @@
         <td><%= attacksPerSecond.numberFormat(4) %></td>
       </tr>
     </table>
-    <div class="equivalencies-text">Equivalencies</div>
+    <div class="equivalencies-text">DPS Equivalencies</div>
     <table class="table">
       <col style="width: 55%" />
       <col style="width: 45%" />
+      <tr>
+        <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="primary-stat-dps-input" style="width: 40px;" value="1" /> Primary Stat =</td>
+        <td class="primary-stat-dps-output" style="vertical-align: middle;"></td>
+      </tr>
       <tr>
         <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="crit-chance-dps-input" style="width: 40px;" value="1" /> % Crit Chance =</td>
         <td class="crit-chance-dps-output" style="vertical-align: middle;"></td>
@@ -197,6 +211,66 @@
       <tr>
         <td class="text-right bold-text" style="vertical-align: middle; padding-right: 0;"><input type="text" class="attack-speed-dps-input" style="width: 40px;" value="1" /> % Attack Speed =</td>
         <td class="attack-speed-dps-output" style="vertical-align: middle;"></td>
+      </tr>
+    </table>
+  </div>
+</script>
+
+<script type="text/template" id="skillsTemplate">
+  <div class="row">
+    <h2>Skills</h2>
+  </div>
+  <div class="row">
+    <table class="table">
+      <col style="width: 1%;">
+      <col style="width: 4px;">
+      <tr style="height: 70px;">
+        <td class="text-center" style="font-size: 18px; color: #4C4C4C; vertical-align: middle;">
+          Active
+        </td>
+        <td style="vertical-align: middle;">
+          <% _.each(relevantSkillSet.active, function(activeSkill) { %>
+          <div class="btn-group active-skill" id="<%= activeSkill.skill.slug %>">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="padding-left:6px; padding-right:6px;">
+              <img width="48" height="48" src="http://us.media.blizzard.com/d3/icons/skills/64/<%= activeSkill.skill.icon %>.png" />
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li role="presentation" class="dropdown-header"><%= activeSkill.skill.name %></li>
+              <% if (activeSkill.allowRunelessUsage) { %>
+              <li><a href="#" class="skill-select enable-select"><span></span> Enabled</a></li>
+              <% }; %>
+              <li><a href="#" class="skill-select disable-select"><span></span> Disabled</a></li>
+              <% if (activeSkill.runes && activeSkill.runes.length > 0) { %>
+              <li class="divider"></li>
+              <% }; %>
+              <% _.each(activeSkill.runes, function(rune) { %>
+              <li><a href="#" class="skill-select rune-select" id="<%= rune.slug %>"><span></span> <%= rune.name %></a></li>
+              <% }); %>
+            </ul>
+          </div>
+          <% }); %>
+        </td>
+      </tr>
+      <tr style="height: 70px;">
+        <td class="text-center" style="font-size: 18px; color: #4C4C4C; vertical-align: middle;">
+          Passive
+        </td>
+        <td style="vertical-align: middle;">
+          <% _.each(relevantSkillSet.passive, function(passiveSkill) { %>
+          <div class="btn-group passive-skill" id="<%= passiveSkill.slug %>">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="padding-left:6px; padding-right:6px;">
+              <img width="48" height="48" src="http://us.media.blizzard.com/d3/icons/skills/64/<%= passiveSkill.icon %>.png" />
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li role="presentation" class="dropdown-header"><%= passiveSkill.name %></li>
+              <li><a href="#" class="skill-select enable-select"><span></span> Enabled</a></li>
+              <li><a href="#" class="skill-select disable-select"><span></span> Disabled</a></li>
+            </ul>
+          </div>
+          <% }); %>
+        </td>
       </tr>
     </table>
   </div>

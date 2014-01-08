@@ -1,6 +1,22 @@
 body {
    padding-top: 50px;
 }
+
+.separator-gradient {
+   background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #FFFFFF),
+      color-stop(0.48, #696969),
+      color-stop(1, #FFFFFF)
+   );
+   background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #696969 48%, #FFFFFF 100%);
+   background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #696969 48%, #FFFFFF 100%);
+   background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #696969 48%, #FFFFFF 100%);
+   background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #696969 48%, #FFFFFF 100%);
+   background-image: linear-gradient(to bottom, #FFFFFF 0%, #696969 48%, #FFFFFF 100%);
+}
 .equivalencies-text {
    color: #8A8A8A;
    background-color: #E6E6E6;

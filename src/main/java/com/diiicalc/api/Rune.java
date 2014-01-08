@@ -12,6 +12,12 @@ public class Rune
    @JsonProperty("type")
    private String type;
 
+   @JsonProperty("name")
+   private String name;
+
+   @JsonProperty("description")
+   private String description;
+
    @JsonProperty("tooltipParams")
    private String tooltipParams;
 
@@ -21,6 +27,21 @@ public class Rune
    @JsonProperty("order")
    private long order;
 
+   public Rune() { }
+
+   public Rune(String slug, String name)
+   {
+      this.slug = slug;
+      this.name = name;
+   }
+
+   public Rune(String slug, String name, String description)
+   {
+      this.slug = slug;
+      this.name = name;
+      this.description = description;
+   }
+
    public String getSlug()
    {
       return slug;
@@ -29,6 +50,16 @@ public class Rune
    public String getType()
    {
       return type;
+   }
+
+   public String getName()
+   {
+      return name;
+   }
+
+   public String getDescription()
+   {
+      return description;
    }
 
    public String getTooltipParams()

@@ -47,11 +47,11 @@ public class Skills
    public static class PassiveSkill
    {
       @JsonProperty("skill")
-      private Skill active;
+      private Skill skill;
 
-      public Skill getActive()
+      public Skill getSkill()
       {
-         return active;
+         return skill;
       }
    }
 }

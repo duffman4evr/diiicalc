@@ -10,6 +10,8 @@ Number.prototype.numberFormat = function (decimals, dec_point, thousands_sep)
    return parts.join(dec_point);
 }
 
+jQuery.fn.exists = function(){ return this.length > 0; }
+
 // ----
 // DIII Calc
 // ----
@@ -26,6 +28,7 @@ DiiiCalcApp.addRegions
 DiiiCalcApp.CareerProfileModel = Backbone.Model.extend( { urlRoot: '/service/career-profiles' } );
 DiiiCalcApp.DefensiveSummaryModel = Backbone.Model.extend( { urlRoot: '/service/defensive-summaries' } );
 DiiiCalcApp.OffensiveSummaryModel = Backbone.Model.extend( { urlRoot: '/service/offensive-summaries' } );
+DiiiCalcApp.SkillChoiceSetModel = Backbone.Model.extend( { urlRoot: '/service/skill-choice-sets' } );
 
 // Views / Layouts.
 DiiiCalcApp.BattleTagLookupView = Backbone.Marionette.ItemView.extend
@@ -95,16 +98,13 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 ({
    template : function(model)
    {
-      return _.template($("#heroTemplate").html(), model, {variable: 'hero'});
-   },
-   initialize: function(options)
-   {
-      this.heroId = options.heroId;
+      return _.template($("#heroTemplate").html(), model, { variable: 'hero' });
    },
    regions:
    {
       offensiveStatsRegion: '#offensive-stats',
-      defensiveStatsRegion: '#defensive-stats'
+      defensiveStatsRegion: '#defensive-stats',
+      skillsRegion: '#skills'
    },
    onShow: function()
    {
@@ -112,6 +112,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 
       var defensiveModel = new DiiiCalcApp.DefensiveSummaryModel({ id: this.model.id });
       var offensiveModel = new DiiiCalcApp.OffensiveSummaryModel({ id: this.model.id });
+      var skillChoiceSetModel = new DiiiCalcApp.SkillChoiceSetModel({ id: this.model.id });
 
       defensiveModel.fetch
       ({
@@ -121,6 +122,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
             DiiiCalcApp.oneArmorEhp = model.get("oneArmorEhp");
             DiiiCalcApp.oneAllResistEhp = model.get("oneAllResistEhp");
             DiiiCalcApp.oneVitalityEhp = model.get("oneVitalityEhp");
+            DiiiCalcApp.onePercentLifeEhp = model.get("onePercentLifeEhp");
 
             var view = new DiiiCalcApp.DefensiveSummaryView({ model: model });
 
@@ -133,6 +135,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
          data: $.param({ battleTag: DiiiCalcApp.battleTag }),
          success: function(model)
          {
+            DiiiCalcApp.onePrimaryStatDps = model.get("onePrimaryStatDps");
             DiiiCalcApp.onePercentCritChanceDps = model.get("onePercentCritChanceDps");
             DiiiCalcApp.onePercentCritDamageDps = model.get("onePercentCritDamageDps");
             DiiiCalcApp.onePercentAttackSpeedDps = model.get("onePercentAttackSpeedDps");
@@ -141,7 +144,21 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 
             that.offensiveStatsRegion.show(view);
          }
-      })
+      });
+
+      skillChoiceSetModel.fetch
+      ({
+         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
+         success: function(model)
+         {
+            DiiiCalcApp.passiveChoices = model.get('passiveChoices');
+            DiiiCalcApp.activeChoices = model.get('activeChoices');
+
+            var view = new DiiiCalcApp.SkillsView({ model: model });
+
+            that.skillsRegion.show(view);
+         }
+      });
    }
 });
 
@@ -159,6 +176,10 @@ DiiiCalcApp.DefensiveSummaryView = Backbone.Marionette.ItemView.extend
       'change .resist-ehp-input': 'resistChanged',
       'input  .resist-ehp-input': 'resistChanged',
       'paste  .resist-ehp-input': 'resistChanged',
+      'keyup  .percent-life-ehp-input': 'percentLifeChanged',
+      'change .percent-life-ehp-input': 'percentLifeChanged',
+      'input  .percent-life-ehp-input': 'percentLifeChanged',
+      'paste  .percent-life-ehp-input': 'percentLifeChanged',
       'keyup  .vitality-ehp-input': 'vitalityChanged',
       'change .vitality-ehp-input': 'vitalityChanged',
       'input  .vitality-ehp-input': 'vitalityChanged',
@@ -169,10 +190,12 @@ DiiiCalcApp.DefensiveSummaryView = Backbone.Marionette.ItemView.extend
       $(".armor-ehp-input").val("200")
       $(".resist-ehp-input").val("80")
       $(".vitality-ehp-input").val("100");
+      $(".percent-life-ehp-input").val("12")
 
       this.armorChanged();
       this.resistChanged();
       this.vitalityChanged();
+      this.percentLifeChanged();
    },
    armorChanged: function()
    {
@@ -194,6 +217,13 @@ DiiiCalcApp.DefensiveSummaryView = Backbone.Marionette.ItemView.extend
       var ehpValue = DiiiCalcApp.oneVitalityEhp * input;
 
       $(".vitality-ehp-output").html(ehpValue.numberFormat(0) + " EHP");
+   },
+   percentLifeChanged: function()
+   {
+      var input = $(".percent-life-ehp-input").val();
+      var ehpValue = DiiiCalcApp.onePercentLifeEhp * input;
+
+      $(".percent-life-ehp-output").html(ehpValue.numberFormat(0) + " EHP");
    }
 });
 
@@ -203,6 +233,10 @@ DiiiCalcApp.OffensiveSummaryView = Backbone.Marionette.ItemView.extend
    events:
    {
       'submit .battle-tag-form' : 'findHeroes',
+      'keyup  .primary-stat-dps-input': 'primaryStatChanged',
+      'change .primary-stat-dps-input': 'primaryStatChanged',
+      'input  .primary-stat-dps-input': 'primaryStatChanged',
+      'paste  .primary-stat-dps-input': 'primaryStatChanged',
       'keyup  .crit-chance-dps-input': 'critChanceChanged',
       'change .crit-chance-dps-input': 'critChanceChanged',
       'input  .crit-chance-dps-input': 'critChanceChanged',
@@ -218,13 +252,22 @@ DiiiCalcApp.OffensiveSummaryView = Backbone.Marionette.ItemView.extend
    },
    onShow: function()
    {
+      $(".primary-stat-dps-input").val("100")
       $(".crit-chance-dps-input").val("5")
       $(".crit-damage-dps-input").val("50")
       $(".attack-speed-dps-input").val("9");
 
+      this.primaryStatChanged();
       this.critChanceChanged();
       this.critDamageChanged();
       this.attackSpeedChanged();
+   },
+   primaryStatChanged: function()
+   {
+      var input = $(".primary-stat-dps-input").val();
+      var dpsValue = DiiiCalcApp.onePrimaryStatDps * input;
+
+      $(".primary-stat-dps-output").html(dpsValue.numberFormat(0) + " DPS");
    },
    critChanceChanged: function()
    {
@@ -246,6 +289,115 @@ DiiiCalcApp.OffensiveSummaryView = Backbone.Marionette.ItemView.extend
       var dpsValue = DiiiCalcApp.onePercentAttackSpeedDps * input;
 
       $(".attack-speed-dps-output").html(dpsValue.numberFormat(0) + " DPS");
+   }
+});
+
+DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
+({
+   template: '#skillsTemplate',
+   events:
+   {
+      'click .skill-select' : 'skillSelect'
+   },
+   onShow: function()
+   {
+      this.updateCheckMarks()
+   },
+   skillSelect: function(ev)
+   {
+      var clickTarget = $(ev.originalEvent.target);
+      var disable = clickTarget.hasClass("disable-select")
+      var dropdown = clickTarget.parent().parent().parent();
+      var slug = dropdown.attr("id");
+      var isActiveSkill = dropdown.hasClass("active-skill");
+
+      if (isActiveSkill)
+      {
+         if (disable)
+         {
+            delete DiiiCalcApp.activeChoices[slug];
+         }
+         else
+         {
+            DiiiCalcApp.activeChoices[slug] = clickTarget.attr("id");
+         }
+      }
+      else
+      {
+         if (disable)
+         {
+            delete DiiiCalcApp.passiveChoices[slug];
+         }
+         else
+         {
+            DiiiCalcApp.passiveChoices[slug] = null;
+         }
+      }
+
+      dropdown.removeClass('open');
+      this.updateCheckMarks();
+      return false;
+   },
+   updateCheckMarks: function()
+   {
+      var CHECK_MARK_CLASS = "glyphicon glyphicon-ok";
+
+      $(".active-skill, .passive-skill").each
+      (
+         function()
+         {
+            var dropdown = $(this);
+            var slug = dropdown.attr("id");
+            var activeSelected = DiiiCalcApp.activeChoices.hasOwnProperty(slug);
+            var passiveSelected = DiiiCalcApp.passiveChoices.hasOwnProperty(slug);
+            var selected = activeSelected || passiveSelected;
+            var rune = null;
+
+            if (selected)
+            {
+               if (activeSelected)
+               {
+                  rune = DiiiCalcApp.activeChoices[slug];
+               }
+               if (passiveSelected)
+               {
+                  rune = null;
+               }
+            }
+
+            // Clear all existing checkmarks, make it opaque.
+            dropdown.find("li").find("span").attr("class", "");
+
+            if (!selected)
+            {
+               dropdown.find("img").css("opacity", "0.4");
+               dropdown.find(".disable-select").find("span").attr("class", CHECK_MARK_CLASS);
+            }
+            else
+            {
+               dropdown.find("img").css("opacity", "1.0");
+
+               if (rune)
+               {
+                  dropdown.find("#" + rune).find("span").attr("class", CHECK_MARK_CLASS);
+               }
+               else
+               {
+                  var runelessEnable = dropdown.find(".enable-select");
+
+                  if (runelessEnable.exists())
+                  {
+                     dropdown.find(".enable-select").find("span").attr("class", CHECK_MARK_CLASS);
+                  }
+                  else
+                  {
+                     dropdown.find("img").css("opacity", "0.4");
+                     dropdown.find(".disable-select").find("span").attr("class", CHECK_MARK_CLASS);
+                  }
+               }
+            }
+         }
+      );
    }
 });
 

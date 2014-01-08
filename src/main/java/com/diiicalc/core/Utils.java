@@ -3,6 +3,8 @@ package com.diiicalc.core;
 import com.diiicalc.api.*;
 import com.diiicalc.core.modifiers.ArmorModifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -11,14 +13,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.net.URI;
+import java.util.*;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class Utils
 {
    public static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+   private static final Cache<URI, Object> HTTP_CACHE;
 
    public static <T> T doGet(BattlenetRealm realm, String path, Class<T> typeClass) throws Exception
    {
@@ -50,7 +53,20 @@ public class Utils
          }
       }
 
-      HttpGet httpget = new HttpGet(builder.build());
+      URI uri = builder.build();
+
+      Object value = HTTP_CACHE.getIfPresent(uri);
+
+      if (value != null)
+      {
+         try
+         {
+            return (T) value;
+         }
+         catch (Throwable t) { }
+      }
+
+      HttpGet httpget = new HttpGet(uri);
 
       CloseableHttpResponse response = httpClient.execute(httpget);
 
@@ -69,7 +85,11 @@ public class Utils
                throw new Exception("Not sure what to do about exceptions yet.");
             }
 
-            return JSON_MAPPER.readValue(entityString, typeClass);
+            T typedEntity = JSON_MAPPER.readValue(entityString, typeClass);
+
+            HTTP_CACHE.put(uri, typedEntity);
+
+            return typedEntity;
          }
       }
       finally
@@ -282,15 +302,27 @@ public class Utils
       return WEAPON_TYPE_TO_ATTACK_SPEED_MAP.get(type);
    }
 
+   public static RelevantSkillSet getRelevantSkillSetForHeroType(String heroType)
+   {
+      return RELEVANT_SKILLS_MAP.get(heroType);
+   }
+
    // -----
    // Private stuff.
    // -----
    private static final Map<String, ModifierInjector> INJECTOR_MAP = new HashMap<String, ModifierInjector>();
    private static Set<String> WEAPON_TYPES = new HashSet<String>();
    private static final Map<Item.Type, Double> WEAPON_TYPE_TO_ATTACK_SPEED_MAP = new HashMap<Item.Type, Double>();
+   private static final Map<String, RelevantSkillSet> RELEVANT_SKILLS_MAP = new HashMap<String, RelevantSkillSet>();
 
    static
    {
+      HTTP_CACHE = CacheBuilder.newBuilder()
+         .concurrencyLevel(4)
+         .maximumSize(1000)
+         .expireAfterWrite(10, TimeUnit.MINUTES)
+         .build();
+
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_DAGGER);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_SWORD);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_MACE);
@@ -316,6 +348,7 @@ public class Utils
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE, true), 0.9);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE, false), 1.3);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE_2H, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_POLEARM, true), 0.95);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SPEAR, false), 1.5);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, false), 1.3);
@@ -329,7 +362,127 @@ public class Utils
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_DIABO, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_FIST_WEAPON, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CEREMONIAL_KNIFE, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CEREMONIAL_DAGGER, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_STAFF, true), 1.0);
+
+      // Relevant wizard skills.
+      {
+         RelevantSkillSet skills = new RelevantSkillSet();
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_MAGIC_WEAPON));
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_MAGIC_WEAPON, "c"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_FROST_NOVA));
+
+            relevantActiveSkill.disallowRunlessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FROST_NOVA, "e"));
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FROST_NOVA, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_SLOW_TIME));
+
+            relevantActiveSkill.disallowRunlessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_SLOW_TIME, "a"));
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_SLOW_TIME, "e"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_FAMILIAR));
+
+            relevantActiveSkill.disallowRunlessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FAMILIAR, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_ENERGY_ARMOR));
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_ENERGY_ARMOR, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_ARCHON));
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_ARCHON, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WIZARD_BLUR));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WIZARD_GLASS_CANNON));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WIZARD_COLD_BLOODED));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WIZARD_CONFLAGRATION));
+
+         RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_WIZARD, skills);
+      }
+
+      // Relevant barbarian skills.
+      {
+         RelevantSkillSet skills = new RelevantSkillSet();
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_BASH));
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_BASH, "b"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_FRENZY));
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_FRENZY, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_BARBARIAN_RUTHLESS));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_BARBARIAN_NERVES_OF_STEEL));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_BARBARIAN_WEAPONS_MASTER));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_BARBARIAN_BERSERKER_RAGE));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_BARBARIAN_TOUGH_AS_NAILS));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_BARBARIAN_BRAWLER));
+
+         RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_BARBARIAN, skills);
+      }
+
+      // Relevant witch doctor skills.
+      {
+         RelevantSkillSet skills = new RelevantSkillSet();
+
+         RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_WITCH_DOCTOR, skills);
+      }
+
+      // Relevant demon hunter skills.
+      {
+         RelevantSkillSet skills = new RelevantSkillSet();
+
+         RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_DEMON_HUNTER, skills);
+      }
+
+      // Relevant monk skills.
+      {
+         RelevantSkillSet skills = new RelevantSkillSet();
+
+         RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_MONK, skills);
+      }
 
       INJECTOR_MAP.put("big-bad-voodoo|big-bad-voodoo-a", new ModifierInjector()
       {

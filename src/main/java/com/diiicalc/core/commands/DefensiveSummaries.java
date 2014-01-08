@@ -62,6 +62,11 @@ public class DefensiveSummaries
 
       DefensiveStats armorValue = Utils.computeDefensiveStats(statTotals, monsterLevel);
 
+      statTotals.addArmor(-1);
+      statTotals.addPercentLife(0.01);
+
+      DefensiveStats percentLifeValue = Utils.computeDefensiveStats(statTotals, monsterLevel);
+
       return new DefensiveSummary
       (
          normalDefensiveStats.getEffectiveLife(),
@@ -73,7 +78,8 @@ public class DefensiveSummaries
          normalDefensiveStats.getIncomingDamageModifiers().get(Constants.DAMAGE_MODIFIER_ARMOR),
          armorValue.getEffectiveLife() - normalDefensiveStats.getEffectiveLife(),
          resistAllValue.getEffectiveLife() - normalDefensiveStats.getEffectiveLife(),
-         vitalityValue.getEffectiveLife() - normalDefensiveStats.getEffectiveLife()
+         vitalityValue.getEffectiveLife() - normalDefensiveStats.getEffectiveLife(),
+         percentLifeValue.getEffectiveLife() - normalDefensiveStats.getEffectiveLife()
       );
    }
 }

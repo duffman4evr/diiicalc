@@ -294,6 +294,11 @@ public class StatTotals
       this.statsFromItems.setVitality(this.statsFromItems.getVitality() + amountToAdd);
    }
 
+   public void addPercentLife(double amountToAdd)
+   {
+      this.statsFromItems.setLifePercent(this.statsFromItems.getLifePercent() + amountToAdd);
+   }
+
    public void addPrimaryStat(double amountToAdd)
    {
       if (Constants.HERO_TYPE_BARBARIAN.equals(this.getHeroClass()))
