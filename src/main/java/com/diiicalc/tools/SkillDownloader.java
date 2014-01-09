@@ -20,14 +20,14 @@ import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SkillDownloader
 {
    public static void main(String[] args) throws Exception
    {
-      downloadPassive();
+      //downloadPassive();
+      downloadActive();
    }
 
    private static void downloadPassive() throws Exception
@@ -39,11 +39,8 @@ public class SkillDownloader
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-      Map<String, String[]> heroTypeToSlugMap = new HashMap<String, String[]>();
-      heroTypeToSlugMap.put(Constants.HERO_TYPE_WIZARD, PassiveSkills.ALL_WIZARD_SLUGS);
-      heroTypeToSlugMap.put(Constants.HERO_TYPE_BARBARIAN, PassiveSkills.ALL_BARBARIAN_SLUGS);
 
-      for (Map.Entry<String, String[]> entry : heroTypeToSlugMap.entrySet())
+      for (Map.Entry<String, String[]> entry : PassiveSkills.HERO_TYPE_TO_SLUGS_MAP.entrySet())
       {
          for (String activeSlug : entry.getValue())
          {
@@ -108,11 +105,7 @@ public class SkillDownloader
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-      Map<String, String[]> heroTypeToSlugMap = new HashMap<String, String[]>();
-      heroTypeToSlugMap.put(Constants.HERO_TYPE_WIZARD, ActiveSkills.ALL_WIZARD_SLUGS);
-      heroTypeToSlugMap.put(Constants.HERO_TYPE_BARBARIAN, ActiveSkills.ALL_BARBARIAN_SLUGS);
-
-      for (Map.Entry<String, String[]> entry : heroTypeToSlugMap.entrySet())
+      for (Map.Entry<String, String[]> entry : ActiveSkills.HERO_TYPE_TO_SLUGS_MAP.entrySet())
       {
          for (String activeSlug : entry.getValue())
          {

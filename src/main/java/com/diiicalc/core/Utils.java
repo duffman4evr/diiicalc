@@ -380,7 +380,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_FROST_NOVA));
 
-            relevantActiveSkill.disallowRunlessUsage();
+            relevantActiveSkill.disallowRunelessUsage();
 
             relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FROST_NOVA, "e"));
             relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FROST_NOVA, "a"));
@@ -391,7 +391,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_SLOW_TIME));
 
-            relevantActiveSkill.disallowRunlessUsage();
+            relevantActiveSkill.disallowRunelessUsage();
 
             relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_SLOW_TIME, "a"));
             relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_SLOW_TIME, "e"));
@@ -402,7 +402,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_FAMILIAR));
 
-            relevantActiveSkill.disallowRunlessUsage();
+            relevantActiveSkill.disallowRunelessUsage();
 
             relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FAMILIAR, "a"));
 
@@ -438,9 +438,65 @@ public class Utils
          RelevantSkillSet skills = new RelevantSkillSet();
 
          {
-            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_BASH));
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_BATTLE_RAGE));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_BASH, "b"));
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_BATTLE_RAGE, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_WAR_CRY));
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WAR_CRY, "a"));
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WAR_CRY, "e"));
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WAR_CRY, "c"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_WRATH_OF_THE_BERSERKER));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WRATH_OF_THE_BERSERKER, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_LEAP));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_LEAP, "d"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_REVENGE));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_REVENGE, "e"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_OVERPOWER));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_OVERPOWER, "a"));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_IGNORE_PAIN));
 
             skills.getActive().add(relevantActiveSkill);
          }

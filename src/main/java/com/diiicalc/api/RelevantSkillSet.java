@@ -48,7 +48,7 @@ public class RelevantSkillSet
          return skill;
       }
 
-      public void disallowRunlessUsage()
+      public void disallowRunelessUsage()
       {
          this.allowRunelessUsage = false;
       }
