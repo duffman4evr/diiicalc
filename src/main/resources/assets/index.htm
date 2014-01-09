@@ -126,6 +126,16 @@
   </div>
 </script>
 
+<script type="text/template" id="progressPanelTemplate">
+  <div class="panel panel-<%= panelType %>">
+    <div class="panel-heading">
+      <h3 class="panel-title"><%= heading %></h3>
+    </div>
+    <div class="spinner-target" style="height: 325px; color: <%= panelType === 'warning' ? 'rgb(192, 152, 83);' : 'rgb(58, 135, 173);' %>;">
+    </div>
+ </div>
+</script>
+
 <script type="text/template" id="defensiveSummaryTemplate">
   <div class="panel panel-info">
     <div class="panel-heading">
@@ -230,7 +240,7 @@
         </td>
         <td style="vertical-align: middle;">
           <% _.each(relevantSkillSet.active, function(activeSkill) { %>
-          <div class="btn-group active-skill" id="<%= activeSkill.skill.slug %>">
+          <div class="btn-group active-skill" id="<%= activeSkill.skill.slug %>" style="margin-top: 2px; margin-bottom: 2px;">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="padding-left:6px; padding-right:6px;">
               <img width="48" height="48" src="http://us.media.blizzard.com/d3/icons/skills/64/<%= activeSkill.skill.icon %>.png" />
               <span class="caret"></span>
@@ -258,7 +268,7 @@
         </td>
         <td style="vertical-align: middle;">
           <% _.each(relevantSkillSet.passive, function(passiveSkill) { %>
-          <div class="btn-group passive-skill" id="<%= passiveSkill.slug %>">
+          <div class="btn-group passive-skill" id="<%= passiveSkill.slug %>" style="margin-top: 2px; margin-bottom: 2px;">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="padding-left:6px; padding-right:6px;">
               <img width="48" height="48" src="http://us.media.blizzard.com/d3/icons/skills/64/<%= passiveSkill.icon %>.png" />
               <span class="caret"></span>
@@ -287,6 +297,7 @@
 <script src="/js/contrib/bootstrap.min.js"></script>
 <script src="/js/contrib/d3.v3.min.js"></script>
 <script src="/js/contrib/nv.d3.min.js"></script>
+<script src="/js/contrib/spin.min.js"></script>
 
 <!-- Our JS -->
 <script src="/js/diii-calc.js"></script>

@@ -16,12 +16,19 @@ public class Constants
 
    public static final String WEAPON_TYPE_DAGGER = "Dagger";
    public static final String WEAPON_TYPE_SWORD = "Sword";
+   public static final String WEAPON_TYPE_SWORD_1H = "Sword1H";
+   public static final String WEAPON_TYPE_SWORD_2H = "Sword2H";
    public static final String WEAPON_TYPE_MACE = "Mace";
+   public static final String WEAPON_TYPE_MACE_1H = "Mace1H";
+   public static final String WEAPON_TYPE_MACE_2H = "Mace2H";
    public static final String WEAPON_TYPE_AXE = "Axe";
+   public static final String WEAPON_TYPE_AXE_1H = "Axe1H";
    public static final String WEAPON_TYPE_AXE_2H = "Axe2H";
    public static final String WEAPON_TYPE_POLEARM = "Polearm";
    public static final String WEAPON_TYPE_SPEAR = "Spear";
    public static final String WEAPON_TYPE_MIGHTY_WEAPON = "Mighty Weapon";
+   public static final String WEAPON_TYPE_MIGHTY_WEAPON_1H = "MightyWeapon1H";
+   public static final String WEAPON_TYPE_MIGHTY_WEAPON_2H = "MightyWeapon2H";
    public static final String WEAPON_TYPE_BOW = "Bow";
    public static final String WEAPON_TYPE_XBOW = "Xbow";
    public static final String WEAPON_TYPE_HAND_XBOW = "HandXbow";
@@ -30,6 +37,7 @@ public class Constants
    public static final String WEAPON_TYPE_WAND = "Wand";
    public static final String WEAPON_TYPE_DIABO = "Diabo";
    public static final String WEAPON_TYPE_FIST_WEAPON = "Fist Weapon";
+   public static final String WEAPON_TYPE_FISTWEAPON = "FistWeapon";
    public static final String WEAPON_TYPE_CEREMONIAL_KNIFE = "Ceremonial Knife";
    public static final String WEAPON_TYPE_CEREMONIAL_DAGGER = "CeremonialDagger";
    public static final String WEAPON_TYPE_STAFF = "Staff";

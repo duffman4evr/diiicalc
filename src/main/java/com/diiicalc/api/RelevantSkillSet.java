@@ -1,5 +1,6 @@
 package com.diiicalc.api;
 
+import com.diiicalc.core.ActiveSkills;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
@@ -51,6 +52,11 @@ public class RelevantSkillSet
       public void disallowRunelessUsage()
       {
          this.allowRunelessUsage = false;
+      }
+
+      public void addRune(String runeType)
+      {
+         this.runes.add(ActiveSkills.lookupRune(this.skill.getSlug(), runeType));
       }
    }
 }

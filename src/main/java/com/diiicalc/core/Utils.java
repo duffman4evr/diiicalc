@@ -341,18 +341,25 @@ public class Utils
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_CEREMONIAL_KNIFE);
       WEAPON_TYPES.add(Constants.WEAPON_TYPE_STAFF);
 
-      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_DAGGER, false), 1.5);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SWORD, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SWORD_1H, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SWORD, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SWORD_2H, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE, false), 1.2);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE_1H, false), 1.2);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE, true), 0.9);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MACE_2H, true), 0.9);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE, false), 1.3);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE_1H, false), 1.3);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_AXE_2H, true), 1.1);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, false), 1.3);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON_1H, false), 1.3);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, true), 1.0);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON_2H, true), 1.0);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_DAGGER, false), 1.5);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_POLEARM, true), 0.95);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_SPEAR, false), 1.5);
-      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, false), 1.3);
-      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_MIGHTY_WEAPON, true), 1.0);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_BOW, true), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_XBOW, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_HAND_XBOW, false), 1.6);
@@ -361,6 +368,7 @@ public class Utils
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_WAND, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_DIABO, true), 1.1);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_FIST_WEAPON, false), 1.4);
+      WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_FISTWEAPON, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CEREMONIAL_KNIFE, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_CEREMONIAL_DAGGER, false), 1.4);
       WEAPON_TYPE_TO_ATTACK_SPEED_MAP.put(new Item.Type(Constants.WEAPON_TYPE_STAFF, true), 1.0);
@@ -372,7 +380,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_MAGIC_WEAPON));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_MAGIC_WEAPON, "c"));
+            relevantActiveSkill.addRune("c");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -382,8 +390,8 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FROST_NOVA, "e"));
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FROST_NOVA, "a"));
+            relevantActiveSkill.addRune("e");
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -393,8 +401,8 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_SLOW_TIME, "a"));
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_SLOW_TIME, "e"));
+            relevantActiveSkill.addRune("a");
+            relevantActiveSkill.addRune("e");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -404,7 +412,7 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_FAMILIAR, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -412,7 +420,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_ENERGY_ARMOR));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_ENERGY_ARMOR, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -420,7 +428,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WIZARD_ARCHON));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_WIZARD_ARCHON, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -440,7 +448,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_BATTLE_RAGE));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_BATTLE_RAGE, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -448,9 +456,9 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_WAR_CRY));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WAR_CRY, "a"));
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WAR_CRY, "e"));
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WAR_CRY, "c"));
+            relevantActiveSkill.addRune("a");
+            relevantActiveSkill.addRune("e");
+            relevantActiveSkill.addRune("c");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -460,7 +468,7 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_WRATH_OF_THE_BERSERKER, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -470,7 +478,7 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_LEAP, "d"));
+            relevantActiveSkill.addRune("d");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -480,7 +488,7 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_REVENGE, "e"));
+            relevantActiveSkill.addRune("e");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -490,7 +498,7 @@ public class Utils
 
             relevantActiveSkill.disallowRunelessUsage();
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_OVERPOWER, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -504,7 +512,7 @@ public class Utils
          {
             RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_FRENZY));
 
-            relevantActiveSkill.getRunes().add(ActiveSkills.lookupRune(ActiveSkills.SLUG_BARBARIAN_FRENZY, "a"));
+            relevantActiveSkill.addRune("a");
 
             skills.getActive().add(relevantActiveSkill);
          }
@@ -523,6 +531,63 @@ public class Utils
       {
          RelevantSkillSet skills = new RelevantSkillSet();
 
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WITCH_DOCTOR_HEX));
+
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WITCH_DOCTOR_BIG_BAD_VOODOO));
+
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WITCH_DOCTOR_HORRIFY));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_BARBARIAN_IGNORE_PAIN));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WITCH_DOCTOR_SACRIFICE));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_WITCH_DOCTOR_MASS_CONFUSION));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WITCH_DOCTOR_JUNGLE_FORTITUDE));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WITCH_DOCTOR_GRUESOME_FEAST));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WITCH_DOCTOR_BAD_MEDICINE));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_WITCH_DOCTOR_PIERCE_THE_VEIL));
+
          RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_WITCH_DOCTOR, skills);
       }
 
@@ -530,12 +595,214 @@ public class Utils
       {
          RelevantSkillSet skills = new RelevantSkillSet();
 
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_DEMON_HUNTER_CALTROPS));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_DEMON_HUNTER_MARKED_FOR_DEATH));
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_DEMON_HUNTER_SENTRY));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_DEMON_HUNTER_STEADY_AIM));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_DEMON_HUNTER_CULL_THE_WEAK));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_DEMON_HUNTER_ARCHERY));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_DEMON_HUNTER_NUMBING_TRAPS));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_DEMON_HUNTER_PERFECTIONIST));
+
          RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_DEMON_HUNTER, skills);
       }
 
       // Relevant monk skills.
       {
          RelevantSkillSet skills = new RelevantSkillSet();
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_FISTS_OF_THUNDER));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_DEADLY_REACH));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("e");
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_CRIPPLING_WAVE));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_WAY_OF_THE_HUNDRED_FISTS));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_TEMPEST_RUSH));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_BLINDING_FLASH));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_BREATH_OF_HEAVEN));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_INNER_SANCTUARY));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+            relevantActiveSkill.addRune("a");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_DASHING_STRIKE));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_EXPLODING_PALM));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_CYCLONE_STRIKE));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_MYSTIC_ALLY));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_MANTRA_OF_EVASION));
+
+            relevantActiveSkill.addRune("c");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_MANTRA_OF_RETRIBUTION));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("b");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_MANTRA_OF_HEALING));
+
+            relevantActiveSkill.disallowRunelessUsage();
+
+            relevantActiveSkill.addRune("c");
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         {
+            RelevantSkillSet.RelevantActiveSkill relevantActiveSkill = new RelevantSkillSet.RelevantActiveSkill(ActiveSkills.lookup(ActiveSkills.SLUG_MONK_MANTRA_OF_CONVICTION));
+
+            relevantActiveSkill.addRune("a");
+            relevantActiveSkill.addRune("e");
+
+            skills.getActive().add(relevantActiveSkill);
+         }
+
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_RESOLVE));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_SEIZE_THE_INITIATIVE));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_THE_GUARDIANS_PATH));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_SIXTH_SENSE));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_PACIFISM));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_GUIDING_LIGHT));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_ONE_WITH_EVERYTHING));
+         skills.getPassive().add(PassiveSkills.lookup(PassiveSkills.SLUG_MONK_COMBINATION_STRIKE));
 
          RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_MONK, skills);
       }
