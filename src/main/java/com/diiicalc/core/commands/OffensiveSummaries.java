@@ -1,6 +1,5 @@
 package com.diiicalc.core.commands;
 
-import com.diiicalc.api.DefensiveSummary;
 import com.diiicalc.api.Hero;
 import com.diiicalc.api.Item;
 import com.diiicalc.api.OffensiveSummary;

@@ -59,11 +59,38 @@
 <!-- Templates -->
 
 <script type="text/template" id="battleTagSearchTemplate">
-  <form class="form-signin battle-tag-form" role="form">
-    <h2 class="form-signin-heading">Enter your BattleTag</h2>
-    <input type="text" class="form-control battle-tag-input" placeholder="MyBattleTag#1234" required autofocus>
-    <button class="btn btn-lg btn-primary btn-block" type="submit" style="border-top-right-radius: 0px; border-top-left-radius: 0px;">Find Heroes</button>
-    <span class="help-block text-center" style="font-size: 18px; color: #b94a48;"></span>
+  <form class="battle-tag-form">
+    <table style="width: 350px; margin-left: auto; margin-right: auto;">
+      <tr>
+        <td>
+          <h2>Enter your BattleTag</h2>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="input-group input-group-lg">
+            <input type="text" placeholder="MyBattleTag#1234" required autofocus class="form-control battle-tag-input">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">US <span class="caret"></span></button>
+              <ul class="dropdown-menu pull-right">
+                <li><a href="#" class="select-realm" id="US"><span></span> US</a></li>
+                <li><a href="#" class="select-realm" id="EU"><span></span> EU</a></li>
+              </ul>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button class="btn btn-lg btn-primary btn-block" style="height: 48px;" type="submit">Find Heroes</button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="help-block text-center" style="font-size: 18px; color: #b94a48;"></span>
+        </td>
+      </tr>
+    </table>
   </form>
 </script>
 

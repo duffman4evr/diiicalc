@@ -2,7 +2,9 @@ package com.diiicalc.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SkillChoiceSet
 {

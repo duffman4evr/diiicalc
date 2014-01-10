@@ -1,8 +1,5 @@
 package com.diiicalc.core;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class Constants
 {
    public static final String PROFILE_API_URL_PREFIX = "/api/d3/profile";

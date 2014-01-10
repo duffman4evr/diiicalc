@@ -1,9 +1,6 @@
 package com.diiicalc.tools;
 
-import com.diiicalc.api.BlizzardApiError;
 import com.diiicalc.core.ActiveSkills;
-import com.diiicalc.core.BattlenetRealm;
-import com.diiicalc.core.Constants;
 import com.diiicalc.core.PassiveSkills;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;

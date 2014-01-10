@@ -3,7 +3,8 @@ package com.diiicalc.api;
 import com.diiicalc.core.ActiveSkills;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RelevantSkillSet
 {

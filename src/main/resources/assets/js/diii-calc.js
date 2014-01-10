@@ -18,6 +18,9 @@ jQuery.fn.exists = function(){ return this.length > 0; }
 
 DiiiCalcApp = new Backbone.Marionette.Application();
 
+// Constants.
+DiiiCalcApp.CHECK_MARK_CLASS = "glyphicon glyphicon-ok";
+
 // Regions.
 DiiiCalcApp.addRegions
 ({
@@ -40,14 +43,48 @@ DiiiCalcApp.BattleTagLookupView = Backbone.Marionette.ItemView.extend
       'keyup  .battle-tag-input': 'clearErrors',
       'change .battle-tag-input': 'clearErrors',
       'input  .battle-tag-input': 'clearErrors',
-      'paste  .battle-tag-input': 'clearErrors'
+      'paste  .battle-tag-input': 'clearErrors',
+      'click  .select-realm'    : 'clickRealm'
    },
    onShow: function()
    {
+      DiiiCalcApp.realm = "US";
+      this.updateRealmUi();
+
       if (DiiiCalcApp.battleTag)
       {
          $('.battle-tag-input').val(DiiiCalcApp.battleTag);
       }
+   },
+   clickRealm: function(ev)
+   {
+      var clickTarget = $(ev.originalEvent.target);
+      var dropdown = clickTarget.parent().parent().parent();
+      DiiiCalcApp.realm = clickTarget.attr('id');
+      dropdown.removeClass('open');
+      this.updateRealmUi();
+      return false;
+   },
+   updateRealmUi: function()
+   {
+      $('.select-realm').each
+      (
+         function(index, rawRalm)
+         {
+            var realm = $(rawRalm);
+            var span = realm.find("span");
+
+            if (realm.attr('id') === DiiiCalcApp.realm)
+            {
+               $('.dropdown-toggle').html(DiiiCalcApp.realm + '  <span class="caret"></span>');
+               span.attr("class", DiiiCalcApp.CHECK_MARK_CLASS);
+            }
+            else
+            {
+               span.attr("class", "");
+            }
+         }
+      )
    },
    findHeroes: function()
    {
@@ -56,6 +93,7 @@ DiiiCalcApp.BattleTagLookupView = Backbone.Marionette.ItemView.extend
 
       careerProfileModel.fetch
       ({
+         data: $.param({ realm: DiiiCalcApp.realm }),
          success: function(model)
          {
             DiiiCalcApp.battleTag = battleTag;
@@ -124,7 +162,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 
       offensiveModel.fetch
       ({
-         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
+         data: $.param({ battleTag: DiiiCalcApp.battleTag, realm: DiiiCalcApp.realm }),
          success: function(model)
          {
             DiiiCalcApp.onePrimaryStatDps = model.get("onePrimaryStatDps");
@@ -140,7 +178,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 
       defensiveModel.fetch
       ({
-         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
+         data: $.param({ battleTag: DiiiCalcApp.battleTag, realm: DiiiCalcApp.realm }),
          success: function(model)
          {
             DiiiCalcApp.oneArmorEhp = model.get("oneArmorEhp");
@@ -156,7 +194,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
 
       skillChoiceSetModel.fetch
       ({
-         data: $.param({ battleTag: DiiiCalcApp.battleTag }),
+         data: $.param({ battleTag: DiiiCalcApp.battleTag, realm: DiiiCalcApp.realm }),
          success: function(model)
          {
             DiiiCalcApp.passiveChoices = model.get('passiveChoices');
@@ -382,8 +420,6 @@ DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
    },
    updateCheckMarks: function()
    {
-      var CHECK_MARK_CLASS = "glyphicon glyphicon-ok";
-
       $(".active-skill, .passive-skill").each
       (
          function()
@@ -413,7 +449,7 @@ DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
             if (!selected)
             {
                dropdown.find("img").css("opacity", "0.4");
-               dropdown.find(".disable-select").find("span").attr("class", CHECK_MARK_CLASS);
+               dropdown.find(".disable-select").find("span").attr("class", DiiiCalcApp.CHECK_MARK_CLASS);
             }
             else
             {
@@ -421,7 +457,7 @@ DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
 
                if (rune)
                {
-                  dropdown.find("#" + rune).find("span").attr("class", CHECK_MARK_CLASS);
+                  dropdown.find("#" + rune).find("span").attr("class", DiiiCalcApp.CHECK_MARK_CLASS);
                }
                else
                {
@@ -429,12 +465,12 @@ DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
 
                   if (runelessEnable.exists())
                   {
-                     dropdown.find(".enable-select").find("span").attr("class", CHECK_MARK_CLASS);
+                     dropdown.find(".enable-select").find("span").attr("class", DiiiCalcApp.CHECK_MARK_CLASS);
                   }
                   else
                   {
                      dropdown.find("img").css("opacity", "0.4");
-                     dropdown.find(".disable-select").find("span").attr("class", CHECK_MARK_CLASS);
+                     dropdown.find(".disable-select").find("span").attr("class", DiiiCalcApp.CHECK_MARK_CLASS);
                   }
                }
             }
@@ -457,6 +493,7 @@ DiiiCalcApp.Controller = Marionette.Controller.extend
       var careerProfileModel = new DiiiCalcApp.CareerProfileModel({ id: battleTag });
       careerProfileModel.fetch
       ({
+         data: $.param({ realm: DiiiCalcApp.realm }),
          success: function(model)
          {
             DiiiCalcApp.controller.showHeroesForModel(model);

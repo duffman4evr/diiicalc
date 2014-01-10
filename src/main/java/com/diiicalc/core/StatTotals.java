@@ -1,6 +1,8 @@
 package com.diiicalc.core;
 
-import com.diiicalc.api.*;
+import com.diiicalc.api.Hero;
+import com.diiicalc.api.Item;
+import com.diiicalc.api.ValueRange;
 import com.diiicalc.core.modifiers.*;
 
 import java.util.HashMap;
