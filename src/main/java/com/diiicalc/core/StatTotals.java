@@ -16,14 +16,14 @@ public class StatTotals
    private StatsFromItems statsFromItems;
    private StatModifiers statModifiers;
 
-   public StatTotals(Map<String, Item> itemMap, Hero hero)
+   public StatTotals(Map<String, Item> itemMap, Hero hero, Map<String, String> activeSkillsOverride, Map<String, String> passiveSkillsOverride)
    {
       this.heroClass = hero.getType();
       this.heroLevel = hero.getLevel();
       this.heroParagonLevel = hero.getParagonLevel();
 
       this.statsFromItems = new StatsFromItems(itemMap);
-      this.statModifiers = new StatModifiers(hero.getSkills());
+      this.statModifiers = new StatModifiers(hero.getSkills(), activeSkillsOverride, passiveSkillsOverride);
    }
 
    // -----

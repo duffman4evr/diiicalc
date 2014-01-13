@@ -19,6 +19,7 @@ jQuery.fn.exists = function(){ return this.length > 0; }
 DiiiCalcApp = new Backbone.Marionette.Application();
 
 // Constants.
+DiiiCalcApp.realm = "US";
 DiiiCalcApp.CHECK_MARK_CLASS = "glyphicon glyphicon-ok";
 
 // Regions.
@@ -48,7 +49,6 @@ DiiiCalcApp.BattleTagLookupView = Backbone.Marionette.ItemView.extend
    },
    onShow: function()
    {
-      DiiiCalcApp.realm = "US";
       this.updateRealmUi();
 
       if (DiiiCalcApp.battleTag)
@@ -146,51 +146,11 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
    },
    onShow: function()
    {
+      DiiiCalcApp.controller.showSummaries(this);
+
       var that = this;
 
-      // Show spinners while we load.
-      var offensiveLoadingModel = new Backbone.Model({ heading: "Offensive", panelType: "warning" });
-      var defensiveLoadingModel = new Backbone.Model({ heading: "Defensive", panelType: "info"});
-
-      this.offensiveStatsRegion.show(new DiiiCalcApp.ProgressPanelView({ model: offensiveLoadingModel }));
-      this.defensiveStatsRegion.show(new DiiiCalcApp.ProgressPanelView({ model: defensiveLoadingModel }));
-
-      // Load data and show it in views.
-      var offensiveModel = new DiiiCalcApp.OffensiveSummaryModel({ id: this.model.id });
-      var defensiveModel = new DiiiCalcApp.DefensiveSummaryModel({ id: this.model.id });
       var skillChoiceSetModel = new DiiiCalcApp.SkillChoiceSetModel({ id: this.model.id });
-
-      offensiveModel.fetch
-      ({
-         data: $.param({ battleTag: DiiiCalcApp.battleTag, realm: DiiiCalcApp.realm }),
-         success: function(model)
-         {
-            DiiiCalcApp.onePrimaryStatDps = model.get("onePrimaryStatDps");
-            DiiiCalcApp.onePercentCritChanceDps = model.get("onePercentCritChanceDps");
-            DiiiCalcApp.onePercentCritDamageDps = model.get("onePercentCritDamageDps");
-            DiiiCalcApp.onePercentAttackSpeedDps = model.get("onePercentAttackSpeedDps");
-
-            var view = new DiiiCalcApp.OffensiveSummaryView({ model: model });
-
-            that.offensiveStatsRegion.show(view);
-         }
-      });
-
-      defensiveModel.fetch
-      ({
-         data: $.param({ battleTag: DiiiCalcApp.battleTag, realm: DiiiCalcApp.realm }),
-         success: function(model)
-         {
-            DiiiCalcApp.oneArmorEhp = model.get("oneArmorEhp");
-            DiiiCalcApp.oneAllResistEhp = model.get("oneAllResistEhp");
-            DiiiCalcApp.oneVitalityEhp = model.get("oneVitalityEhp");
-            DiiiCalcApp.onePercentLifeEhp = model.get("onePercentLifeEhp");
-
-            var view = new DiiiCalcApp.DefensiveSummaryView({ model: model });
-
-            that.defensiveStatsRegion.show(view);
-         }
-      });
 
       skillChoiceSetModel.fetch
       ({
@@ -200,7 +160,7 @@ DiiiCalcApp.HeroLayout = Backbone.Marionette.Layout.extend
             DiiiCalcApp.passiveChoices = model.get('passiveChoices');
             DiiiCalcApp.activeChoices = model.get('activeChoices');
 
-            var view = new DiiiCalcApp.SkillsView({ model: model });
+            var view = new DiiiCalcApp.SkillsView({ model: model, heroLayout: that });
 
             that.skillsRegion.show(view);
          }
@@ -332,9 +292,9 @@ DiiiCalcApp.OffensiveSummaryView = Backbone.Marionette.ItemView.extend
    },
    onShow: function()
    {
-      $(".primary-stat-dps-input").val("100")
-      $(".crit-chance-dps-input").val("5")
-      $(".crit-damage-dps-input").val("50")
+      $(".primary-stat-dps-input").val("100");
+      $(".crit-chance-dps-input").val("5");
+      $(".crit-damage-dps-input").val("50");
       $(".attack-speed-dps-input").val("9");
 
       this.primaryStatChanged();
@@ -375,13 +335,18 @@ DiiiCalcApp.OffensiveSummaryView = Backbone.Marionette.ItemView.extend
 DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
 ({
    template: '#skillsTemplate',
+   initialize: function(options)
+   {
+      this.heroLayout = options.heroLayout;
+   },
    events:
    {
-      'click .skill-select' : 'skillSelect'
+      'click .skill-select' : 'skillSelect',
+      'click .apply-skill-changes' : 'applySkillChanges'
    },
    onShow: function()
    {
-      this.updateCheckMarks()
+      this.updateCheckMarks();
    },
    skillSelect: function(ev)
    {
@@ -414,6 +379,7 @@ DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
          }
       }
 
+      $('.apply-skill-changes').attr('style', '');
       dropdown.removeClass('open');
       this.updateCheckMarks();
       return false;
@@ -476,6 +442,12 @@ DiiiCalcApp.SkillsView = Backbone.Marionette.ItemView.extend
             }
          }
       );
+   },
+   applySkillChanges: function()
+   {
+      DiiiCalcApp.controller.showSummaries(this.heroLayout, DiiiCalcApp.activeChoices, DiiiCalcApp.passiveChoices);
+
+      $('.apply-skill-changes').attr('style', 'visibility: hidden;');
    }
 });
 
@@ -515,6 +487,67 @@ DiiiCalcApp.Controller = Marionette.Controller.extend
       var heroesView = new DiiiCalcApp.HeroesView({ model: model });
 
       DiiiCalcApp.contentRegion.show(heroesView);
+   },
+   showSummaries: function(heroLayout, activeChoices, passiveChoices)
+   {
+      // Show spinners while we load.
+      var offensiveLoadingModel = new Backbone.Model({ heading: "Offensive", panelType: "warning" });
+      var defensiveLoadingModel = new Backbone.Model({ heading: "Defensive", panelType: "info"});
+
+      heroLayout.offensiveStatsRegion.show(new DiiiCalcApp.ProgressPanelView({ model: offensiveLoadingModel }));
+      heroLayout.defensiveStatsRegion.show(new DiiiCalcApp.ProgressPanelView({ model: defensiveLoadingModel }));
+
+      // Load data and show it in views.
+      var offensiveModel = new DiiiCalcApp.OffensiveSummaryModel({ id: heroLayout.model.id });
+      var defensiveModel = new DiiiCalcApp.DefensiveSummaryModel({ id: heroLayout.model.id });
+
+      var queryParams =
+      {
+         battleTag: DiiiCalcApp.battleTag,
+         realm: DiiiCalcApp.realm
+      };
+
+      if (activeChoices)
+      {
+         queryParams.activeSkills = JSON.stringify(activeChoices);
+      }
+
+      if (passiveChoices)
+      {
+         queryParams.passiveSkills = JSON.stringify(passiveChoices);
+      }
+
+      offensiveModel.fetch
+      ({
+         data: $.param(queryParams),
+         success: function(model)
+         {
+            DiiiCalcApp.onePrimaryStatDps = model.get("onePrimaryStatDps");
+            DiiiCalcApp.onePercentCritChanceDps = model.get("onePercentCritChanceDps");
+            DiiiCalcApp.onePercentCritDamageDps = model.get("onePercentCritDamageDps");
+            DiiiCalcApp.onePercentAttackSpeedDps = model.get("onePercentAttackSpeedDps");
+
+            var view = new DiiiCalcApp.OffensiveSummaryView({ model: model });
+
+            heroLayout.offensiveStatsRegion.show(view);
+         }
+      });
+
+      defensiveModel.fetch
+      ({
+         data: $.param(queryParams),
+         success: function(model)
+         {
+            DiiiCalcApp.oneArmorEhp = model.get("oneArmorEhp");
+            DiiiCalcApp.oneAllResistEhp = model.get("oneAllResistEhp");
+            DiiiCalcApp.oneVitalityEhp = model.get("oneVitalityEhp");
+            DiiiCalcApp.onePercentLifeEhp = model.get("onePercentLifeEhp");
+
+            var view = new DiiiCalcApp.DefensiveSummaryView({ model: model });
+
+            heroLayout.defensiveStatsRegion.show(view);
+         }
+      });
    },
    showBattleTagPrompt: function()
    {

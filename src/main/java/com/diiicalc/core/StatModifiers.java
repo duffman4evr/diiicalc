@@ -7,6 +7,7 @@ import com.diiicalc.core.modifiers.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class StatModifiers
 {
@@ -16,21 +17,58 @@ public class StatModifiers
    List<CritDamageModifier> critDamage = new ArrayList<CritDamageModifier>();
    List<SkillDamageModifier> skillDamage = new ArrayList<SkillDamageModifier>();
 
-   public StatModifiers(Skills skills)
+   public StatModifiers(Skills skills, Map<String, String> activeSkillsOverride, Map<String, String> passiveSkillsOverride)
    {
-      for (Skills.ActiveSkill activeSkill : skills.getActive())
+      if (activeSkillsOverride != null)
       {
-         Skill skill = activeSkill.getSkill();
-         Rune rune = activeSkill.getRune();
-
-         ModifierInjector modifierInjector = Utils.lookupInjector(skill, rune);
-
-         if (modifierInjector == null)
+         for (Map.Entry<String, String> entry : activeSkillsOverride.entrySet())
          {
-            continue;
-         }
+            Skill skill = ActiveSkills.lookup(entry.getKey());
+            Rune rune = ActiveSkills.lookupRune(skill.getSlug(), entry.getValue());
 
-         modifierInjector.inject(this);
+            this.injectSkill(skill, rune);
+         }
       }
+      else
+      {
+         for (Skills.ActiveSkill activeSkill : skills.getActive())
+         {
+            Skill skill = activeSkill.getSkill();
+            Rune rune = activeSkill.getRune();
+
+            this.injectSkill(skill, rune);
+         }
+      }
+
+      if (passiveSkillsOverride != null)
+      {
+         for (Map.Entry<String, String> entry : passiveSkillsOverride.entrySet())
+         {
+            Skill skill = PassiveSkills.lookup(entry.getKey());
+
+            this.injectSkill(skill, null);
+         }
+      }
+      else
+      {
+         for (Skills.PassiveSkill activeSkill : skills.getPassive())
+         {
+            Skill skill = activeSkill.getSkill();
+
+            this.injectSkill(skill, null);
+         }
+      }
+   }
+
+   private void injectSkill(Skill skill, Rune rune)
+   {
+      ModifierInjector modifierInjector = Injectors.lookup(skill, rune);
+
+      if (modifierInjector == null)
+      {
+         return;
+      }
+
+      modifierInjector.inject(this);
    }
 }

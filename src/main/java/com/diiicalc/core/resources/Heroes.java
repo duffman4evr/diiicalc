@@ -17,7 +17,7 @@ public class Heroes
    @GET
    @Timed
    @Path("/{heroId}")
-   public Hero getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag) throws Exception
+   public Hero getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag, @QueryParam("realm") BattlenetRealm realm) throws Exception
    {
       if (battleTag == null)
       {
@@ -29,6 +29,6 @@ public class Heroes
 
       String path = Constants.PROFILE_API_URL_PREFIX + "/" + battleTag + "/" + heroId;
 
-      return Utils.doGet(BattlenetRealm.US, path, Hero.class);
+      return Utils.doGet(realm, path, Hero.class);
    }
 }

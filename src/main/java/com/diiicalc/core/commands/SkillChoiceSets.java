@@ -19,7 +19,7 @@ public class SkillChoiceSets
    @GET
    @Timed
    @Path("/{heroId}")
-   public SkillChoiceSet getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag) throws Exception
+   public SkillChoiceSet getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag, @QueryParam("realm") BattlenetRealm realm) throws Exception
    {
       if (battleTag == null)
       {
@@ -31,7 +31,7 @@ public class SkillChoiceSets
 
       String heroPath = Constants.PROFILE_API_URL_PREFIX + "/" + battleTag + "/hero/" + heroId;
 
-      Hero hero = Utils.doGet(BattlenetRealm.US, heroPath, Hero.class);
+      Hero hero = Utils.doGet(realm, heroPath, Hero.class);
 
       RelevantSkillSet relevantSkillSet = Utils.getRelevantSkillSetForHeroType(hero.getType());
 

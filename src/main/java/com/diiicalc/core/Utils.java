@@ -30,7 +30,7 @@ public class Utils
       return Utils.doGetWithArgs(realm, path, null, typeClass);
    }
 
-   public static <T> T doGetWithArgs(BattlenetRealm realm, String path, Map<String, String> queryArgs, Class<T> typeClass) throws Exception
+   private static <T> T doGetWithArgs(BattlenetRealm realm, String path, Map<String, String> queryArgs, Class<T> typeClass) throws Exception
    {
       CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -45,6 +45,8 @@ public class Utils
          builder = new URIBuilder("http://eu.battle.net");
       }
 
+      boolean isDataItem = path.startsWith(Constants.DATA_API_URL_PREFIX);
+
       builder.setPath(path);
 
       if (queryArgs != null && queryArgs.size() > 0)
@@ -57,15 +59,20 @@ public class Utils
 
       URI uri = builder.build();
 
-      Object value = HTTP_CACHE.getIfPresent(uri);
-
-      if (value != null)
+      // If its a data API item, we use caching on it,
+      // so check the cache.
+      if (isDataItem)
       {
-         try
+         Object value = HTTP_CACHE.getIfPresent(uri);
+
+         if (value != null)
          {
-            return (T) value;
+            try
+            {
+               return (T) value;
+            }
+            catch (Throwable t) { }
          }
-         catch (Throwable t) { }
       }
 
       HttpGet httpget = new HttpGet(uri);
@@ -89,7 +96,11 @@ public class Utils
 
             T typedEntity = JSON_MAPPER.readValue(entityString, typeClass);
 
-            HTTP_CACHE.put(uri, typedEntity);
+            // Only store data items in the cache.
+            if (isDataItem)
+            {
+               HTTP_CACHE.put(uri, typedEntity);
+            }
 
             return typedEntity;
          }
@@ -102,7 +113,7 @@ public class Utils
       return null;
    }
 
-   public static Map<String, Item> pullDownItemMap(Hero hero) throws Exception
+   public static Map<String, Item> pullDownItemMap(Hero hero, BattlenetRealm realm) throws Exception
    {
       Map<String, Item> itemMap = new HashMap<String, Item>();
 
@@ -110,7 +121,7 @@ public class Utils
       {
          String itemPath = Constants.DATA_API_URL_PREFIX + "/" + entry.getValue().getTooltipParams();
 
-         itemMap.put(entry.getKey(), Utils.doGet(BattlenetRealm.US, itemPath, Item.class));
+         itemMap.put(entry.getKey(), Utils.doGet(realm, itemPath, Item.class));
       }
 
       return itemMap;
@@ -287,13 +298,6 @@ public class Utils
       return min;
    }
 
-   public static ModifierInjector lookupInjector(Skill skill, Rune rune)
-   {
-      String lookupKey = skill.getSlug() + "|" + rune.getSlug();
-
-      return INJECTOR_MAP.get(lookupKey);
-   }
-
    public static boolean isWeapon(String type)
    {
       return WEAPON_TYPES.contains(type);
@@ -312,7 +316,6 @@ public class Utils
    // -----
    // Private stuff.
    // -----
-   private static final Map<String, ModifierInjector> INJECTOR_MAP = new HashMap<String, ModifierInjector>();
    private static Set<String> WEAPON_TYPES = new HashSet<String>();
    private static final Map<Item.Type, Double> WEAPON_TYPE_TO_ATTACK_SPEED_MAP = new HashMap<Item.Type, Double>();
    private static final Map<String, RelevantSkillSet> RELEVANT_SKILLS_MAP = new HashMap<String, RelevantSkillSet>();
@@ -808,21 +811,5 @@ public class Utils
 
          RELEVANT_SKILLS_MAP.put(Constants.HERO_TYPE_MONK, skills);
       }
-
-      INJECTOR_MAP.put("big-bad-voodoo|big-bad-voodoo-a", new ModifierInjector()
-      {
-         @Override
-         public void inject(StatModifiers modifiers)
-         {
-            modifiers.armor.add(new ArmorModifier()
-            {
-               @Override
-               public double calculateArmor(double armorFromStrength, double armorFromItems)
-               {
-                  return 0;
-               }
-            });
-         }
-      });
    }
 }

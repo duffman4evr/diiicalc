@@ -4,6 +4,7 @@ import com.diiicalc.api.Hero;
 import com.diiicalc.api.Item;
 import com.diiicalc.api.OffensiveSummary;
 import com.diiicalc.core.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.*;
@@ -18,7 +19,15 @@ public class OffensiveSummaries
    @GET
    @Timed
    @Path("/{heroId}")
-   public OffensiveSummary getSingle(@PathParam("heroId") long heroId, @QueryParam("battleTag") String battleTag) throws Exception
+   public OffensiveSummary getSingle
+   (
+      @PathParam("heroId") long heroId,
+      @QueryParam("battleTag") String battleTag,
+      @QueryParam("realm") BattlenetRealm realm,
+      @QueryParam("activeSkills") String activeSkillsJson,
+      @QueryParam("passiveSkills") String passiveSkillsJson
+   )
+      throws Exception
    {
       if (battleTag == null)
       {
@@ -28,13 +37,26 @@ public class OffensiveSummaries
             .build());
       }
 
+      Map<String, String> activeSkillOverrides = null;
+      Map<String, String> passiveSkillOverrides = null;
+
+      if (activeSkillsJson != null)
+      {
+         activeSkillOverrides = Utils.JSON_MAPPER.readValue(activeSkillsJson, new TypeReference<Map<String,String>>() { });
+      }
+
+      if (passiveSkillsJson != null)
+      {
+         passiveSkillOverrides = Utils.JSON_MAPPER.readValue(passiveSkillsJson, new TypeReference<Map<String,String>>() { });
+      }
+
       String heroPath = Constants.PROFILE_API_URL_PREFIX + "/" + battleTag + "/hero/" + heroId;
 
-      Hero hero = Utils.doGet(BattlenetRealm.US, heroPath, Hero.class);
+      Hero hero = Utils.doGet(realm, heroPath, Hero.class);
 
-      Map<String, Item> itemMap = Utils.pullDownItemMap(hero);
+      Map<String, Item> itemMap = Utils.pullDownItemMap(hero, realm);
 
-      StatTotals statTotals = new StatTotals(itemMap, hero);
+      StatTotals statTotals = new StatTotals(itemMap, hero, activeSkillOverrides, passiveSkillOverrides);
 
       OffensiveStats normalOffensiveStats = Utils.computeOffensiveStats(statTotals);
 
