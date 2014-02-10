@@ -12,6 +12,7 @@ import java.util.Map;
 public class StatModifiers
 {
    List<ArmorModifier> armor = new ArrayList<ArmorModifier>();
+   List<AllResistModifier> allResist = new ArrayList<AllResistModifier>();
    List<IncomingDamageModifier> incomingDamage = new ArrayList<IncomingDamageModifier>();
    List<CritChanceModifier> critChance = new ArrayList<CritChanceModifier>();
    List<CritDamageModifier> critDamage = new ArrayList<CritDamageModifier>();

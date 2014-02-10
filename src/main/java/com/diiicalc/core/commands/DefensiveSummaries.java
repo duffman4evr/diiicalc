@@ -88,6 +88,7 @@ public class DefensiveSummaries
       return new DefensiveSummary
       (
          normalDefensiveStats.getEffectiveLife(),
+         normalDefensiveStats.getEffectiveLifeWithoutDodge(),
          normalDefensiveStats.getArmor(),
          normalDefensiveStats.getResistAll(),
          normalDefensiveStats.getDodgeChance(),

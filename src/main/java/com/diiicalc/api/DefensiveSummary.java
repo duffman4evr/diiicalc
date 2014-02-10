@@ -7,6 +7,9 @@ public class DefensiveSummary
    @JsonProperty("effectiveLife")
    private double effectiveLife;
 
+   @JsonProperty("effectiveLifeWithoutDodge")
+   private double effectiveLifeWithoutDodge;
+
    @JsonProperty("armor")
    private double armor;
 
@@ -40,6 +43,7 @@ public class DefensiveSummary
    public DefensiveSummary
    (
       double effectiveLife,
+      double effectiveLifeWithoutDodge,
       double armor,
       double allResist,
       double dodgeChance,
@@ -53,6 +57,7 @@ public class DefensiveSummary
    )
    {
       this.effectiveLife = effectiveLife;
+      this.effectiveLifeWithoutDodge = effectiveLifeWithoutDodge;
       this.armor = armor;
       this.allResist = allResist;
       this.dodgeChance = dodgeChance;

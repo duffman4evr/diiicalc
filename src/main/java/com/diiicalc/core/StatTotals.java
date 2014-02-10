@@ -118,21 +118,29 @@ public class StatTotals
          this.statsFromItems.getResistPhysical()
       );
 
-      return fromIntelligence + fromAllResistOnItems + fromIndividualResistOnItems;
+      double total = fromIntelligence + fromAllResistOnItems + fromIndividualResistOnItems;
+
+      for (AllResistModifier modifier : this.statModifiers.allResist)
+      {
+         total += modifier.get(total);
+      }
+
+      return total;
    }
 
    public double getArmor()
    {
       double fromStrength = this.getStrength();
       double fromItems = this.statsFromItems.getArmor();
-      double fromModifiers = 0;
+
+      double total = fromStrength + fromItems;
 
       for (ArmorModifier armorModifier : this.statModifiers.armor)
       {
-         fromModifiers += armorModifier.calculateArmor(fromStrength, fromItems);
+         total += armorModifier.get(total);
       }
 
-      return fromStrength + fromItems + fromModifiers;
+      return total;
    }
 
    public double getLife()
@@ -201,28 +209,30 @@ public class StatTotals
    {
       double base = 0.05;
       double fromItems = this.statsFromItems.getCritChance();
-      double fromModifiers = 0;
+
+      double total = base + fromItems;
 
       for (CritChanceModifier critChanceModifier : this.statModifiers.critChance)
       {
-         fromModifiers += critChanceModifier.addCritChance(fromItems);
+         total += critChanceModifier.get();
       }
 
-      return base + fromItems + fromModifiers;
+      return total;
    }
 
    public double getCritDamageBonus()
    {
       double base = 0.50;
       double fromItems = this.statsFromItems.getCritDamageBonus();
-      double fromModifiers = 0;
+
+      double total = base + fromItems;
 
       for (CritDamageModifier critDamageModifier : this.statModifiers.critDamage)
       {
-         fromModifiers += critDamageModifier.addCritDamage(fromItems);
+         total += critDamageModifier.get();
       }
 
-      return base + fromItems + fromModifiers;
+      return total;
    }
 
    public double getAttackSpeedBonus()
@@ -271,7 +281,7 @@ public class StatTotals
 
       for (SkillDamageModifier skillDamageModifier : this.statModifiers.skillDamage)
       {
-         skillDamageBonus += skillDamageModifier.getSkillDamageBonus();
+         skillDamageBonus += skillDamageModifier.get();
       }
 
       return skillDamageBonus;

@@ -2,5 +2,5 @@ package com.diiicalc.core.modifiers;
 
 public interface SkillDamageModifier
 {
-   public double getSkillDamageBonus();
+   public double get();
 }

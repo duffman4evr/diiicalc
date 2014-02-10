@@ -144,7 +144,8 @@ public class Utils
       }
 
       double effectiveLifeMultiplier = (1 / totalIncomingDamageModifier) * (1 + (averageBlockAmount / statTotals.getLife()));
-      double effectiveLife = statTotals.getLife() * effectiveLifeMultiplier;
+      double effectiveLifeWithoutDodge = statTotals.getLife() * effectiveLifeMultiplier;
+      double effectiveLife = effectiveLifeWithoutDodge / (1.0 - dodgeChance);
 
       DefensiveStats defensiveStats = new DefensiveStats
       (
@@ -154,7 +155,8 @@ public class Utils
          averageBlockAmount,
          incomingDamageModifiers,
          totalIncomingDamageModifier,
-         effectiveLife
+         effectiveLife,
+         effectiveLifeWithoutDodge
       );
 
       return defensiveStats;

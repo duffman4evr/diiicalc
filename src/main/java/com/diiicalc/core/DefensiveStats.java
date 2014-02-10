@@ -11,6 +11,7 @@ public class DefensiveStats
    private final Map<String, Double> incomingDamageModifiers;
    private final double totalIncomingDamageModifier;
    private final double effectiveLife;
+   private final double effectiveLifeWithoutDodge;
 
    public DefensiveStats
    (
@@ -20,7 +21,8 @@ public class DefensiveStats
       double averageBlockAmount,
       Map<String, Double> incomingDamageModifiers,
       double incomingDamageModifier,
-      double effectiveLife
+      double effectiveLife,
+      double effectiveLifeWithoutDodge
    )
    {
       this.armor = armor;
@@ -30,6 +32,7 @@ public class DefensiveStats
       this.incomingDamageModifiers = incomingDamageModifiers;
       this.totalIncomingDamageModifier = incomingDamageModifier;
       this.effectiveLife = effectiveLife;
+      this.effectiveLifeWithoutDodge = effectiveLifeWithoutDodge;
    }
 
    public double getArmor()
@@ -65,5 +68,10 @@ public class DefensiveStats
    public double getEffectiveLife()
    {
       return effectiveLife;
+   }
+
+   public double getEffectiveLifeWithoutDodge()
+   {
+      return effectiveLifeWithoutDodge;
    }
 }
